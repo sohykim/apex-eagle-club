@@ -167,6 +167,28 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 #join.open { display: flex; }
 #auth { position: fixed; inset: 0; z-index: 11; display: none; align-items: center; justify-content: center; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: rgba(8, 10, 13, 0.72); }
 #auth.open { display: flex; }
+#langPick, #lobby { position: fixed; inset: 0; z-index: 11; display: none; align-items: center; justify-content: center; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: rgba(8, 10, 13, 0.72); }
+#langPick { z-index: 13; }
+#langPick.open, #lobby.open { display: flex; }
+.lbpane { display: grid; gap: 10px; }
+.bigbtn { display: grid; gap: 4px; text-align: left; font: 500 15px var(--font-body); color: var(--paper); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; cursor: pointer; }
+.bigbtn b { font-family: var(--font-title); font-weight: 400; font-size: 19px; }
+.bigbtn small { color: var(--muted); font-size: 13px; }
+.bigbtn:hover, .bigbtn:focus-visible { background: rgba(255,255,255,.1); border-color: var(--amber); }
+.bigbtn.vip { border-color: rgba(243,178,60,.55); background: linear-gradient(135deg, rgba(243,178,60,.16), rgba(255,143,200,.08)); }
+.lbrecent { display: flex; flex-wrap: wrap; gap: 6px; }
+.lbrecent:empty { display: none; }
+.codebox { text-align: center; font: 400 42px/1.2 var(--font-title); letter-spacing: .2em; padding: 14px; border-radius: 14px; border: 1px dashed var(--amber); color: var(--amber); user-select: all; -webkit-user-select: all; }
+.card select { font: 500 16px var(--font-body); color: var(--paper); background: #222b33; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.card .actions.lbfoot { justify-content: space-between; }
+.cardtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.roomchip { pointer-events: auto; display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; padding: 4px 5px 4px 10px; border-radius: 999px; background: rgba(17,21,26,.6); border: 1px solid var(--line); width: fit-content; max-width: 70vw; }
+.roomchip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.roomchip button { font: 500 12px var(--font-body); color: var(--amber); background: none; border: 1px solid rgba(243,178,60,.4); border-radius: 999px; padding: 3px 9px; cursor: pointer; }
+#vipList, #vipReqList { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+#vipList li, #vipReqList li { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 2px; border-top: 1px solid var(--line); }
+#vipList li span, #vipReqList li span { flex: 1; }
+.btn.on { border-color: var(--amber); color: var(--amber); }
 #auth .field label span { font-size: 13px; color: var(--muted); }
 .card { width: min(480px, 100%); max-height: 100%; overflow-y: auto; background: #182027; border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
 .card h2 { margin: 0; font-family: var(--font-title); font-weight: 400; font-size: 28px; }
@@ -229,6 +251,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
   <div class="brand">
     <h1 id="title">정수리 독수리 연구소</h1>
     <p>정수리를 맞대고 논문을 정독하는 독수리들의 모임</p>
+    <div class="roomchip" id="roomChip" hidden><span id="roomName"></span><button type="button" id="roomCopy">복사</button></div>
   </div>
   <div class="pills">
     <button class="pill" id="soundBtn" type="button" aria-pressed="false">백색소음</button>
@@ -257,6 +280,13 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
   <h3 id="jMonth">이번 달 출석</h3>
   <div class="cal" id="jCal"></div>
   <p class="note" id="jCare"></p>
+  <h3>연구실</h3>
+  <div class="acct">
+    <p class="note" id="jRoom"></p>
+    <div class="row"><button class="btn small" type="button" id="roomLeave">🚪 다른 연구실로</button></div>
+  </div>
+  <h3>언어 · Language</h3>
+  <div class="acct"><div class="row"><button class="btn small" type="button" data-lang="ko">한국어</button><button class="btn small" type="button" data-lang="en">English</button></div></div>
   <h3>계정 관리</h3>
   <div class="acct">
     <div class="row"><label for="renameInput">별명 바꾸기</label><input type="text" id="renameInput" maxlength="12" autocomplete="off"><button class="btn small" type="button" id="renameBtn">바꾸기</button></div>
@@ -274,15 +304,23 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     <p class="err" id="fbMsg" role="status"></p>
   </div>
   <section id="devTools" hidden>
-    <h3>🛠 개발자 도구</h3>
-    <p class="note">개발자는 세션 없이 언제든 돌볼 수 있어요.</p>
+    <h3 id="devTitle">🛠 개발자 도구</h3>
+    <p class="note" id="devCareNote">개발자는 세션 없이 언제든 돌볼 수 있어요.</p>
     <div class="row"><label for="notice0">화이트보드 공지</label><input type="text" id="notice0" maxlength="24"><input type="text" id="notice1" maxlength="24" aria-label="공지 2"><input type="text" id="notice2" maxlength="24" aria-label="공지 3"></div>
     <div class="row"><label for="neonInput">네온사인 문구</label><input type="text" id="neonInput" maxlength="16"><button class="btn small" type="button" id="neonSave">네온 저장</button></div>
     <div class="row"><button class="btn small" type="button" id="noticeSave">공지 저장</button><button class="btn small danger" type="button" id="chatClear">채팅 전체 지우기</button></div>
+    <div id="devOnly" class="acct">
+    <h3>👑 VIP 클럽</h3>
+    <p class="note">입장 요청</p>
+    <ul id="vipReqList"></ul>
+    <p class="note">VIP 회원</p>
+    <ul id="vipList"></ul>
+    <div class="row"><input type="text" id="vipAdd" maxlength="12" autocomplete="off" aria-label="VIP에 추가할 별명"><button class="btn small" type="button" id="vipAddBtn">추가</button></div>
     <h3>받은 피드백</h3>
     <ul id="fbList"></ul>
     <h3>회원 목록</h3>
     <ul id="memberList"></ul>
+    </div>
     <p class="err" id="devMsg" role="status"></p>
   </section>
 </aside>
@@ -319,7 +357,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 
 <div id="auth" class="open" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="card">
-    <h2 id="authTitle">연구소 입장</h2>
+    <div class="cardtop"><h2 id="authTitle">연구소 입장</h2><button class="btn small" type="button" id="authLang">English</button></div>
     <p class="lede" id="authLede">연구소 문을 여는 중이에요…</p>
     <form id="authForm" autocomplete="off" hidden>
       <div class="field"><label for="authNick"><span>별명</span></label><input type="text" id="authNick" maxlength="12"></div>
@@ -329,6 +367,47 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
       <p class="rule" id="authNote">같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.</p>
       <div class="actions"><button class="btn" type="button" id="authSwitch">처음 왔어요 · 가입하기</button><button class="btn primary" type="submit" id="authSubmit">로그인</button></div>
     </form>
+  </div>
+</div>
+
+<div id="lobby" role="dialog" aria-modal="true" aria-labelledby="lobbyTitle">
+  <div class="card">
+    <h2 id="lobbyTitle">어느 연구실로 갈까요?</h2>
+    <p class="lede" id="lobbyLede"></p>
+    <div id="lbHome" class="lbpane">
+      <button class="bigbtn" type="button" id="lbCreate"><b>🧪 새로운 연구실 만들기</b><small>이름을 짓고 번호를 받아 친구들을 불러요</small></button>
+      <button class="bigbtn" type="button" id="lbEnter"><b>🔑 연구실 입장하기</b><small>받은 번호로 들어가요</small></button>
+      <button class="bigbtn vip" type="button" id="lbVip"><b>👑 독수리 VIP 클럽 입장하기</b><small id="lbVipSub">초대받은 독수리만 들어갈 수 있어요</small></button>
+      <div id="lbRecent" class="lbrecent"></div>
+    </div>
+    <form id="lbCreatePane" class="lbpane" hidden autocomplete="off">
+      <div class="field"><label for="lbName"><span>연구실 이름</span></label><input type="text" id="lbName" maxlength="20" placeholder="예: 3층 식물생리 연구실"></div>
+      <div class="field"><label for="lbCap"><span>정원 (나 포함)</span></label><select id="lbCap"></select></div>
+      <div class="actions"><button class="btn" type="button" data-back>뒤로</button><button class="btn primary" type="submit">만들기</button></div>
+    </form>
+    <div id="lbMadePane" class="lbpane" hidden>
+      <p class="rule" id="lbMadeName"></p>
+      <div class="codebox" id="lbCode"></div>
+      <div class="actions"><button class="btn" type="button" id="lbCopyCode">번호 복사</button><button class="btn" type="button" id="lbCopyLink">링크 복사</button><button class="btn primary" type="button" id="lbGoMade">입장하기</button></div>
+    </div>
+    <form id="lbEnterPane" class="lbpane" hidden autocomplete="off">
+      <div class="field"><label for="lbCodeIn"><span>연구실 번호</span></label><input type="text" id="lbCodeIn" maxlength="8" autocapitalize="characters" spellcheck="false" placeholder="예: K7QM2X"></div>
+      <div class="actions"><button class="btn" type="button" data-back>뒤로</button><button class="btn primary" type="submit">입장</button></div>
+    </form>
+    <div id="lbVipPane" class="lbpane" hidden>
+      <p class="rule" id="lbVipMsg"></p>
+      <div class="actions"><button class="btn" type="button" data-back>뒤로</button><button class="btn primary" type="button" id="lbVipReq">입장 요청 보내기</button></div>
+    </div>
+    <p class="err" id="lbMsg" role="alert"></p>
+    <div class="actions lbfoot"><button class="btn small" type="button" id="lbLang">English</button><button class="btn small" type="button" id="lbLogout">로그아웃</button></div>
+  </div>
+</div>
+
+<div id="langPick" role="dialog" aria-modal="true" aria-labelledby="langTitle">
+  <div class="card">
+    <h2 id="langTitle">정수리 독수리 연구소</h2>
+    <p class="lede">언어를 골라 주세요 · Choose your language</p>
+    <div class="lbpane"><button class="bigbtn" type="button" data-lang="ko"><b>한국어</b></button><button class="bigbtn" type="button" data-lang="en"><b>English</b></button></div>
   </div>
 </div>
 
@@ -353,21 +432,41 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+/* ================= 언어 ================= */
+const LANG = (() => { try { const v = localStorage.getItem('jsdsr-lang'); return v === 'en' || v === 'ko' ? v : null; } catch { return null; } })();
+const isEN = LANG === 'en';
+const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Endive", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "I want to graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Crown to crown,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Crown Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Crown Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Crown", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Crowns together, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle #N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, crown to crown", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head and touches crowns. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "초대받은 독수리만 들어갈 수 있어요": "Invited eagles only", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add"};
+const $t = s => isEN && Object.prototype.hasOwnProperty.call(EN, s) ? EN[s] : s;
+const $tt = (ko, en) => isEN ? en : ko;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+document.documentElement.lang = isEN ? 'en' : 'ko';
+if (isEN) {
+  document.title = $t(document.title);
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n; (n = tw.nextNode());) { const v = n.nodeValue, k = v.trim(); if (k && Object.prototype.hasOwnProperty.call(EN, k)) n.nodeValue = v.replace(k, EN[k]); }
+  for (const e of document.querySelectorAll('[placeholder],[aria-label],[title],[alt]')) for (const a of ['placeholder', 'aria-label', 'title', 'alt']) { const v = e.getAttribute(a); if (v && Object.prototype.hasOwnProperty.call(EN, v)) e.setAttribute(a, EN[v]); }
+  const st = document.createElement('style'); st.textContent = '.tag.me .nm::after { content: " (me)"; }'; document.head.appendChild(st);
+}
+// 들어갈 연구실: 주소 끝 #r=번호 (vip는 VIP 클럽)
+const ROOM_KEY = (() => { const m = /[#&]r=([A-Za-z0-9]{3,12})/.exec(location.hash); return m ? (m[1].toLowerCase() === 'vip' ? 'vip' : m[1].toUpperCase()) : null; })();
+const ATT_LS = 'jsdsr-att-' + (ROOM_KEY || 'none');
+let RP = '', ROOM = null, roomReady = false, RTDB = null;
+
 /* ================= 상수 ================= */
 const COLORS = ['#f3b23c', '#ff8fc8', '#7cc7b3', '#9da8ff', '#e0603a', '#5c7fd6', '#3f8f6b', '#b48ad8'];
-const COLOR_NAMES = ['호박', '분홍', '민트', '라벤더', '주황', '파랑', '초록', '보라'];
+const COLOR_NAMES = [$t('호박'), $t('분홍'), $t('민트'), $t('라벤더'), $t('주황'), $t('파랑'), $t('초록'), $t('보라')];
 const KINDS = {
-  eagle: '🦅 독수리', potato: '🥔 감자', carrot: '🥕 당근', sweetpotato: '🍠 고구마', cabbage: '🥬 배추',
-  radish: '무', tomato: '🍅 토마토', celery: '🌿 셀러리', endive: '앤다이브', pepper: '🫑 피망', broccoli: '🥦 브로콜리', onion: '🧅 양파',
+  eagle: $t('🦅 독수리'), potato: $t('🥔 감자'), carrot: $t('🥕 당근'), sweetpotato: $t('🍠 고구마'), cabbage: $t('🥬 배추'),
+  radish: $t('무'), tomato: $t('🍅 토마토'), celery: $t('🌿 셀러리'), endive: $t('앤다이브'), pepper: $t('🫑 피망'), broccoli: $t('🥦 브로콜리'), onion: $t('🧅 양파'),
 };
 const TASKS = {
-  thesis: { label: '논문 쓰기', icon: '📝' },
-  code:   { label: '코딩', icon: '🖥️' },
-  read:   { label: '논문 읽기', icon: '📄' },
-  notes:  { label: '실험 노트 정리', icon: '🧪' },
-  data:   { label: '데이터 분석', icon: '📊' },
-  dutch:  { label: '더치 숙제', icon: '🇧🇪' },
-  me:     { label: '나를 위한 시간', icon: '🥰' },
+  thesis: { label: $t('논문 쓰기'), icon: '📝' },
+  code:   { label: $t('코딩'), icon: '🖥️' },
+  read:   { label: $t('논문 읽기'), icon: '📄' },
+  notes:  { label: $t('실험 노트 정리'), icon: '🧪' },
+  data:   { label: $t('데이터 분석'), icon: '📊' },
+  dutch:  { label: $t('더치 숙제'), icon: '🇧🇪' },
+  me:     { label: $t('나를 위한 시간'), icon: '🥰' },
 };
 const own = (o, k) => typeof k === 'string' && Object.prototype.hasOwnProperty.call(o, k);
 const BENCH_H = 0.92, BENCH_L = 6.4, BENCH_W = 1.3;
@@ -517,7 +616,7 @@ const fairy = [];
 
 /* ---- 화이트보드 (뒷벽 가운데) ---- */
 let chattyNames = [], boardGraph = [], boardTotal = 0, devId = null, chatClearedAt = 0;
-let noticeLines = ['-80 문 열어두지 말 것!!', '오토클레이브 16:00', '바이오 폐기물은 주황 통에'];
+let noticeLines = [$t('-80 문 열어두지 말 것!!'), $t('오토클레이브 16:00'), $t('바이오 폐기물은 주황 통에')];
 const WB_FONT = '"Seunghoon", "Poor Story", "Gaegu", sans-serif';
 function drawBoard(g, w, h) {
   g.fillStyle = '#fbfcfb'; g.fillRect(0, 0, w, h); g.textAlign = 'left';
@@ -538,20 +637,20 @@ function drawBoard(g, w, h) {
   ink('#1f4f9c', 36);
   g.fillText('RCF = 1.118×10⁻⁵ × r × rpm²', 40, 552);
   g.fillText('= 1.118e-5 × 8.5 × 15000² ≈ 21,382 g', 40, 596);
-  ink('#9aa29d', 32); g.fillText('13000 rpm?? 아니 15000', 640, 552);
+  ink('#9aa29d', 32); g.fillText($t('13000 rpm?? 아니 15000'), 640, 552);
   g.lineWidth = 2; g.beginPath(); g.moveTo(636, 542); g.lineTo(820, 536); g.stroke();
-  ink('#2b2f33', 40); g.fillText('웨스턴 실패:', 40, 668);
+  ink('#2b2f33', 40); g.fillText($t('웨스턴 실패:'), 40, 668);
   g.lineWidth = 4;
   for (let k = 0; k < 13; k++) { const gx = 270 + Math.floor(k / 5) * 74 + (k % 5) * 12; if (k % 5 === 4) { g.beginPath(); g.moveTo(gx - 54, 672); g.lineTo(gx + 4, 634); g.stroke(); } else { g.beginPath(); g.moveTo(gx, 636); g.lineTo(gx, 676); g.stroke(); } }
-  ink('#2d7a5f', 38); g.fillText('졸업 D-???', 40, 736);
-  ink('#b04a8a', 34); g.fillText('왜 안 됨?? 어제는 됐잖아', 300, 736);
+  ink('#2d7a5f', 38); g.fillText($t('졸업 D-???'), 40, 736);
+  ink('#b04a8a', 34); g.fillText($t('왜 안 됨?? 어제는 됐잖아'), 300, 736);
   g.strokeStyle = '#c9cfcb'; g.lineWidth = 3;
   for (const x of [985, 1575]) { g.beginPath(); g.moveTo(x, 30); g.lineTo(x, h - 30); g.stroke(); }
   // 월간 누적 공부시간 그래프
   const GX = 1005;
-  ink('#1f4f9c', 50); g.fillText(`${new Date().getMonth() + 1}월 누적 공부시간`, GX, 74);
-  ink('#7a8580', 28); g.fillText('집중 모드로 앉아 있던 시간', GX + 4, 112);
-  if (!boardGraph.length) { ink('#9aa29d', 38); g.fillText('(아직 기록 없음)', GX + 20, 200); }
+  ink('#1f4f9c', 50); g.fillText($tt(`${new Date().getMonth() + 1}월 누적 공부시간`, `Study hours · ${MON[new Date().getMonth()]}`), GX, 74);
+  ink('#7a8580', 28); g.fillText($t('집중 모드로 앉아 있던 시간'), GX + 4, 112);
+  if (!boardGraph.length) { ink('#9aa29d', 38); g.fillText($t('(아직 기록 없음)'), GX + 20, 200); }
   else {
     const max = Math.max(3600000, ...boardGraph.map(r => r.ms)), bx = GX + 160, bw = 330;
     g.strokeStyle = '#2b2f33'; g.lineWidth = 3; g.beginPath(); g.moveTo(bx, 136); g.lineTo(bx, 150 + boardGraph.length * 78); g.stroke();
@@ -568,18 +667,18 @@ function drawBoard(g, w, h) {
       const v = (r.ms / 3600000).toFixed(1) + 'h';
       ink(i === 0 ? '#c23b3b' : '#2b2f33', 32); g.fillText(v + (i === 0 ? ' ★' : ''), bx + bwid + 10, y + 36);
     });
-    ink('#2d7a5f', 36); g.fillText(`연구소 합계 ${(boardTotal / 3600000).toFixed(1)}시간`, GX, 752);
+    ink('#2d7a5f', 36); g.fillText($tt(`연구소 합계 ${(boardTotal / 3600000).toFixed(1)}시간`, `Lab total ${(boardTotal / 3600000).toFixed(1)} h`), GX, 752);
   }
   // 공지와 떠든 사람
   const RX = 1600;
-  ink('#1f4f9c', 44); g.fillText('공지', RX, 72);
+  ink('#1f4f9c', 44); g.fillText($t('공지'), RX, 72);
   noticeLines.forEach((ln, i) => { ink(i ? '#2b2f33' : '#c23b3b', i ? 32 : 34); g.fillText(ln, RX, 120 + i * 43); });
   g.fillStyle = '#fff3c4'; g.fillRect(RX - 10, 250, 470, 500);
   g.strokeStyle = '#c23b3b'; g.lineWidth = 5; g.strokeRect(RX - 10, 250, 470, 500);
-  ink('#c23b3b', 60); g.fillText('떠든 사람', RX + 16, 320);
-  ink('#2b2f33', 28); g.fillText('벌칙: 피펫 팁 채우기', RX + 18, 362);
+  ink('#c23b3b', 60); g.fillText($t('떠든 사람'), RX + 16, 320);
+  ink('#2b2f33', 28); g.fillText($t('벌칙: 피펫 팁 채우기'), RX + 18, 362);
   g.lineWidth = 3; g.beginPath(); g.moveTo(RX + 16, 380); g.lineTo(RX + 430, 380); g.stroke();
-  if (!chattyNames.length) { ink('#9aa29d', 40); g.fillText('(아직 없음... 조용)', RX + 24, 450); }
+  if (!chattyNames.length) { ink('#9aa29d', 40); g.fillText($t('(아직 없음... 조용)'), RX + 24, 450); }
   chattyNames.forEach((n, i) => {
     ink('#2b2f33', 54); const label = `${i + 1}. ${n.length > 8 ? n.slice(0, 8) + '…' : n}`; g.fillText(label, RX + 24, 450 + i * 80);
     const tw = g.measureText(label).width;
@@ -685,15 +784,15 @@ mesh(new THREE.PlaneGeometry(1.74, 1.1), glow('#dff3ff'), 0, 1.45, -0.38, hood);
 mesh(new THREE.PlaneGeometry(1.76, 0.75), new THREE.MeshStandardMaterial({ color: '#bfe2f0', transparent: true, opacity: 0.25, roughness: 0.05 }), 0, 1.62, 0.4, hood);
 mesh(box(1.76, 0.05, 0.04), std('#9aa29d', { metalness: .6 }), 0, 1.25, 0.41, hood);
 for (let i = 0; i < 5; i++) bottle(hood, -0.6 + i * 0.3, 0.9, -0.1 + (i % 2) * 0.12, true);
-sign('사용 후 꼭 끄기!!', 0.5, 0.12, { w: 512, h: 120, bg: '#ffe46b', font: `60px ${HAND}` }, hood, 0, 2.1, 0.43);
+sign($t('사용 후 꼭 끄기!!'), 0.5, 0.12, { w: 512, h: 120, bg: '#ffe46b', font: `60px ${HAND}` }, hood, 0, 2.1, 0.43);
 
 const ultTex = canvasTex(256, 512, (g, w, h) => {
   g.fillStyle = '#f2f4f2'; g.fillRect(0, 0, w, h);
   g.fillStyle = '#1e2a33'; g.fillRect(40, 50, 176, 74);
   g.fillStyle = '#7cf0b6'; g.font = '600 44px "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif'; g.textAlign = 'center'; g.fillText('-80.3°C', 128, 104);
   g.fillStyle = '#5d6762'; g.font = '600 22px "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif'; g.fillText('ULT FREEZER', 128, 170);
-  g.fillStyle = '#c63d3d'; g.font = `34px ${HAND}`; g.fillText('문 꼭 닫아주세요', 128, 300);
-  g.fillStyle = '#ff8fc8'; g.fillRect(70, 360, 116, 90); g.fillStyle = '#2b2f33'; g.font = `22px ${HAND}`; g.fillText('내 샘플', 128, 395); g.fillText('건들지마', 128, 425);
+  g.fillStyle = '#c63d3d'; g.font = `34px ${HAND}`; g.fillText($t('문 꼭 닫아주세요'), 128, 300);
+  g.fillStyle = '#ff8fc8'; g.fillRect(70, 360, 116, 90); g.fillStyle = '#2b2f33'; g.font = `22px ${HAND}`; g.fillText($t('내 샘플'), 128, 395); g.fillText($t('건들지마'), 128, 425);
   g.fillStyle = '#c7ccc9'; g.fillRect(212, 200, 16, 180);
 }, { text: true });
 const ult = new THREE.Group(); ult.position.set(-0.4, 0, 0.45); left.add(ult); // 월드 z=0.4
@@ -701,7 +800,7 @@ const ultBox = new THREE.Mesh(box(0.85, 1.95, 0.85), [std('#eef0ee'), std('#eef0
 ultBox.position.y = 0.975; ult.add(ultBox);
 const led = mesh(sph(0.018, 10, 8), glow('#4dff9a'), 0.3, 1.82, 0.43, ult);
 
-let neonText = '졸업하고 싶다';
+let neonText = $t('졸업하고 싶다');
 const neonTex = canvasTex(1024, 256, (g, w, h) => {
   g.clearRect(0, 0, w, h); g.textAlign = 'center'; g.textBaseline = 'middle';
   let fs = 150; g.font = `${fs}px ${HAND}`; while (g.measureText(neonText).width > w - 150 && fs > 50) { fs -= 6; g.font = `${fs}px ${HAND}`; }
@@ -712,7 +811,7 @@ const neonTex = canvasTex(1024, 256, (g, w, h) => {
 const neon = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshBasicMaterial({ map: neonTex, transparent: true, depthWrite: false }));
 neon.position.set(-2.4, 2.35, 0.03); left.add(neon); // 월드 z=2.4
 
-const STICKY = [['새벽 2시 공초점 예약', '#ffc2de'], ['졸업하고 싶다', '#ffc2de'], ['왜 안 돼', '#fff07a'], ['교수님 미팅 10시', '#bff0d9'], ['다시 하자...', '#ffc2de'], ['밴드 안 뜸 ㅠ', '#fff07a'], ['엄마한테 전화', '#c9d7ff'], ['나는 할 수 있다(?)', '#ffd8a8'], ['리뷰어 2 왜그래', '#ffc2de'], ['밥 먹기!!', '#bff0d9'], ['n=3 채우기', '#fff07a'], ['잠은 졸업하고', '#c9d7ff'], ['괜찮아 괜찮아', '#ffd8a8']];
+const STICKY = [[$t('새벽 2시 공초점 예약'), '#ffc2de'], [$t('졸업하고 싶다'), '#ffc2de'], [$t('왜 안 돼'), '#fff07a'], [$t('교수님 미팅 10시'), '#bff0d9'], [$t('다시 하자...'), '#ffc2de'], [$t('밴드 안 뜸 ㅠ'), '#fff07a'], [$t('엄마한테 전화'), '#c9d7ff'], [$t('나는 할 수 있다(?)'), '#ffd8a8'], [$t('리뷰어 2 왜그래'), '#ffc2de'], [$t('밥 먹기!!'), '#bff0d9'], [$t('n=3 채우기'), '#fff07a'], [$t('잠은 졸업하고'), '#c9d7ff'], [$t('괜찮아 괜찮아'), '#ffd8a8']];
 STICKY.push(STICKY.shift());
 const stickyTex = STICKY.map(([t, c]) => canvasTex(160, 160, (g, w, h) => {
   g.fillStyle = c; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(0,0,0,.06)'; g.fillRect(0, 0, w, 22);
@@ -814,9 +913,9 @@ for (let k = 0; k < 2; k++) {
 const rack = new THREE.Group(); rack.position.set(-1.75, 0, 0.3); rack.scale.setScalar(1.3); right.add(rack);
 [0.45, 1.05, 1.65].forEach(y => {
   mesh(box(1.7, 0.03, 0.5), shelfMat, 0, y, 0, rack);
-  mesh(box(1.6, 0.02, 0.06), glow('#ffc6f0'), 0, y + 0.55, 0, rack);
+  mesh(box(1.6, 0.02, 0.06), glow('#ffc6f0'), 0, y + (y > 1.5 ? 0.93 : 0.55), 0, rack);
 });
-[-0.84, 0.84].forEach(x => mesh(box(0.03, 1.95, 0.03), shelfMat, x, 0.97, 0.22, rack));
+[-0.84, 0.84].forEach(x => mesh(box(0.03, 2.62, 0.03), shelfMat, x, 1.31, 0.22, rack));
 const rackLight = new THREE.PointLight('#ff9be6', 3.5, 3.2, 2); rackLight.position.set(6.3, 2.0, -1.75); scene.add(rackLight);
 function pot(p, x, y, z, r = 0.045, c = '#2b2f33') { mesh(cyl(r, r * 0.8, r * 1.4, 12), std(c), x, y + r * 0.7, z, p); mesh(cyl(r * 0.95, r * 0.95, 0.005, 12), std('#4a3a2a'), x, y + r * 1.4, z, p); return y + r * 1.4; }
 const leafGeo = sph(1, 10, 6);
@@ -830,11 +929,17 @@ function rosette(p, x, y, z, s = 1) {
   if (rnd() > 0.35) { mesh(cyl(0.002, 0.002, 0.16, 5), PM.stalk, x, top + 0.08, z, p); for (let k = 0; k < 4; k++) mesh(sph(0.006, 6, 4), std('#ffffff'), x + (rnd() - .5) * 0.02, top + 0.14 + k * 0.012, z + (rnd() - .5) * 0.02, p); }
 }
 for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) for (let j = 0; j < 2; j++) rosette(rack, -0.7 + i * 0.2, 0.465 + r * 0.6, -0.1 + j * 0.16);
-function rapeseed(p, x, y, z) {
-  const top = pot(p, x, y, z, 0.06, '#7a5a3a');
-  mesh(cyl(0.006, 0.008, 0.42, 6), PM.rsStem, x, top + 0.21, z, p);
-  for (let i = 0; i < 4; i++) { const l = mesh(leafGeo, PM.rsLeaf, x + (i % 2 ? 0.05 : -0.05), top + 0.08 + i * 0.07, z, p); l.scale.set(0.05, 0.006, 0.03); l.rotation.z = (i % 2 ? -1 : 1) * 0.4; }
-  for (let i = 0; i < 9; i++) mesh(sph(0.012, 6, 4), std('#f7d22c', { emissive: '#4a3a00' }), x + (rnd() - .5) * 0.07, top + 0.4 + rnd() * 0.08, z + (rnd() - .5) * 0.07, p);
+const RS_FLOWER = std('#f7d22c', { emissive: '#5a4600' }), RS_BUD = std('#c9c23a');
+function rapeseed(p, x, y, z, s = 1.42) {
+  // 유채 (Brassica napus): 굵은 꽃대, 곁가지 두 개, 아래는 피고 위는 꽃봉오리
+  const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(s); p.add(g);
+  const top = pot(g, 0, 0, 0, 0.06, '#7a5a3a');
+  mesh(cyl(0.006, 0.009, 0.46, 6), PM.rsStem, 0, top + 0.23, 0, g);
+  for (let i = 0; i < 5; i++) { const l = mesh(leafGeo, PM.rsLeaf, (i % 2 ? 0.055 : -0.055), top + 0.06 + i * 0.065, ((i % 3) - 1) * 0.02, g); l.scale.set(0.062 - i * 0.008, 0.006, 0.036 - i * 0.004); l.rotation.z = (i % 2 ? -1 : 1) * 0.45; }
+  [[0, top + 0.47, 0], [0.055, top + 0.39, 0.02], [-0.055, top + 0.37, -0.02]].forEach(([hx, hy, hz], k) => {
+    if (k) { const br = mesh(cyl(0.003, 0.004, 0.13, 5), PM.rsStem, hx * 0.5, hy - 0.07, hz * 0.5, g); br.rotation.z = -Math.sign(hx) * 0.65; }
+    for (let i = 0; i < 16; i++) { const a = i * 2.4, r = 0.01 + (i / 16) * 0.024; mesh(sph(i < 5 ? 0.006 : 0.012, 6, 4), i < 5 ? RS_BUD : RS_FLOWER, hx + Math.sin(a) * r, hy + 0.05 - i * 0.006, hz + Math.cos(a) * r, g); }
+  });
 }
 for (let i = 0; i < 4; i++) rapeseed(rack, -0.6 + i * 0.4, 1.665, -0.05 + (i % 2) * 0.1);
 sign('Arabidopsis thaliana', 0.5, 0.07, { w: 512, h: 72, font: 'italic 36px \"A2Z SemiBold\", \"IBM Plex Sans KR\", sans-serif' }, rack, -0.4, 0.4, 0.26);
@@ -962,7 +1067,7 @@ const doorPanel = new THREE.Group(); doorPanel.position.set(DOOR_X, 0, 0.1); fro
 mesh(box(DW, DH - 0.02, 0.05), std('#c4ced4', { roughness: 0.5 }), 0, DH / 2, 0, doorPanel);
 mesh(new THREE.PlaneGeometry(0.42, 0.62), std('#2a3f52', { transparent: true, opacity: 0.75, roughness: 0.05 }), 0.15, 1.55, 0.026, doorPanel);
 mesh(box(0.035, 0.45, 0.035), std('#e6e9e8', { metalness: 0.6, roughness: 0.3 }), DW / 2 - 0.12, 1.05, 0.05, doorPanel);
-sign('실험실 B-214', 0.5, 0.12, { w: 512, h: 120, bg: '#ffffff', fg: '#1d2126', font: '64px "A2Z SemiBold", sans-serif', sub: '관계자 외 출입금지' }, doorPanel, -0.25, 1.95, 0.026);
+sign($t('실험실 B-214'), 0.5, 0.12, { w: 512, h: 120, bg: '#ffffff', fg: '#1d2126', font: '64px "A2Z SemiBold", sans-serif', sub: $t('관계자 외 출입금지') }, doorPanel, -0.25, 1.95, 0.026);
 bioSticker(doorPanel, -0.25, 1.62, 0.026, 0, 0.2);
 sticky(doorPanel, 6, 0.38, 1.2, 0.027, 0);
 const doorHits = [];
@@ -971,7 +1076,7 @@ const doorHit = new THREE.Mesh(box(DW, DH, 0.06), new THREE.MeshBasicMaterial({ 
 let doorOpen = false, doorK = 0, doorTimer;
 function toggleDoor() {
   doorOpen = !doorOpen; clearTimeout(doorTimer);
-  toast(doorOpen ? '문을 밀어서 열었어요. 복도가 보여요.' : '문을 닫았어요.');
+  toast(doorOpen ? $t('문을 밀어서 열었어요. 복도가 보여요.') : $t('문을 닫았어요.'));
   if (doorOpen) doorTimer = setTimeout(() => { doorOpen = false; }, 9000);
 }
 function animateDoor(dt) { doorK += ((doorOpen ? 1 : 0) - doorK) * Math.min(1, dt * 3.5); const e = doorK * doorK * (3 - 2 * doorK); doorPanel.position.x = DOOR_X - (DW + 0.02) * e; }
@@ -1094,9 +1199,9 @@ const mottoTex = canvasTex(1200, 400, (g, w, h) => {
   g.strokeStyle = '#c9b48a'; g.lineWidth = 6; g.strokeRect(24, 24, w - 48, h - 48);
   g.fillStyle = '#1d1a16'; g.textAlign = 'center'; g.textBaseline = 'middle';
   const gung = n => `800 ${n}px "Gungsuh", "GungSeo", "궁서", "궁서체", "Nanum Myeongjo", serif`;
-  g.font = gung(96); g.fillText('정수리를 맞대고', w / 2, 140);
-  g.font = gung(96); g.fillText('독수리처럼 날아오르자!', w / 2, 270);
-  g.fillStyle = '#c0392b'; g.fillRect(w - 150, h - 130, 92, 92); g.fillStyle = '#fbf6e6'; g.font = gung(40); g.fillText('급훈', w - 104, h - 84);
+  g.font = gung(96); g.fillText($t('정수리를 맞대고'), w / 2, 140);
+  g.font = gung(96); g.fillText($t('독수리처럼 날아오르자!'), w / 2, 270);
+  g.fillStyle = '#c0392b'; g.fillRect(w - 150, h - 130, 92, 92); g.fillStyle = '#fbf6e6'; g.font = gung(40); g.fillText($t('급훈'), w - 104, h - 84);
 }, { text: true });
 const MOTTO_X = 5.3;
 mesh(new THREE.PlaneGeometry(2.3, 0.77), new THREE.MeshStandardMaterial({ map: mottoTex, roughness: 0.8 }), MOTTO_X, 2.6, 0.03, front);
@@ -1109,8 +1214,8 @@ const plaqueTex = canvasTex(640, 150, (g, w, h) => {
   const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#f7d774'); gr.addColorStop(1, '#c89a2c'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
   g.strokeStyle = '#7a5a12'; g.lineWidth = 6; g.strokeRect(8, 8, w - 16, h - 16);
   g.fillStyle = '#3a2a08'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.font = '40px "A2Z SemiBold", sans-serif'; g.fillText(trophyInfo.name ? `🏆 ${trophyInfo.month}월 공부왕` : '🏆 이달의 공부왕', w / 2, 50);
-  g.font = '36px "A2Z SemiBold", sans-serif'; g.fillText(trophyInfo.name ? `${trophyInfo.name} · ${trophyInfo.hours}시간` : '아직 주인공이 없어요', w / 2, 104);
+  g.font = '40px "A2Z SemiBold", sans-serif'; g.fillText(trophyInfo.name ? $tt(`🏆 ${trophyInfo.month}월 공부왕`, `🏆 ${MON[(trophyInfo.month || 1) - 1]} Champion`) : $t('🏆 이달의 공부왕'), w / 2, 50);
+  g.font = '36px "A2Z SemiBold", sans-serif'; g.fillText(trophyInfo.name ? $tt(`${trophyInfo.name} · ${trophyInfo.hours}시간`, `${trophyInfo.name} · ${trophyInfo.hours} h`) : $t('아직 주인공이 없어요'), w / 2, 104);
 }, { text: true });
 const PF_Y = 1.32;
 mesh(new THREE.PlaneGeometry(0.56, 0.7), new THREE.MeshBasicMaterial({ map: portraitRT.texture }), MOTTO_X, PF_Y, 0.04, front);
@@ -1139,7 +1244,7 @@ PAPERS.forEach(([jn, title], i) => {
     g.fillStyle = '#2a7fd4'; g.fillRect(16, 32, w - 32, 2);
     g.fillStyle = '#1d2126'; g.font = '20px "A2Z SemiBold", sans-serif';
     let line = '', y = 62; for (const wd of title.split(' ')) { if (g.measureText(line + ' ' + wd).width > w - 32 && line) { g.fillText(line, 16, y); line = wd; y += 25; } else line = line ? line + ' ' + wd : wd; } g.fillText(line, 16, y);
-    g.fillStyle = '#5d6762'; g.font = '12px "IBM Plex Sans KR", sans-serif'; g.fillText('J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소', 16, y + 24);
+    g.fillStyle = '#5d6762'; g.font = '12px "IBM Plex Sans KR", sans-serif'; g.fillText($t('J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소'), 16, y + 24);
     g.fillStyle = '#c6ccc9'; for (let k = 0; k < 7; k++) g.fillRect(16, y + 44 + k * 10, w - 32 - (k === 6 ? 90 : 0), 4);
     g.save(); g.translate(16, y + 124); fluoDraw(g, w - 32, 150, (i * 2) % 6, 3000 + i * 7, PHOTOS[(i * 3) % PHOTOS.length][1]); g.restore();
     g.fillStyle = '#c6ccc9'; for (let k = 0; k < 4; k++) g.fillRect(16, y + 286 + k * 10, w - 32, 4);
@@ -1223,8 +1328,8 @@ const softTex = canvasTex(512, 320, (g, w, h) => {
     g.fillStyle = '#39414a'; g.fillRect(16, y + 24, 300, 8); g.fillStyle = col; g.fillRect(16, y + 24, 90 + i * 60, 8);
   });
   g.fillStyle = '#e0603a'; g.fillRect(360, 62, 130, 42); g.fillStyle = '#fff'; g.fillText('START', 398, 89);
-  g.fillStyle = '#f7d22c'; g.font = `24px ${HAND}`; g.fillText('남은 시간 03:12:44 ㅠ', 300, 160);
-  g.fillText('제발 안 꺼지게 해주세요', 300, 196);
+  g.fillStyle = '#f7d22c'; g.font = `24px ${HAND}`; g.fillText($t('남은 시간 03:12:44 ㅠ'), 300, 160);
+  g.fillText($t('제발 안 꺼지게 해주세요'), 300, 196);
 }, { text: true });
 const conf = new THREE.Group(); conf.position.set(2.4, 0, 5.75); conf.rotation.y = Math.PI; scene.add(conf); // 앞쪽 끝, 로컬 +z = 월드 -z (벤치 쪽)
 const steelC = std('#9aa3a8', { metalness: 0.6, roughness: 0.35 }), blackC = std('#1b1f23', { roughness: 0.95 }), dgreyC = std('#3a3f44', { roughness: 0.6 }), lgreyC = std('#e4e7e6', { roughness: 0.45 });
@@ -1263,7 +1368,7 @@ laserSticker(lbox, 0.17, 0.15, 0.302, 0, 0.14);
   mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 30, 0.012, 6), std(c), 0, 0, 0, conf);
 });
 laserSticker(conf, ECX + 0.35, EY + EH - 0.2, ED / 2 + 0.002, 0, 0.2);
-sign('CONFOCAL LSM · 예약 필수', 1.15, 0.15, { w: 900, h: 118, bg: '#f7d22c', fg: '#111', font: '60px "A2Z SemiBold", sans-serif' }, conf, ECX, EY + EH + 0.1, ED / 2 - 0.02);
+sign($t('CONFOCAL LSM · 예약 필수'), 1.15, 0.15, { w: 900, h: 118, bg: '#f7d22c', fg: '#111', font: '60px "A2Z SemiBold", sans-serif' }, conf, ECX, EY + EH + 0.1, ED / 2 - 0.02);
 sticky(conf, 12, ECX - 0.4, EY + EH - 0.25, ED / 2 + 0.004, 0);
 bioSticker(conf, 0.9, EY - 0.25, 0.58, 0, 0.12);
 // 분석용 컴퓨터 책상
@@ -1297,8 +1402,8 @@ for (let i = 0; i < 9; i++) for (const s of [1, -1]) {
 }
 const tentTex = canvasTex(256, 112, (g, w) => {
   g.fillStyle = '#fbf6e8'; g.fillRect(0, 0, w, 112); g.fillStyle = '#2b2f33'; g.textAlign = 'center';
-  g.font = '42px "A2Z SemiBold", "Do Hyeon", sans-serif'; g.fillText('정숙', w / 2, 50);
-  g.font = `26px ${HAND}`; g.fillStyle = '#c23b3b'; g.fillText('떠들면 화이트보드행', w / 2, 92);
+  g.font = '42px "A2Z SemiBold", "Do Hyeon", sans-serif'; g.fillText($t('정숙'), w / 2, 50);
+  g.font = `26px ${HAND}`; g.fillStyle = '#c23b3b'; g.fillText($t('떠들면 화이트보드행'), w / 2, 92);
 }, { text: true });
 const tentMat = new THREE.MeshStandardMaterial({ map: tentTex, side: THREE.DoubleSide, roughness: 0.7 });
 for (const s of [1, -1]) { const p = mesh(new THREE.PlaneGeometry(0.17, 0.075), tentMat, 0, BENCH_H + 0.034, s * 0.012, bench); p.rotation.x = -s * 0.32; if (s < 0) p.rotation.y = Math.PI; }
@@ -1649,7 +1754,7 @@ class Student {
     this.root = new THREE.Group(); scene.add(this.root);
     this.phase = Math.random() * 10; this.lean = LEAN_F; this.ht = HT_F; this.nodT = -1; this.lastNod = null; this.lastSay = null;
     this.label = document.createElement('div'); this.label.className = 'tag';
-    this.label.innerHTML = '<span class="bubble"></span><span class="dot"></span><span class="devb" title="개발자">🛠</span><span class="nm"></span><span class="meta"></span><span class="nod">끄덕</span><span class="mad">💢 화남!</span>';
+    this.label.innerHTML = $t('<span class="bubble"></span><span class="dot"></span><span class="devb" title="개발자">🛠</span><span class="nm"></span><span class="meta"></span><span class="nod">끄덕</span><span class="mad">💢 화남!</span>');
     document.getElementById('labels').appendChild(this.label);
     this.anchor = new THREE.Vector3();
   }
@@ -1758,7 +1863,7 @@ class Student {
       const q = ((t * 0.5 + i / 3) % 1); p.position.set(Math.sin(q * 6 + i) * 0.015, 0.11 + q * 0.18, 0); p.material.opacity = 0.35 * (1 - q); p.scale.setScalar(0.8 + q * 1.4);
     });
     if (photoMode) this.applyPhoto(); else if (this._posed) this.clearPhoto();
-    const meta = focus ? `${TASKS[s.task].icon} ${fmtShort(liveTotal(s))}` : `☕ 휴식 · ${fmtShort(liveTotal(s))}`;
+    const meta = focus ? `${TASKS[s.task].icon} ${fmtShort(liveTotal(s))}` : $tt(`☕ 휴식 · ${fmtShort(liveTotal(s))}`, `☕ Break · ${fmtShort(liveTotal(s))}`);
     if (this._meta !== meta) { this._meta = meta; this.label.querySelector('.meta').textContent = meta; this._w = 0; }
     this.anchor.set(0, 1.28, -0.28 - (this.stagger || 0)); this.root.localToWorld(this.anchor); this.anchor.project(camera);
     const vis = this.anchor.z < 1 && Math.abs(this.anchor.x) < 1.2 && Math.abs(this.anchor.y) < 1.2;
@@ -1789,7 +1894,7 @@ class Student {
 /* ================= 상태 ================= */
 const pad = n => String(n).padStart(2, '0');
 const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-function fmtMin(ms) { const m = Math.floor(ms / 60000); return m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간 ${pad(m % 60)}분`; }
+function fmtMin(ms) { const m = Math.floor(ms / 60000); return m < 60 ? $tt(`${m}분`, `${m} min`) : $tt(`${Math.floor(m / 60)}시간 ${pad(m % 60)}분`, `${Math.floor(m / 60)} h ${pad(m % 60)} min`); }
 function fmtShort(ms) { const m = Math.floor(ms / 60000); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? pad(m % 60) : ''}`; }
 function clean(str, n = 12) { return String(str).replace(/[\u0000-\u001f\u007f\u00ad\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g, '').trim().slice(0, n); }
 function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } }
@@ -1806,7 +1911,7 @@ const me = {
   todayMs: 0, segStart: null, dayKey: dayKey(), say: null,
 };
 // 내 출석 기록 (db가 없으면 이 브라우저에만)
-let myAtt = lsGet('jsdsr-att') || { days: {} };
+let myAtt = lsGet(ATT_LS) || { days: {} };
 if (!myAtt.days || typeof myAtt.days !== 'object') myAtt.days = {};
 me.todayMs = Number(myAtt.days[me.dayKey]?.focusMs) || 0;
 function saveProfile() { lsSet('jsdsr-profile', { name: me.name, color: me.color, kind: me.kind, task: me.task }); }
@@ -1829,7 +1934,7 @@ function sanitize(o) {
   }
   return {
     seat, color, say,
-    name: (typeof o.name === 'string' && clean(o.name)) || '익명 독수리',
+    name: (typeof o.name === 'string' && clean(o.name)) || $t('익명 독수리'),
     kind: own(KINDS, o.kind) ? o.kind : 'eagle',
     task: own(TASKS, o.task) ? o.task : 'thesis',
     mode: o.mode === 'break' ? 'break' : 'focus',
@@ -1864,13 +1969,13 @@ function chooseSeat(pref) {
 }
 function resolveConflicts() {
   if (!me.joined) return;
-  if (me.seat === null) { const s = chooseSeat(null); if (s !== null) { me.seat = s; if (me.mode === 'focus') me.segStart = Date.now(); toast('빈자리가 생겨서 앉았어요.'); publish(); } return; }
+  if (me.seat === null) { const s = chooseSeat(null); if (s !== null) { me.seat = s; if (me.mode === 'focus') me.segStart = Date.now(); toast($t('빈자리가 생겨서 앉았어요.')); publish(); } return; }
   for (const o of others()) {
     if (!o.s || o.s.seat !== me.seat) continue;
     if (o.s.joinedAt < me.joinedAt || (o.s.joinedAt === me.joinedAt && myPeer && o.peer < myPeer)) {
       me.seat = chooseSeat(null);
       if (me.seat === null) { checkpoint(); me.segStart = null; }
-      toast(me.seat === null ? '자리가 다 찼어요. 서서 구경하는 중이에요.' : '같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.');
+      toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $t('같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.'));
       publish(); return;
     }
   }
@@ -1889,14 +1994,14 @@ function persist() {
   myAtt.days[me.dayKey] = { ...d, focusMs: Math.round(me.todayMs), firstIn: d.firstIn || me.joinedAt || Date.now(), lastSeen: Date.now() };
   const keys = Object.keys(myAtt.days).sort(); while (keys.length > 120) delete myAtt.days[keys.shift()];
   myAtt.name = me.name; myAtt.color = me.color; myAtt.kind = me.kind;
-  lsSet('jsdsr-att', myAtt);
+  lsSet(ATT_LS, myAtt);
   writeAtt();
 }
 function writeAtt() {
-  if (!db || !myUid || !dbWritable || !auth.ok) return;
+  if (!db || !myUid || !dbWritable || !auth.ok || !roomReady) return;
   if (attWriting) { attPending = true; return; }
   attWriting = true;
-  db.doc('att/' + myUid).set({ name: me.name, color: me.color, kind: me.kind, days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 })
+  db.doc(RP + 'att/' + myUid).set({ name: me.name, color: me.color, kind: me.kind, days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 })
     .catch(e => { if (e && e.code === 'invalid_argument') { dbWritable = false; renderRoster(); } })
     .finally(() => { attWriting = false; if (attPending) { attPending = false; writeAtt(); } });
 }
@@ -1919,7 +2024,7 @@ function refresh() {
   for (const it of list) {
     keep.add(it.key);
     let st = students.get(it.key);
-    if (!st) { st = new Student(it.key); students.set(it.key, st); if (!it.isMe && toastReady && !known.has(it.key)) toast(`${it.s.name} 님이 벤치에 앉았어요.`); }
+    if (!st) { st = new Student(it.key); students.set(it.key, st); if (!it.isMe && toastReady && !known.has(it.key)) toast($tt(`${it.s.name} 님이 벤치에 앉았어요.`, `${it.s.name} sat down at the bench.`)); }
     st.sync(it.s, it.isMe, it.isMe ? auth.isDev : !!(devId && it.by && it.by === devId));
     if (it.s.say && !chatMsgs.has(it.s.say.id) && it.s.say.t >= chatClearedAt && Date.now() - it.s.say.t < 12 * 3600000) { chatMsgs.set(it.s.say.id, { ...it.s.say, name: it.s.name, color: it.s.color }); chatDirty = true; }
   }
@@ -1965,7 +2070,7 @@ function computeGraph() {
   for (const p of allPeople().values()) {
     const keys = new Set(Object.keys(p.days || {})); keys.add(dayKey());
     let ms = 0; for (const k of keys) if (k.startsWith(mk)) ms += dayMs(p, k);
-    if (ms >= 60000 || p.live) rows.push({ name: p.name || '익명', color: p.color, kind: p.kind || 'eagle', ms });
+    if (ms >= 60000 || p.live) rows.push({ name: p.name || $t('익명'), color: p.color, kind: p.kind || 'eagle', ms });
   }
   rows.sort((a, b) => b.ms - a.ms);
   boardTotal = rows.reduce((a, r) => a + r.ms, 0);
@@ -1997,7 +2102,7 @@ function allPeople() {
   const map = new Map();
   for (const [uid, d] of attDocs) map.set(uid, { name: d.name, color: d.color, kind: d.kind, days: d.days || {} });
   const myKey = myUid || 'me';
-  map.set(myKey, { name: me.name || '나', color: me.color, kind: me.kind, days: myAtt.days, isMe: true });
+  map.set(myKey, { name: me.name || $t('나'), color: me.color, kind: me.kind, days: myAtt.days, isMe: true });
   for (const it of seatedList()) {
     const k = it.isMe ? myKey : (it.by || it.key);
     const p = map.get(k) || { name: it.s.name, color: it.s.color, days: {} };
@@ -2020,27 +2125,27 @@ function renderRoster() {
     const ul = el('ul');
     for (const it of list) {
       const li = el('li', it.isMe ? 'me' : '');
-      const who = el('span', 'who', it.s.name + (it.isMe ? ' (나)' : ''));
-      who.appendChild(el('small', '', it.s.mode === 'break' ? '☕ 쉬는 중' : `${TASKS[it.s.task].icon} ${TASKS[it.s.task].label}`));
-      const mn = el('span', 'min', fmtMin(liveTotal(it.s))); mn.appendChild(el('small', '', '오늘 누적'));
+      const who = el('span', 'who', it.s.name + (it.isMe ? $t(' (나)') : ''));
+      who.appendChild(el('small', '', it.s.mode === 'break' ? $t('☕ 쉬는 중') : `${TASKS[it.s.task].icon} ${TASKS[it.s.task].label}`));
+      const mn = el('span', 'min', fmtMin(liveTotal(it.s))); mn.appendChild(el('small', '', $t('오늘 누적')));
       li.append(dot(it.s.color), who, mn); ul.appendChild(li);
     }
-    rosterBody.appendChild(list.length ? ul : el('p', 'note', '아직 아무도 앉지 않았어요.'));
+    rosterBody.appendChild(list.length ? ul : el('p', 'note', $t('아직 아무도 앉지 않았어요.')));
     const lurk = others().filter(o => !o.s).length;
-    rosterNote.textContent = !roomLive ? '실시간 연결이 없어 혼자 보는 중이에요.' : lurk ? `입구에서 구경 중 ${lurk}명 · 빈 의자를 누르면 자리를 옮겨요.` : '빈 의자를 누르면 자리를 옮길 수 있어요.';
+    rosterNote.textContent = !roomLive ? $t('실시간 연결이 없어 혼자 보는 중이에요.') : lurk ? $tt(`입구에서 구경 중 ${lurk}명 · 빈 의자를 누르면 자리를 옮겨요.`, `${lurk} watching from the door · Tap an empty chair to move.`) : $t('빈 의자를 누르면 자리를 옮길 수 있어요.');
   } else if (tab === 'today') {
     const rows = [...allPeople().values()].filter(p => p.days?.[today] || p.live || (p.isMe && me.joined)).sort((a, b) => dayMs(b, today) - dayMs(a, today));
     const ul = el('ul');
     rows.forEach((p, i) => {
       const li = el('li', p.isMe ? 'me' : '');
       const first = p.days?.[today]?.firstIn;
-      const who = el('span', 'who', `${i + 1}. ${p.name}${p.isMe ? ' (나)' : ''}`);
-      who.appendChild(el('small', '', (p.live ? '지금 벤치에 있음' : '오늘 왔다 감') + (first ? ` · ${new Date(first).getHours()}:${pad(new Date(first).getMinutes())} 입실` : '')));
-      const mn = el('span', 'min', fmtMin(dayMs(p, today))); mn.appendChild(el('small', '', '집중'));
+      const who = el('span', 'who', $tt(`${i + 1}. ${p.name}${p.isMe ? ' (나)' : ''}`, `${i + 1}. ${p.name}${p.isMe ? ' (me)' : ''}`));
+      who.appendChild(el('small', '', (p.live ? $t('지금 벤치에 있음') : $t('오늘 왔다 감')) + (first ? $tt(` · ${new Date(first).getHours()}:${pad(new Date(first).getMinutes())} 입실`, ` · in at ${new Date(first).getHours()}:${pad(new Date(first).getMinutes())}`) : '')));
+      const mn = el('span', 'min', fmtMin(dayMs(p, today))); mn.appendChild(el('small', '', $t('집중')));
       li.append(dot(p.color), who, mn); ul.appendChild(li);
     });
-    rosterBody.appendChild(rows.length ? ul : el('p', 'note', '오늘 출석한 사람이 아직 없어요.'));
-    rosterNote.textContent = db ? '집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.' : '기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.';
+    rosterBody.appendChild(rows.length ? ul : el('p', 'note', $t('오늘 출석한 사람이 아직 없어요.')));
+    rosterNote.textContent = db ? $t('집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.') : $t('기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.');
   } else {
     const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(dayKey(d)); }
     const ppl = [...allPeople().values()].filter(p => days.some(k => p.days?.[k] || (k === today && p.live)));
@@ -2050,11 +2155,11 @@ function renderRoster() {
     const attended = days.filter(k => myAtt.days[k] || (k === today && me.joined)).length;
     let streak = 0; for (let i = 0; ; i++) { const d = new Date(); d.setDate(d.getDate() - i); const k = dayKey(d); if (myAtt.days[k]) streak++; else if (i > 0) break; else if (!(me.joined)) break; if (i > 365) break; }
     const st = el('div', 'stats');
-    [[`${attended}일`, '이번 주 출석'], [fmtShort(weekMs), '7일 누적 집중'], [`${streak}일`, '연속 출석']].forEach(([b, s]) => { const d = el('div'); d.append(el('b', '', b), el('span', '', s)); st.appendChild(d); });
+    [[$tt(`${attended}일`, `${attended}`), $t('이번 주 출석')], [fmtShort(weekMs), $t('7일 누적 집중')], [$tt(`${streak}일`, `${streak}`), $t('연속 출석')]].forEach(([b, s]) => { const d = el('div'); d.append(el('b', '', b), el('span', '', s)); st.appendChild(d); });
     rosterBody.appendChild(st);
-    const tbl = el('table', 'grid7'); const hr = el('tr'); hr.appendChild(el('th', '', '이름'));
-    const WD = ['일', '월', '화', '수', '목', '금', '토'];
-    days.forEach(k => { const d = new Date(k + 'T12:00:00'); hr.appendChild(el('th', '', k === today ? '오늘' : WD[d.getDay()])); });
+    const tbl = el('table', 'grid7'); const hr = el('tr'); hr.appendChild(el('th', '', $t('이름')));
+    const WD = [$t('일'), $t('월'), $t('화'), $t('수'), $t('목'), $t('금'), $t('토')];
+    days.forEach(k => { const d = new Date(k + 'T12:00:00'); hr.appendChild(el('th', '', k === today ? $t('오늘') : WD[d.getDay()])); });
     tbl.appendChild(hr);
     ppl.sort((a, b) => (b.isMe ? 1 : 0) - (a.isMe ? 1 : 0) || days.reduce((s, k) => s + dayMs(b, k), 0) - days.reduce((s, k) => s + dayMs(a, k), 0));
     for (const p of ppl) {
@@ -2062,14 +2167,14 @@ function renderRoster() {
       days.forEach(k => {
         const ms = dayMs(p, k), present = p.days?.[k] || (k === today && p.live);
         const lv = !present ? '' : ms >= 3 * 3600000 ? 'l3' : ms >= 3600000 ? 'l2' : 'l1';
-        const td = el('td'); const c = el('span', 'cell ' + lv, present ? fmtShort(ms) : '·'); c.title = present ? `${k} 집중 ${fmtMin(ms)}` : `${k} 결석`; td.appendChild(c); tr.appendChild(td);
+        const td = el('td'); const c = el('span', 'cell ' + lv, present ? fmtShort(ms) : '·'); c.title = present ? $tt(`${k} 집중 ${fmtMin(ms)}`, `${k} focus ${fmtMin(ms)}`) : $tt(`${k} 결석`, `${k} absent`); td.appendChild(c); tr.appendChild(td);
       });
       tbl.appendChild(tr);
     }
     rosterBody.appendChild(tbl);
-    rosterNote.textContent = '칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.' + (db ? '' : ' 지금은 내 기록만 보여요.');
+    rosterNote.textContent = $t('칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.') + (db ? '' : $t(' 지금은 내 기록만 보여요.'));
   }
-  if (db && !dbWritable) rosterNote.textContent += ' 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.';
+  if (db && !dbWritable) rosterNote.textContent += $t(' 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.');
 }
 setInterval(renderRoster, 15000);
 
@@ -2081,11 +2186,11 @@ function setChat(open) { chatOpen = open; chatEl.classList.toggle('closed', !ope
 function renderChat() {
   const seated = me.joined && me.seat !== null;
   chatInput.disabled = chatSend.disabled = !seated;
-  chatInput.placeholder = seated ? 'Enter로 채팅 · 떠들면 화이트보드행' : '벤치에 앉으면 채팅할 수 있어요';
+  chatInput.placeholder = seated ? $t('Enter로 채팅 · 떠들면 화이트보드행') : $t('벤치에 앉으면 채팅할 수 있어요');
   if (!chatDirty) return; chatDirty = false;
   const msgs = [...chatMsgs.values()].filter(m => Date.now() - m.t < 12 * 3600000).sort((a, b) => a.t - b.t).slice(-60);
   chatLog.textContent = '';
-  if (!msgs.length) chatLog.appendChild(el('li', 'sys', '조용하네요. 아직 아무도 떠들지 않았어요.'));
+  if (!msgs.length) chatLog.appendChild(el('li', 'sys', $t('조용하네요. 아직 아무도 떠들지 않았어요.')));
   for (const m of msgs) {
     const li = el('li'); const b = el('b', '', m.name); b.style.color = COLORS[m.color] || 'var(--paper)';
     const tm = el('time', '', `${new Date(m.t).getHours()}:${pad(new Date(m.t).getMinutes())}`);
@@ -2110,9 +2215,10 @@ document.getElementById('chatForm').addEventListener('submit', e => {
 });
 let chatWriting = false, chatPending = false;
 function queueChatWrite() {
+  if (!roomReady) return;
   if (chatWriting) { chatPending = true; return; }
   chatWriting = true;
-  db.doc('chat/' + myUid).set({ name: me.name, color: me.color, msgs: myChat.msgs }).catch(() => {}).finally(() => { chatWriting = false; if (chatPending) { chatPending = false; queueChatWrite(); } });
+  db.doc(RP + 'chat/' + myUid).set({ name: me.name, color: me.color, msgs: myChat.msgs }).catch(() => {}).finally(() => { chatWriting = false; if (chatPending) { chatPending = false; queueChatWrite(); } });
 }
 chatInput.addEventListener('keydown', e => { if (e.key === 'Escape') chatInput.blur(); });
 addEventListener('keydown', e => {
@@ -2136,7 +2242,7 @@ function savePublic({ filename, data }) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(data), ov = document.createElement('div');
       ov.style.cssText = 'position:fixed;inset:0;z-index:30;background:rgba(8,10,13,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px';
-      ov.innerHTML = '<img alt="캡처한 사진" style="max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)"><p style="margin:0;color:#a9b3ad;font-size:13px;text-align:center">사진을 길게 눌러도 저장할 수 있어요.</p><div style="display:flex;gap:8px"><button class="btn" type="button">닫기</button><button class="btn primary" type="button">사진에 저장</button></div>';
+      ov.innerHTML = $t('<img alt="캡처한 사진" style="max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)"><p style="margin:0;color:#a9b3ad;font-size:13px;text-align:center">사진을 길게 눌러도 저장할 수 있어요.</p><div style="display:flex;gap:8px"><button class="btn" type="button">닫기</button><button class="btn primary" type="button">사진에 저장</button></div>');
       ov.querySelector('img').src = url; document.body.appendChild(ov);
       const [closeB, saveB] = ov.querySelectorAll('button');
       const done = ok => { ov.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); ok ? resolve({ status: 'saved' }) : reject({ code: 'declined' }); };
@@ -2155,7 +2261,7 @@ function savePublic({ filename, data }) {
 function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 function drawTagShot(g, st) {
   const s2 = st.s; if (!s2) return;
-  const name = s2.name + (st.isMe ? ' (나)' : ''), meta = st._meta || '';
+  const name = s2.name + (st.isMe ? $t(' (나)') : ''), meta = st._meta || '';
   g.font = '12px "IBM Plex Sans KR", sans-serif';
   const nw = g.measureText(name).width, mw = g.measureText(meta).width, w = 6 + 10 + 6 + nw + 6 + mw + 9, h = 22;
   const x = st._lx - w / 2, y = st._ly - h;
@@ -2175,9 +2281,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 document.getElementById('shotBtn').addEventListener('click', async () => {
   if (shooting) return;
   if (downloadsNs === undefined) downloadsNs = { save: savePublic };
-  if (!downloadsNs) { toast('이 화면에서는 캡처를 저장할 수 없어요.'); return; }
+  if (!downloadsNs) { toast($t('이 화면에서는 캡처를 저장할 수 없어요.')); return; }
   shooting = true; photoMode = true;
-  toast('하나, 둘… 브이! ✌️'); await sleep(1100);
+  toast($t('하나, 둘… 브이! ✌️')); await sleep(1100);
   renderer.render(scene, camera);
   const src = renderer.domElement, k = src.width / innerWidth, c = document.createElement('canvas');
   c.width = src.width; c.height = src.height; const g = c.getContext('2d'), W = c.width, H = c.height;
@@ -2186,7 +2292,7 @@ document.getElementById('shotBtn').addEventListener('click', async () => {
   g.save(); g.scale(k, k);
   if (labelsOn) for (const st of students.values()) if (st._vis) drawTagShot(g, st);
   g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 8; g.fillStyle = 'rgba(255,255,255,.95)'; g.textBaseline = 'alphabetic';
-  g.font = '28px "A2Z SemiBold", sans-serif'; g.fillText('정수리 독수리 연구소', 20, 44);
+  g.font = '28px "A2Z SemiBold", sans-serif'; g.fillText($t('정수리 독수리 연구소'), 20, 44);
   if (me.name) { g.font = '18px "A2Z SemiBold", sans-serif'; g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText(me.name, 22, 72); }
   g.restore();
   // 비네팅과 입자
@@ -2200,14 +2306,14 @@ document.getElementById('shotBtn').addEventListener('click', async () => {
   g.shadowColor = 'rgba(255,90,0,.85)'; g.shadowBlur = fs * 0.35; g.fillStyle = '#ff9d2e';
   g.fillText(stamp, W - fs * 1.1, H - fs * 0.9); g.shadowBlur = 0; g.fillStyle = 'rgba(255,214,150,.55)'; g.fillText(stamp, W - fs * 1.1, H - fs * 0.9);
   const fl = document.getElementById('flash'); fl.classList.add('on'); requestAnimationFrame(() => requestAnimationFrame(() => fl.classList.remove('on')));
-  toast('찰칵! 📸');
+  toast($t('찰칵! 📸'));
   await sleep(700); photoMode = false; shooting = false;
   const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-  if (!blob) { toast('캡처하지 못했어요.'); return; }
-  const name = `정수리독수리연구소_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`;
+  if (!blob) { toast($t('캡처하지 못했어요.')); return; }
+  const name = $tt(`정수리독수리연구소_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`, `CrownEagleLab_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`);
   const mobile = matchMedia('(pointer: coarse)').matches;
-  try { await downloadsNs.save({ filename: name, data: blob }); toast(mobile ? '저장했어요. 사진이나 파일 앱에서 확인하세요.' : '저장했어요. 다운로드 폴더를 확인하세요.'); }
-  catch (e) { toast(e && e.code === 'declined' ? '저장을 취소했어요.' : e && e.code === 'rate_limited' ? '잠시 뒤에 다시 눌러 주세요.' : '저장하지 못했어요.'); }
+  try { await downloadsNs.save({ filename: name, data: blob }); toast(mobile ? $t('저장했어요. 사진이나 파일 앱에서 확인하세요.') : $t('저장했어요. 다운로드 폴더를 확인하세요.')); }
+  catch (e) { toast(e && e.code === 'declined' ? $t('저장을 취소했어요.') : e && e.code === 'rate_limited' ? $t('잠시 뒤에 다시 눌러 주세요.') : $t('저장하지 못했어요.')); }
 });
 let toastTimer;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); }
@@ -2218,17 +2324,17 @@ const modeBtn = document.getElementById('modeBtn');
 function updateDock() {
   const seated = me.joined && me.seat !== null;
   modeBtn.disabled = document.getElementById('angryBtn').disabled = !seated;
-  modeBtn.textContent = me.mode === 'focus' ? '쉬기' : '집중';
+  modeBtn.textContent = me.mode === 'focus' ? $t('쉬기') : $t('집중');
   dock.classList.toggle('rest', seated && me.mode === 'break');
-  document.getElementById('modeLabel').textContent = !me.joined ? '입장 전' : me.seat === null ? '서서 구경 중' : me.mode === 'focus' ? `${TASKS[me.task].label}` : '쉬는 중';
-  document.getElementById('editBtn').textContent = me.joined ? '캐릭터' : '입장';
+  document.getElementById('modeLabel').textContent = !me.joined ? $t('입장 전') : me.seat === null ? $t('서서 구경 중') : me.mode === 'focus' ? `${TASKS[me.task].label}` : $t('쉬는 중');
+  document.getElementById('editBtn').textContent = me.joined ? $t('캐릭터') : $t('입장');
 }
 function tickTimer() {
   const el2 = document.getElementById('timer');
   const sn = sessionsToday();
-  if (me.lastSn !== undefined && sn > me.lastSn && me.joined) { toast('🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.'); renderCare(); }
+  if (me.lastSn !== undefined && sn > me.lastSn && me.joined) { toast($t('🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.')); renderCare(); }
   me.lastSn = sn;
-  document.getElementById('todayLabel').textContent = `오늘 ${fmtMin(liveMe())} · 세션 ${sn} · 다음까지 ${minsToNext()}분`;
+  document.getElementById('todayLabel').textContent = $tt(`오늘 ${fmtMin(liveMe())} · 세션 ${sn} · 다음까지 ${minsToNext()}분`, `Today ${fmtMin(liveMe())} · ${sn} sessions · next in ${minsToNext()} min`);
   if (!me.joined || me.seat === null) { el2.textContent = '00:00'; return; }
   const s = Math.max(0, Math.floor((Date.now() - me.since) / 1000)), h = Math.floor(s / 3600);
   el2.textContent = (h ? h + ':' + pad(Math.floor(s / 60) % 60) : pad(Math.floor(s / 60))) + ':' + pad(s % 60);
@@ -2240,14 +2346,14 @@ modeBtn.addEventListener('click', () => {
 });
 document.getElementById('angryBtn').addEventListener('click', () => { me.angry++; publish(); });
 let view = 'crown';
-const VIEWS = ['crown', 'bench', 'face'], VIEW_LABEL = { crown: '정수리', bench: '벤치 뷰', face: '얼굴 뷰' };
+const VIEWS = ['crown', 'bench', 'face'], VIEW_LABEL = { crown: $t('정수리'), bench: $t('벤치 뷰'), face: $t('얼굴 뷰') };
 const nextView = v => VIEWS[(VIEWS.indexOf(v) + 1) % VIEWS.length];
 const viewBtn = document.getElementById('viewBtn');
 let boardZoomed = false;
 const boardBack = document.getElementById('boardBack');
 const FOCUS = {
   board:   { t: [WB_X, 1.7, -5.47], dir: [0, 0.03, 1], w: 4.1, h: 1.7 },
-  plants:  { t: [6.55, 1.35, -1.3], dir: [-1, 0.15, 0], w: 3.9, h: 2.8 },
+  plants:  { t: [6.55, 1.68, -1.4], dir: [-1, 0.12, 0], w: 3.9, h: 3.45 },
   animals: { t: [6.5, 1.25, 3.0], dir: [-1, 0.18, 0], w: 5.4, h: 2.8 },
   scope:   { t: [2.0, 1.45, 5.75], dir: [0, 0.22, -1], w: 3.9, h: 2.6 },
   frog:    { t: [5.0, 1.08, 5.95], dir: [0, 0.3, -1], w: 1.6, h: 1.0 },
@@ -2260,7 +2366,7 @@ function zoomTo(name) {
   tween = { t: 0, fromP: camera.position.clone(), fromT: controls.target.clone(), toP: pos, toT: target };
   controls.enabled = false; controls.enablePan = true; boardZoomed = true; labelsOn = false; boardBack.hidden = false;
   setPanel(null); updateViewOffset();
-  if (name === 'plants' || name === 'animals' || name === 'frog') toast('돌봄 버튼으로 물과 밥을 줄 수 있어요.');
+  if (name === 'plants' || name === 'animals' || name === 'frog') toast($t('돌봄 버튼으로 물과 밥을 줄 수 있어요.'));
 }
 function exitBoard(skipGo) { if (!boardZoomed) return; boardZoomed = false; controls.enablePan = false; labelsOn = true; boardBack.hidden = true; updateViewOffset(); if (!skipGo) goView(view); }
 boardBack.addEventListener('click', () => exitBoard());
@@ -2281,7 +2387,7 @@ const care = { water: lsGet('jsdsr-water'), feed: lsGet('jsdsr-feed') }; // {t, 
 let careAnim = { water: -1, feed: -1 }, careSeen = { water: 0, feed: 0 }, careSnapReady = false;
 function setCare(open) { setPanel(open ? 'care' : null); }
 careBtn.addEventListener('click', () => setCare(!careEl.classList.contains('open')));
-function ago(t) { const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.floor(m / 60)}시간 전` : `${Math.floor(m / 1440)}일 전`; }
+function ago(t) { const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? $t('방금') : m < 60 ? $tt(`${m}분 전`, `${m} min ago`) : m < 1440 ? $tt(`${Math.floor(m / 60)}시간 전`, `${Math.floor(m / 60)} h ago`) : $tt(`${Math.floor(m / 1440)}일 전`, `${Math.floor(m / 1440)} d ago`); }
 const SESSION_MS = 30 * 60000, CARE_RESET = 15 * 60000;
 function liveMe() { return liveTotal({ todayMs: me.todayMs, segStart: me.segStart, mode: me.mode }); }
 function sessionsToday() { return Math.floor(liveMe() / SESSION_MS); }
@@ -2301,34 +2407,34 @@ function renderCare() {
   const w = thirst(), h = hunger();
   const ps = document.getElementById('plantState'), as = document.getElementById('animalState');
   const left = k => Math.max(1, Math.ceil((CARE_RESET - sinceCare(k)) / 60000));
-  ps.textContent = w > 0.6 ? '목말라요, 시들고 있어요' : w > 0 ? '목말라요' : `촉촉해요 · ${left('water')}분 뒤 다시 목말라요`; ps.classList.toggle('bad', w > 0);
-  as.textContent = h > 0.6 ? '배고파서 기운이 없어요' : h > 0 ? '배고파요' : `배불러요 · ${left('feed')}분 뒤 다시 배고파요`; as.classList.toggle('bad', h > 0);
+  ps.textContent = w > 0.6 ? $t('목말라요, 시들고 있어요') : w > 0 ? $t('목말라요') : $tt(`촉촉해요 · ${left('water')}분 뒤 다시 목말라요`, `Watered · thirsty again in ${left('water')} min`); ps.classList.toggle('bad', w > 0);
+  as.textContent = h > 0.6 ? $t('배고파서 기운이 없어요') : h > 0 ? $t('배고파요') : $tt(`배불러요 · ${left('feed')}분 뒤 다시 배고파요`, `Full · hungry again in ${left('feed')} min`); as.classList.toggle('bad', h > 0);
   const cr = careCredits();
-  document.getElementById('careCredit').textContent = auth.isDev ? '🛠 개발자: 세션 없이 무제한 돌봄' : `돌봄 가능 ${cr}회${me.freeCare ? ' (입장 보너스 1회 포함)' : ''} · 다음 세션까지 ${minsToNext()}분`;
+  document.getElementById('careCredit').textContent = auth.isDev ? $t('🛠 개발자: 세션 없이 무제한 돌봄') : $tt(`돌봄 가능 ${cr}회${me.freeCare ? ' (입장 보너스 1회 포함)' : ''} · 다음 세션까지 ${minsToNext()}분`, `Care available: ${cr}${me.freeCare ? ' (incl. 1 arrival bonus)' : ''} · next session in ${minsToNext()} min`);
   document.getElementById('waterBtn').disabled = !auth.isDev && (w === 0 || cr < 1 || !me.joined);
   document.getElementById('feedBtn').disabled = !auth.isDev && (h === 0 || cr < 1 || !me.joined);
-  document.getElementById('plantLast').textContent = care.water?.t ? `마지막: ${care.water.name} · ${ago(care.water.t)}` : '아직 아무도 물을 안 줬어요';
-  document.getElementById('animalLast').textContent = care.feed?.t ? `마지막: ${care.feed.name} · ${ago(care.feed.t)}` : '아직 아무도 밥을 안 줬어요';
+  document.getElementById('plantLast').textContent = care.water?.t ? $tt(`마지막: ${care.water.name} · ${ago(care.water.t)}`, `Last: ${care.water.name} · ${ago(care.water.t)}`) : $t('아직 아무도 물을 안 줬어요');
+  document.getElementById('animalLast').textContent = care.feed?.t ? $tt(`마지막: ${care.feed.name} · ${ago(care.feed.t)}`, `Last: ${care.feed.name} · ${ago(care.feed.t)}`) : $t('아직 아무도 밥을 안 줬어요');
   const need = (w > 0) + (h > 0);
   document.getElementById('careBadge').textContent = need ? `${need}` : '';
   careBtn.classList.toggle('alert', need > 0);
   applyCare();
 }
 function doCare(kind) {
-  if (!auth.ok || !me.joined) { toast('벤치에 앉은 사람만 돌볼 수 있어요.'); return; }
+  if (!auth.ok || !me.joined) { toast($t('벤치에 앉은 사람만 돌볼 수 있어요.')); return; }
   if (!auth.isDev) {
-    if (sinceCare(kind) < CARE_RESET) { toast(`아직 괜찮아요. ${Math.ceil((CARE_RESET - sinceCare(kind)) / 60000)}분 뒤에 다시 필요해요.`); return; }
-    if (careCredits() < 1) { toast(`30분 집중 세션을 마치면 돌볼 수 있어요. 다음 세션까지 ${minsToNext()}분.`); return; }
+    if (sinceCare(kind) < CARE_RESET) { toast($tt(`아직 괜찮아요. ${Math.ceil((CARE_RESET - sinceCare(kind)) / 60000)}분 뒤에 다시 필요해요.`, `They're fine for now. Needed again in ${Math.ceil((CARE_RESET - sinceCare(kind)) / 60000)} min.`)); return; }
+    if (careCredits() < 1) { toast($tt(`30분 집중 세션을 마치면 돌볼 수 있어요. 다음 세션까지 ${minsToNext()}분.`, `Finish a 30-minute focus session to do care. Next session in ${minsToNext()} min.`)); return; }
     if (me.freeCare) me.freeCare = false;
     else { const d = myAtt.days[me.dayKey] || (myAtt.days[me.dayKey] = {}); d.careUsed = (Number(d.careUsed) || 0) + 1; }
   } else if (sinceCare(kind) < 3000) return;
   if (kind === 'water') myAtt.careWater = (myAtt.careWater || 0) + 1; else myAtt.careFeed = (myAtt.careFeed || 0) + 1;
   persist();
-  const rec = { t: Date.now(), name: me.name || '익명 독수리' };
+  const rec = { t: Date.now(), name: me.name || $t('익명 독수리') };
   care[kind] = rec; careSeen[kind] = rec.t; lsSet('jsdsr-' + kind, rec);
   careAnim[kind] = 0; renderCare();
-  toast(kind === 'water' ? '식물에 물을 줬어요. 🌱' : '동물들에게 밥을 줬어요. 🐭🐰🐟');
-  if (db && dbWritable) db.doc('care/' + kind).set(rec).catch(() => {});
+  toast(kind === 'water' ? $t('식물에 물을 줬어요. 🌱') : $t('동물들에게 밥을 줬어요. 🐭🐰🐟'));
+  if (db && dbWritable && roomReady) db.doc(RP + 'care/' + kind).set(rec).catch(() => {});
 }
 document.getElementById('waterBtn').addEventListener('click', () => doCare('water'));
 document.getElementById('feedBtn').addEventListener('click', () => doCare('feed'));
@@ -2338,10 +2444,10 @@ function onCareSnap(qs) {
     if (d.id !== 'water' && d.id !== 'feed') continue;
     const v = d.data() || {};
     if (!Number.isFinite(v.t) || v.t > Date.now() + 60000) continue;
-    const rec = { t: v.t, name: (typeof v.name === 'string' && clean(v.name)) || '익명 독수리' };
+    const rec = { t: v.t, name: (typeof v.name === 'string' && clean(v.name)) || $t('익명 독수리') };
     if (!care[d.id] || rec.t > care[d.id].t) {
       care[d.id] = rec; lsSet('jsdsr-' + d.id, rec);
-      if (careSnapReady && rec.t !== careSeen[d.id] && Date.now() - rec.t < 30000) { careAnim[d.id] = 0; toast(d.id === 'water' ? `${rec.name} 님이 식물에 물을 줬어요.` : `${rec.name} 님이 동물들에게 밥을 줬어요.`); }
+      if (careSnapReady && rec.t !== careSeen[d.id] && Date.now() - rec.t < 30000) { careAnim[d.id] = 0; toast(d.id === 'water' ? $tt(`${rec.name} 님이 식물에 물을 줬어요.`, `${rec.name} watered the plants.`) : $tt(`${rec.name} 님이 동물들에게 밥을 줬어요.`, `${rec.name} fed the animals.`)); }
     }
   }
   careSnapReady = true; renderCare();
@@ -2388,7 +2494,7 @@ soundBtn.addEventListener('click', () => {
     audio.ctx.resume(); audio.on = !audio.on;
     audio.gain.gain.setTargetAtTime(audio.on ? 0.32 : 0, audio.ctx.currentTime, 0.4);
     soundBtn.classList.toggle('on', audio.on); soundBtn.setAttribute('aria-pressed', String(audio.on));
-  } catch { toast('이 브라우저에서는 소리를 낼 수 없어요.'); }
+  } catch { toast($t('이 브라우저에서는 소리를 낼 수 없어요.')); }
 });
 
 /* ---- 입장 폼 ---- */
@@ -2399,12 +2505,13 @@ chips(document.getElementById('kindChips'), 'kind', KINDS, v => v);
 chips(document.getElementById('taskChips'), 'task', TASKS, v => `${v.icon} ${v.label}`);
 function openJoin() {
   if (!auth.ok) { showAuth('login'); return; }
-  document.getElementById('joinWho').textContent = `별명: ${me.name}${auth.isDev ? ' 🛠 개발자' : ''} · 별명은 '나의 연구 여정'에서 바꿀 수 있어요.`;
+  if (!roomReady) { showLobby(); return; }
+  document.getElementById('joinWho').textContent = $tt(`별명: ${me.name}${auth.isDev ? ' 🛠 개발자' : ''} · 별명은 '나의 연구 여정'에서 바꿀 수 있어요.`, `Nickname: ${me.name}${auth.isDev ? ' 🛠 Developer' : ''} · Change it in 'My research journey'.`);
   form.querySelector(`input[name=color][value="${me.color}"]`).checked = true;
   form.querySelector(`input[name=kind][value="${me.kind}"]`).checked = true;
   form.querySelector(`input[name=task][value="${me.task}"]`).checked = true;
-  document.getElementById('joinTitle').textContent = me.joined ? '내 캐릭터' : '연구소 입장';
-  document.getElementById('joinBtn').textContent = me.joined ? '저장' : '벤치에 앉기';
+  document.getElementById('joinTitle').textContent = me.joined ? $t('내 캐릭터') : $t('연구소 입장');
+  document.getElementById('joinBtn').textContent = me.joined ? $t('저장') : $t('벤치에 앉기');
   document.getElementById('leaveBtn').hidden = !me.joined;
   document.getElementById('cancelBtn').hidden = false;
   joinEl.classList.add('open');
@@ -2423,13 +2530,13 @@ form.addEventListener('submit', e => {
     me.joined = true; me.joinedAt = Date.now(); me.mode = 'focus'; me.since = Date.now(); me.freeCare = true;
     me.seat = chooseSeat(me.wantSeat);
     me.segStart = me.seat !== null ? Date.now() : null;
-    toast(me.seat === null ? '자리가 다 찼어요. 서서 구경하는 중이에요.' : '앉았어요. 정수리를 맞대고 시작해요.');
+    toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $t('앉았어요. 정수리를 맞대고 시작해요.'));
   }
   persist(); closeJoin(); publish();
 });
 document.getElementById('cancelBtn').addEventListener('click', closeJoin);
 function leaveSeat() { if (me.joined) checkpoint(); me.segStart = null; me.joined = false; me.seat = null; me.say = null; publish(); }
-document.getElementById('leaveBtn').addEventListener('click', () => { leaveSeat(); closeJoin(); toast('자리를 비웠어요. 오늘 기록은 저장됐어요.'); });
+document.getElementById('leaveBtn').addEventListener('click', () => { leaveSeat(); closeJoin(); toast($t('자리를 비웠어요. 오늘 기록은 저장됐어요.')); });
 document.getElementById('editBtn').addEventListener('click', openJoin);
 
 
@@ -2441,19 +2548,19 @@ const nickKey = n => encodeURIComponent(normNick(n));
 const PIN_PAD = '#jsdsr-lab'; // Firebase 비밀번호는 6자 이상이라 4자리 뒤에 고정 문자열을 붙임
 const pw = pin => pin + PIN_PAD;
 function nickTaken(nick) { const n = normNick(nick); for (const [uid, v] of auth.names) if (uid !== myUid && normNick(v.nick) === n) return true; return false; }
-function autoNick() { let n = auth.names.size + 1; while (nickTaken(`독수리 ${n}호`)) n++; return `독수리 ${n}호`; }
+function autoNick() { let n = auth.names.size + 1; while (nickTaken($tt(`독수리 ${n}호`, `Eagle #${n}`))) n++; return $tt(`독수리 ${n}호`, `Eagle #${n}`); }
 function publishName() { if (db && myUid && auth.ok) db.doc('names/' + myUid).set({ nick: me.name, color: me.color, kind: me.kind, since: auth.acct?.createdAt || Date.now() }).catch(() => {}); }
 function showAuth(mode, msg = '') {
   auth.mode = mode; authEl.classList.add('open'); closeJoin();
   authForm.hidden = mode === 'loading';
   document.getElementById('pin2Row').hidden = mode !== 'signup';
   document.getElementById('authPin2').required = mode === 'signup';
-  document.getElementById('authTitle').textContent = mode === 'signup' ? '연구소 가입' : '연구소 입장';
-  document.getElementById('authLede').textContent = mode === 'signup' ? '별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.' : mode === 'login' ? '별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.' : '연구소 문을 여는 중이에요…';
-  document.getElementById('authSubmit').textContent = mode === 'signup' ? '가입하고 들어가기' : '로그인';
-  document.getElementById('authSwitch').textContent = mode === 'signup' ? '이미 계정이 있어요 · 로그인' : '처음 왔어요 · 가입하기';
+  document.getElementById('authTitle').textContent = mode === 'signup' ? $t('연구소 가입') : $t('연구소 입장');
+  document.getElementById('authLede').textContent = mode === 'signup' ? $t('별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.') : mode === 'login' ? $t('별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.') : $t('연구소 문을 여는 중이에요…');
+  document.getElementById('authSubmit').textContent = mode === 'signup' ? $t('가입하고 들어가기') : $t('로그인');
+  document.getElementById('authSwitch').textContent = mode === 'signup' ? $t('이미 계정이 있어요 · 로그인') : $t('처음 왔어요 · 가입하기');
   document.getElementById('authMsg').textContent = msg;
-  document.getElementById('authNick').placeholder = mode === 'signup' ? '비워 두면 "독수리 N호"로 정해져요' : '';
+  document.getElementById('authNick').placeholder = mode === 'signup' ? $t('비워 두면 "독수리 N호"로 정해져요') : '';
   document.getElementById('authNick').value = mode === 'login' ? (me.name || '') : '';
   document.getElementById('authPin').value = ''; document.getElementById('authPin2').value = '';
   if (mode !== 'loading') setTimeout(() => { const f = mode === 'login' && me.name ? 'authPin' : 'authNick'; if (matchMedia('(pointer: fine)').matches) document.getElementById(f).focus(); }, 30);
@@ -2462,35 +2569,35 @@ function closeAuth() { authEl.classList.remove('open'); }
 document.getElementById('authSwitch').addEventListener('click', () => showAuth(auth.mode === 'signup' ? 'login' : 'signup'));
 const authErr = e => {
   const c = e && e.code || '';
-  if (c.includes('too-many-requests')) return '너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.';
-  if (c.includes('network')) return '인터넷 연결을 확인해 주세요.';
-  if (c.includes('wrong-password') || c.includes('invalid-credential') || c.includes('invalid-login')) return '별명이나 비밀번호가 맞지 않아요.';
-  return '잠시 뒤 다시 해 주세요.';
+  if (c.includes('too-many-requests')) return $t('너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.');
+  if (c.includes('network')) return $t('인터넷 연결을 확인해 주세요.');
+  if (c.includes('wrong-password') || c.includes('invalid-credential') || c.includes('invalid-login')) return $t('별명이나 비밀번호가 맞지 않아요.');
+  return $t('잠시 뒤 다시 해 주세요.');
 };
 authForm.addEventListener('submit', async e => {
   e.preventDefault();
   const msg = document.getElementById('authMsg'), nick = clean(document.getElementById('authNick').value), pin = document.getElementById('authPin').value.trim();
-  if (!FB) { msg.textContent = '연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.'; return; }
-  if (!nick && auth.mode !== 'signup') { msg.textContent = '별명을 입력해 주세요.'; return; }
-  if (!/^\d{4}$/.test(pin)) { msg.textContent = '비밀번호는 숫자 4자리예요.'; return; }
+  if (!FB) { msg.textContent = $t('연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.'); return; }
+  if (!nick && auth.mode !== 'signup') { msg.textContent = $t('별명을 입력해 주세요.'); return; }
+  if (!/^\d{4}$/.test(pin)) { msg.textContent = $t('비밀번호는 숫자 4자리예요.'); return; }
   const btn = document.getElementById('authSubmit'); btn.disabled = true;
   try {
     if (auth.mode === 'signup') {
-      if (pin !== document.getElementById('authPin2').value.trim()) { msg.textContent = '비밀번호 확인이 달라요.'; return; }
+      if (pin !== document.getElementById('authPin2').value.trim()) { msg.textContent = $t('비밀번호 확인이 달라요.'); return; }
       const fNick = nick || autoNick(), key = nickKey(fNick);
-      if (nickTaken(fNick) || (await db.doc('logins/' + key).get()).exists) { msg.textContent = '이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.'; return; }
+      if (nickTaken(fNick) || (await db.doc('logins/' + key).get()).exists) { msg.textContent = $t('이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.'); return; }
       const rid = [...crypto.getRandomValues(new Uint8Array(10))].map(x => x.toString(16).padStart(2, '0')).join('');
       const email = `e${rid}@jeongsuri.lab`;
       pendingSignup = { nick: fNick, createdAt: Date.now() };
       const cred = await FB.createUser(email, pw(pin));
       try { await db.doc('logins/' + key).set({ uid: cred.user.uid, email }); }
-      catch { await FB.deleteUser().catch(() => {}); pendingSignup = null; msg.textContent = '방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.'; return; }
+      catch { await FB.deleteUser().catch(() => {}); pendingSignup = null; msg.textContent = $t('방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.'); return; }
       await db.doc('profiles/' + cred.user.uid).set(pendingSignup);
       await handleUser(cred.user, true);
     } else {
-      if (Date.now() < auth.lockUntil) { msg.textContent = `너무 많이 틀렸어요. ${Math.ceil((auth.lockUntil - Date.now()) / 1000)}초 뒤 다시 해 주세요.`; return; }
+      if (Date.now() < auth.lockUntil) { msg.textContent = $tt(`너무 많이 틀렸어요. ${Math.ceil((auth.lockUntil - Date.now()) / 1000)}초 뒤 다시 해 주세요.`, `Too many wrong tries. Try again in ${Math.ceil((auth.lockUntil - Date.now()) / 1000)} s.`); return; }
       const L = await db.doc('logins/' + nickKey(nick)).get();
-      if (!L.exists) { msg.textContent = '그런 별명은 없어요. 처음이라면 가입해 주세요.'; return; }
+      if (!L.exists) { msg.textContent = $t('그런 별명은 없어요. 처음이라면 가입해 주세요.'); return; }
       try { await FB.signIn(L.data().email, pw(pin)); auth.fails = 0; }
       catch (err) { if (++auth.fails >= 5) { auth.fails = 0; auth.lockUntil = Date.now() + 30000; } msg.textContent = authErr(err); }
     }
@@ -2501,26 +2608,30 @@ let handledUid = null;
 async function handleUser(user, isNew) {
   if (!user) {
     myUid = null; handledUid = null; auth.ok = false; auth.isDev = false; auth.acct = null;
-    showAuth('login'); renderJourney(true); refresh(); return;
+    lobbyEl.classList.remove('open'); showAuth('login'); renderJourney(true); refresh(); return;
   }
   if (handledUid === user.uid) return; handledUid = user.uid;
   myUid = user.uid; auth.isDev = !!OWNER_UID && user.uid === OWNER_UID;
   let prof = null;
   try { const sn = await db.doc('profiles/' + myUid).get(); prof = sn.exists ? sn.data() : null; } catch {}
   if (!prof && pendingSignup) prof = pendingSignup;
-  if (!prof || typeof prof.nick !== 'string') prof = { nick: '익명 독수리', createdAt: Date.now() };
-  auth.acct = { nick: clean(prof.nick) || '익명 독수리', createdAt: prof.createdAt || Date.now(), email: user.email };
+  if (!prof || typeof prof.nick !== 'string') prof = { nick: $t('익명 독수리'), createdAt: Date.now() };
+  auth.acct = { nick: clean(prof.nick) || $t('익명 독수리'), createdAt: prof.createdAt || Date.now(), email: user.email };
   auth.ok = true; me.name = auth.acct.nick; saveProfile();
-  await loadMyRecords();
-  publishName(); closeAuth(); if (!me.joined) openJoin();
-  renderJourney(true); renderCare(); refresh();
-  toast(isNew || pendingSignup ? `환영해요, ${me.name} 님! 계정을 만들었어요.` : `${me.name} 님, 어서 오세요.`);
+  loadFeedback();
+  publishName(); closeAuth();
+  toast(isNew || pendingSignup ? $tt(`환영해요, ${me.name} 님! 계정을 만들었어요.`, `Welcome, ${me.name}! Your account is ready.`) : $tt(`${me.name} 님, 어서 오세요.`, `Welcome back, ${me.name}.`));
   pendingSignup = null;
+  await routeAfterLogin();
 }
 let devFeedbackSub = false;
+async function loadFeedback() {
+  try { const sn = await db.doc('feedback/' + myUid).get(); if (sn.exists && Array.isArray(sn.data().items)) myFeedback = sn.data().items.slice(-50); } catch {}
+  if (auth.isDev && !devFeedbackSub) { devFeedbackSub = true; db.collection('feedback').onSnapshot(qs => { fbDocs.clear(); for (const d of qs.docs) fbDocs.set(d.id, d.data() || {}); renderFeedback(); }, () => {}); subscribeVipAdmin(); }
+}
 async function loadMyRecords() {
   try {
-    const snap = await db.doc('att/' + myUid).get();
+    const snap = await db.doc(RP + 'att/' + myUid).get();
     if (snap.exists) {
       const d = snap.data() || {};
       for (const [k, v] of Object.entries(d.days || {})) { const mine = myAtt.days[k]; if (!mine || (Number(v.focusMs) || 0) > (Number(mine.focusMs) || 0)) myAtt.days[k] = { ...v }; }
@@ -2528,10 +2639,221 @@ async function loadMyRecords() {
       me.todayMs = Math.max(me.todayMs, Number(myAtt.days[me.dayKey]?.focusMs) || 0);
     }
   } catch {}
-  try { const sn = await db.doc('chat/' + myUid).get(); if (sn.exists && Array.isArray(sn.data().msgs)) myChat.msgs = sn.data().msgs.filter(m => m && Number.isFinite(m.t)).slice(-30); } catch {}
-  try { const sn = await db.doc('feedback/' + myUid).get(); if (sn.exists && Array.isArray(sn.data().items)) myFeedback = sn.data().items.slice(-50); } catch {}
-  if (auth.isDev && !devFeedbackSub) { devFeedbackSub = true; db.collection('feedback').onSnapshot(qs => { fbDocs.clear(); for (const d of qs.docs) fbDocs.set(d.id, d.data() || {}); renderFeedback(); }, () => {}); }
+  try { const sn = await db.doc(RP + 'chat/' + myUid).get(); if (sn.exists && Array.isArray(sn.data().msgs)) myChat.msgs = sn.data().msgs.filter(m => m && Number.isFinite(m.t)).slice(-30); } catch {}
 }
+/* ---- 연구실: 새로 만들기 · 번호로 입장 · 독수리 VIP 클럽 ---- */
+const lobbyEl = document.getElementById('lobby');
+const VIP_NAME = $tt('독수리 VIP 클럽', 'Eagle VIP Club');
+const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const roomUrl = code => location.origin + location.pathname + '#r=' + code;
+function recentRooms() { const v = lsGet('jsdsr-rooms'); return Array.isArray(v) ? v.filter(x => x && typeof x.code === 'string').slice(0, 5) : []; }
+function rememberRoom(code, name) { lsSet('jsdsr-rooms', [{ code, name: clean(String(name || code), 20) }, ...recentRooms().filter(x => x.code !== code)].slice(0, 5)); }
+function goRoom(code) { if (me.joined) leaveSeat(); setTimeout(() => { if (location.hash === '#r=' + code) location.reload(); else location.hash = 'r=' + code; }, me.joined ? 500 : 0); }
+function leaveToLobby() { history.replaceState(null, '', location.pathname + location.search); location.reload(); }
+addEventListener('hashchange', () => location.reload());
+function ownerNick() { return auth.names.get(OWNER_UID)?.nick || $tt('개발자', 'the developer'); }
+function lbShow(pane, msg = '', ok = false) {
+  ['lbHome', 'lbCreatePane', 'lbMadePane', 'lbEnterPane', 'lbVipPane'].forEach(id => { document.getElementById(id).hidden = id !== pane; });
+  const m = document.getElementById('lbMsg'); m.textContent = msg; m.classList.toggle('ok', ok);
+}
+function showLobby(pane = 'lbHome', msg = '') {
+  closeJoin(); closeAuth(); lobbyEl.classList.add('open');
+  document.getElementById('lobbyLede').textContent = $tt(`${me.name} 님, 오늘은 어디서 공부할까요?`, `Where are we studying today, ${me.name}?`);
+  document.getElementById('lbVipSub').textContent = $tt(`${ownerNick()} 님이 허락한 독수리만 들어갈 수 있어요`, `Only eagles approved by ${ownerNick()}`);
+  const rc = document.getElementById('lbRecent'); rc.textContent = '';
+  for (const r of recentRooms()) { const b = el('button', 'btn small', `${r.code === 'vip' ? '👑' : '🔑'} ${r.code === 'vip' ? VIP_NAME : (r.name || r.code)}`); b.type = 'button'; b.title = r.code; b.addEventListener('click', () => tryEnter(r.code)); rc.appendChild(b); }
+  lbShow(pane, msg);
+}
+// 들어갈 수 있는지 확인. join이면 일반 연구실 회원으로 등록까지
+async function checkRoom(key, join) {
+  try {
+    if (key === 'vip') {
+      const info = { key: 'vip', name: VIP_NAME, cap: 14, owner: OWNER_UID };
+      if (auth.isDev) return { ok: true, info };
+      const a = await db.doc('vip/allow').get();
+      const mem = a.exists && a.data() && typeof a.data().members === 'object' && a.data().members ? a.data().members : {};
+      return own(mem, myUid) ? { ok: true, info } : { ok: false, vip: true };
+    }
+    const sn = await db.doc('rooms/' + key).get();
+    if (!sn.exists) return { ok: false, msg: $tt('그런 번호의 연구실이 없어요. 번호를 다시 확인해 주세요.', "There's no lab with that code. Check it again.") };
+    const d = sn.data() || {}, cap = Math.min(14, Math.max(2, Number(d.cap) || 14));
+    const info = { key, name: clean(String(d.name || key), 20), cap, owner: typeof d.owner === 'string' ? d.owner : '' };
+    if ((await db.doc(`rooms/${key}/members/${myUid}`).get()).exists) return { ok: true, info };
+    const ms = await db.collection(`rooms/${key}/members`).get();
+    if (ms.size >= cap) return { ok: false, msg: $tt(`정원이 다 찼어요 (${ms.size}/${cap}명). 실장에게 물어보세요.`, `This lab is full (${ms.size}/${cap}). Ask the lab manager.`) };
+    if (join) await db.doc(`rooms/${key}/members/${myUid}`).set({ nick: me.name, t: Date.now() });
+    return { ok: true, info };
+  } catch { return { ok: false, msg: $tt('연구실을 확인하지 못했어요. 잠시 뒤 다시 해 주세요.', "Couldn't check the lab. Try again in a moment.") }; }
+}
+async function tryEnter(key) {
+  lbShow(document.querySelector('#lobby .lbpane:not([hidden])')?.id || 'lbHome', $tt('확인하는 중…', 'Checking…'), true);
+  const r = await checkRoom(key, true);
+  if (r.ok) { rememberRoom(key, r.info.name); return goRoom(key); }
+  if (r.vip) return showVipPane();
+  lbShow(key === 'vip' ? 'lbHome' : document.getElementById('lbEnterPane').hidden ? 'lbHome' : 'lbEnterPane', r.msg);
+}
+async function routeAfterLogin() {
+  if (ROOM_KEY) {
+    const r = await checkRoom(ROOM_KEY, true);
+    if (r.ok) return enterRoom(r.info);
+    history.replaceState(null, '', location.pathname + location.search);
+    showLobby('lbHome', r.msg || '');
+    if (r.vip) showVipPane();
+    return;
+  }
+  showLobby();
+}
+async function enterRoom(info) {
+  ROOM = info; RP = info.key === 'vip' ? '' : `rooms/${info.key}/`; roomReady = true;
+  rememberRoom(info.key, info.name);
+  document.getElementById('roomChip').hidden = false;
+  document.getElementById('roomName').textContent = info.key === 'vip' ? `👑 ${VIP_NAME}` : `🔑 ${info.name} · ${info.key}`;
+  document.getElementById('roomCopy').hidden = info.key === 'vip';
+  subscribeRoom();
+  await loadMyRecords();
+  lobbyEl.classList.remove('open'); closeAuth();
+  if (!me.joined) openJoin();
+  renderJourney(true); renderCare(); refresh();
+}
+function subscribeRoom() {
+  db.collection(RP + 'att').onSnapshot(qs => {
+    attDocs.clear();
+    for (const d of qs.docs) { const v = d.data() || {}; attDocs.set(d.id, { name: (typeof v.name === 'string' && clean(v.name)) || $t('익명 독수리'), color: Number.isInteger(v.color) ? v.color : 0, kind: own(KINDS, v.kind) ? v.kind : 'eagle', days: v.days && typeof v.days === 'object' ? v.days : {} }); }
+    renderRoster(); updateBoard(seatedList());
+  }, () => {});
+  db.collection(RP + 'care').onSnapshot(onCareSnap, () => {});
+  db.collection(RP + 'board').onSnapshot(onBoardSnap, () => {});
+  db.collection(RP + 'chat').onSnapshot(qs => {
+    chatDocIds = new Set(qs.docs.map(d => d.id));
+    for (const d of qs.docs) {
+      const v = d.data() || {}; const nm = (typeof v.name === 'string' && clean(v.name)) || $t('익명 독수리');
+      for (const m of (Array.isArray(v.msgs) ? v.msgs : [])) {
+        if (!m || typeof m.id !== 'string' || typeof m.text !== 'string' || !Number.isFinite(m.t)) continue;
+        if (Date.now() - m.t > 12 * 3600000 || m.t < chatClearedAt || chatMsgs.has(m.id)) continue;
+        const text = clean(m.text, 140); if (!text) continue;
+        chatMsgs.set(m.id.slice(0, 40), { id: m.id, t: m.t, text, name: nm, color: Number.isInteger(v.color) ? v.color : 0 }); chatDirty = true;
+      }
+    }
+    renderChat();
+  }, () => {});
+  room = makeRoom(RTDB.rt, RTDB.rdb, () => myUid, 'room/' + ROOM.key); roomLive = true;
+  room.onPeers(ch => { const mine = ch.peers.find(p => p.sameTab); if (mine) myPeer = mine.peer; resolveConflicts(); refresh(); });
+  room.onConnection(c => { if (c) room.presence(myPresence()).catch(() => {}); });
+}
+// 로비 버튼
+const capSel = document.getElementById('lbCap');
+for (let n = 2; n <= 14; n++) { const o = el('option', '', $tt(`${n}명`, `${n} people`)); o.value = String(n); if (n === 14) o.selected = true; capSel.appendChild(o); }
+document.getElementById('lbCreate').addEventListener('click', () => { lbShow('lbCreatePane'); document.getElementById('lbName').focus(); });
+document.getElementById('lbEnter').addEventListener('click', () => { lbShow('lbEnterPane'); document.getElementById('lbCodeIn').focus(); });
+document.getElementById('lbVip').addEventListener('click', () => tryEnter('vip'));
+lobbyEl.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => lbShow('lbHome')));
+let madeCode = null;
+document.getElementById('lbCreatePane').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = clean(document.getElementById('lbName').value, 20);
+  if (!name) return lbShow('lbCreatePane', $tt('연구실 이름을 지어 주세요.', 'Give your lab a name.'));
+  const cap = Math.min(14, Math.max(2, Number(capSel.value) || 14));
+  const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    let code = null;
+    for (let i = 0; i < 6 && !code; i++) {
+      const c = Array.from(crypto.getRandomValues(new Uint8Array(6)), x => CODE_ABC[x % CODE_ABC.length]).join('');
+      if (!(await db.doc('rooms/' + c).get()).exists) code = c;
+    }
+    if (!code) throw new Error('no code');
+    await db.doc('rooms/' + code).set({ name, cap, owner: myUid, ownerNick: me.name, createdAt: Date.now() });
+    await db.doc(`rooms/${code}/members/${myUid}`).set({ nick: me.name, t: Date.now() });
+    rememberRoom(code, name); madeCode = code;
+    document.getElementById('lbMadeName').textContent = $tt(`"${name}" 연구실이 생겼어요 (정원 ${cap}명). 아래 번호나 링크를 친구들에게 보내 주세요. 내가 이 연구실의 실장이라 공지와 네온 문구를 바꿀 수 있어요.`, `"${name}" is ready (up to ${cap} people). Send the code or link below to your friends. You're the lab manager, so you can change its notice and neon sign.`);
+    document.getElementById('lbCode').textContent = code;
+    lbShow('lbMadePane');
+  } catch { lbShow('lbCreatePane', $tt('연구실을 만들지 못했어요. 잠시 뒤 다시 해 주세요.', "Couldn't create the lab. Try again in a moment.")); }
+  finally { btn.disabled = false; }
+});
+async function copyText(text, okMsg, msgId) {
+  try { await navigator.clipboard.writeText(text); }
+  catch { const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch {} ta.remove(); }
+  if (msgId) msg2(msgId, okMsg, true); else toast(okMsg);
+}
+document.getElementById('lbCopyCode').addEventListener('click', () => copyText(madeCode, $tt(`번호 ${madeCode}를 복사했어요.`, `Copied the code ${madeCode}.`), 'lbMsg'));
+document.getElementById('lbCopyLink').addEventListener('click', () => copyText(roomUrl(madeCode), $tt('링크를 복사했어요. 링크를 열면 번호 없이 바로 이 연구실로 와요.', 'Link copied. Opening it goes straight to this lab.'), 'lbMsg'));
+document.getElementById('lbGoMade').addEventListener('click', () => goRoom(madeCode));
+document.getElementById('roomCopy').addEventListener('click', () => { if (ROOM && ROOM.key !== 'vip') copyText(roomUrl(ROOM.key), $tt(`초대 링크를 복사했어요 · 번호 ${ROOM.key}`, `Invite link copied · code ${ROOM.key}`)); });
+document.getElementById('lbEnterPane').addEventListener('submit', async e => {
+  e.preventDefault();
+  const code = String(document.getElementById('lbCodeIn').value).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 6) return lbShow('lbEnterPane', $tt('번호는 영문과 숫자 6자리예요.', 'The code has 6 letters and numbers.'));
+  const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+  await tryEnter(code); btn.disabled = false;
+});
+async function showVipPane() {
+  let pending = false; try { pending = (await db.doc('vipReq/' + myUid).get()).exists; } catch {}
+  document.getElementById('lbVipMsg').textContent = pending
+    ? $tt(`입장 요청을 보냈어요. ${ownerNick()} 님이 허락하면 들어갈 수 있어요.`, `Request sent. You can enter once ${ownerNick()} approves.`)
+    : $tt(`독수리 VIP 클럽은 ${ownerNick()} 님이 허락한 사람만 들어갈 수 있어요. 입장 요청을 보내 볼까요?`, `The Eagle VIP Club is invite-only. Ask ${ownerNick()} to let you in?`);
+  const b = document.getElementById('lbVipReq'); b.disabled = pending; b.textContent = pending ? $tt('요청 보냄', 'Request sent') : $tt($t('입장 요청 보내기'), 'Ask to join');
+  lbShow('lbVipPane');
+}
+document.getElementById('lbVipReq').addEventListener('click', async () => {
+  try { await db.doc('vipReq/' + myUid).set({ nick: me.name, t: Date.now() }); } catch { return lbShow('lbVipPane', $tt('요청을 보내지 못했어요.', "Couldn't send the request.")); }
+  showVipPane();
+});
+document.getElementById('lbLogout').addEventListener('click', async () => { await FB.signOut().catch(() => {}); leaveToLobby(); });
+document.getElementById('roomLeave').addEventListener('click', () => { if (me.joined) leaveSeat(); setPanel(null); setTimeout(leaveToLobby, 500); });
+// 언어
+function setLang(l) {
+  try { localStorage.setItem('jsdsr-lang', l); } catch {}
+  if (l === (LANG || 'ko')) { document.getElementById('langPick').classList.remove('open'); return; }
+  if (me.joined) leaveSeat();
+  setTimeout(() => location.reload(), me.joined ? 500 : 0);
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+['lbLang', 'authLang'].forEach(id => { const b = document.getElementById(id); b.textContent = isEN ? '한국어' : 'English'; b.addEventListener('click', () => setLang(isEN ? 'ko' : 'en')); });
+// VIP 관리 (개발자)
+let vipMembers = {}, vipSub = false; const vipReqs = new Map();
+function subscribeVipAdmin() {
+  if (vipSub || !auth.isDev) return; vipSub = true;
+  db.doc('vip/allow').onSnapshot(sn => { const m = sn.exists && sn.data() ? sn.data().members : null; vipMembers = m && typeof m === 'object' ? m : {}; renderVip(); }, () => {});
+  db.collection('vipReq').onSnapshot(qs => { vipReqs.clear(); for (const d of qs.docs) vipReqs.set(d.id, d.data() || {}); renderVip(); }, () => {});
+}
+async function setVip(uid, nick, on) {
+  const next = { ...vipMembers }; if (on) next[uid] = clean(String(nick || ''), 12) || '?'; else delete next[uid];
+  await db.doc('vip/allow').set({ members: next }); vipMembers = next; renderVip();
+}
+function renderVip() {
+  if (!journeyEl.classList.contains('open') || !auth.isDev) return;
+  const rq = document.getElementById('vipReqList'); rq.textContent = '';
+  const reqs = [...vipReqs.entries()].filter(([id]) => !own(vipMembers, id));
+  if (!reqs.length) rq.appendChild(el('li', '', $tt('새 요청이 없어요.', 'No new requests.')));
+  for (const [id, v] of reqs) {
+    const nick = clean(String(v.nick || '?')), li = el('li'); li.appendChild(el('span', '', nick));
+    const ok = el('button', 'btn small primary', $tt('허락', 'Approve')); ok.type = 'button';
+    const no = el('button', 'btn small', $tt('거절', 'Decline')); no.type = 'button';
+    ok.addEventListener('click', async () => { ok.disabled = true; try { await setVip(id, nick, true); await db.doc('vipReq/' + id).delete().catch(() => {}); msg2('devMsg', $tt(`${nick} 님을 VIP 클럽에 들였어요.`, `${nick} is now in the VIP Club.`), true); } catch { ok.disabled = false; msg2('devMsg', $t('저장하지 못했어요.')); } });
+    no.addEventListener('click', async () => { no.disabled = true; try { await db.doc('vipReq/' + id).delete(); } catch { no.disabled = false; } });
+    li.append(ok, no); rq.appendChild(li);
+  }
+  const ml = document.getElementById('vipList'); ml.textContent = '';
+  const mem = Object.entries(vipMembers);
+  if (!mem.length) ml.appendChild(el('li', '', $tt('아직 VIP 회원이 없어요. 개발자는 언제나 들어갈 수 있어요.', 'No VIP members yet. The developer can always enter.')));
+  for (const [id, nick] of mem) {
+    const li = el('li'); li.appendChild(el('span', '', auth.names.get(id)?.nick || String(nick)));
+    const out = el('button', 'btn small danger', $tt('내보내기', 'Remove')); out.type = 'button';
+    out.addEventListener('click', async () => {
+      if (out.dataset.armed !== '1') { out.dataset.armed = '1'; out.textContent = $tt('정말 내보내기', 'Really remove'); return; }
+      try { await setVip(id, '', false); } catch { msg2('devMsg', $t('저장하지 못했어요.')); }
+    });
+    li.append(out); ml.appendChild(li);
+  }
+}
+document.getElementById('vipAddBtn').addEventListener('click', async () => {
+  const nick = clean(document.getElementById('vipAdd').value); if (!nick) return;
+  const hit = [...auth.names.entries()].find(([, v]) => normNick(v.nick) === normNick(nick));
+  if (!hit) return msg2('devMsg', $tt('그런 별명의 회원이 없어요.', 'No member with that nickname.'));
+  try { await setVip(hit[0], hit[1].nick, true); document.getElementById('vipAdd').value = ''; msg2('devMsg', $tt(`${hit[1].nick} 님을 VIP 클럽에 들였어요.`, `${hit[1].nick} is now in the VIP Club.`), true); }
+  catch { msg2('devMsg', $t('저장하지 못했어요.')); }
+});
+
 
 /* ---- 나의 연구 여정 ---- */
 const journeyEl = document.getElementById('journey'), journeyBtn = document.getElementById('journeyBtn');
@@ -2541,50 +2863,56 @@ function msg2(id, text, ok) { const m = document.getElementById(id); m.textConte
 let chatDocIds = new Set();
 function renderJourney(full) {
   if (!journeyEl.classList.contains('open')) return;
-  document.getElementById('jNick').textContent = auth.ok ? me.name : '로그인 전';
+  document.getElementById('jNick').textContent = auth.ok ? me.name : $t('로그인 전');
   document.getElementById('jDev').hidden = !auth.isDev;
   const since = auth.acct?.createdAt;
-  document.getElementById('jSince').textContent = since && auth.ok ? `가입 ${Math.floor((Date.now() - since) / 86400000) + 1}일째` : '';
+  document.getElementById('jSince').textContent = since && auth.ok ? $tt(`가입 ${Math.floor((Date.now() - since) / 86400000) + 1}일째`, `Day ${Math.floor((Date.now() - since) / 86400000) + 1} since joining`) : '';
   const keys = new Set(Object.keys(myAtt.days)); if (me.joined) keys.add(dayKey());
   let total = 0, sessions = 0, best = 0;
   for (const k of keys) { const ms = myDayMs(k); total += ms; sessions += Math.floor(ms / SESSION_MS); best = Math.max(best, ms); }
   let streak = 0; for (let i = 0; i < 400; i++) { const d = new Date(); d.setDate(d.getDate() - i); if (keys.has(dayKey(d))) streak++; else if (i > 0) break; }
   const st = document.getElementById('jStats'); st.textContent = '';
-  [[fmtShort(total), '총 집중'], [`${sessions}회`, '완료한 세션'], [`${keys.size}일`, '출석한 날'], [`${streak}일`, '연속 출석'], [fmtShort(best), '하루 최고'], [`${(myAtt.careWater || 0) + (myAtt.careFeed || 0)}회`, '돌봄']]
+  [[fmtShort(total), $t('총 집중')], [$tt(`${sessions}회`, `${sessions}`), $t('완료한 세션')], [$tt(`${keys.size}일`, `${keys.size}`), $t('출석한 날')], [$tt(`${streak}일`, `${streak}`), $t('연속 출석')], [fmtShort(best), $t('하루 최고')], [$tt(`${(myAtt.careWater || 0) + (myAtt.careFeed || 0)}회`, `${(myAtt.careWater || 0) + (myAtt.careFeed || 0)}`), $t('돌봄')]]
     .forEach(([b, sp]) => { const d = el('div'); d.append(el('b', '', b), el('span', '', sp)); st.appendChild(d); });
   const now = new Date(), y = now.getFullYear(), mo = now.getMonth();
-  document.getElementById('jMonth').textContent = `${mo + 1}월 출석`;
+  document.getElementById('jMonth').textContent = $tt(`${mo + 1}월 출석`, `${MON[mo]} attendance`);
   const cal = document.getElementById('jCal'); cal.textContent = '';
-  ['일', '월', '화', '수', '목', '금', '토'].forEach(w => cal.appendChild(el('span', 'wd', w)));
+  [$t('일'), $t('월'), $t('화'), $t('수'), $t('목'), $t('금'), $t('토')].forEach(w => cal.appendChild(el('span', 'wd', w)));
   const first = new Date(y, mo, 1).getDay(), days = new Date(y, mo + 1, 0).getDate();
   for (let i = 0; i < first; i++) cal.appendChild(el('span'));
   for (let d = 1; d <= days; d++) {
     const k = `${y}-${pad(mo + 1)}-${pad(d)}`, ms = keys.has(k) ? myDayMs(k) : 0;
     const lv = !keys.has(k) ? '' : ms >= 3 * 3600000 ? 'l3' : ms >= 3600000 ? 'l2' : 'l1';
-    const c = el('span', `cell ${lv}${d === now.getDate() ? ' today' : ''}`, String(d)); c.title = keys.has(k) ? `${k} 집중 ${fmtMin(ms)}` : k; cal.appendChild(c);
+    const c = el('span', `cell ${lv}${d === now.getDate() ? ' today' : ''}`, String(d)); c.title = keys.has(k) ? $tt(`${k} 집중 ${fmtMin(ms)}`, `${k} focus ${fmtMin(ms)}`) : k; cal.appendChild(c);
   }
-  document.getElementById('jCare').textContent = `물 준 횟수 ${myAtt.careWater || 0}회 · 밥 준 횟수 ${myAtt.careFeed || 0}회 · 지금 돌봄 가능 ${auth.isDev ? '무제한' : careCredits() + '회'}`;
+  document.getElementById('jCare').textContent = $tt(`물 준 횟수 ${myAtt.careWater || 0}회 · 밥 준 횟수 ${myAtt.careFeed || 0}회 · 지금 돌봄 가능 ${auth.isDev ? '무제한' : careCredits() + '회'}`, `Watered ${myAtt.careWater || 0}× · Fed ${myAtt.careFeed || 0}× · Care available now: ${auth.isDev ? 'unlimited' : careCredits()}`);
   ['renameBtn', 'pinBtn', 'logoutBtn', 'deleteBtn', 'fbSend'].forEach(id => { document.getElementById(id).disabled = !auth.ok; });
-  document.getElementById('myUidNote').textContent = auth.ok && myUid ? `내 계정 ID: ${myUid}` : '';
-  const dv = document.getElementById('devTools'); dv.hidden = !auth.isDev || !auth.ok;
+  document.getElementById('myUidNote').textContent = auth.ok && myUid ? $tt(`내 계정 ID: ${myUid}`, `My account ID: ${myUid}`) : '';
+  const roomAdmin = auth.ok && roomReady && (auth.isDev || (ROOM && ROOM.owner === myUid));
+  document.getElementById('devTools').hidden = !roomAdmin;
+  document.getElementById('devOnly').hidden = !auth.isDev;
+  document.getElementById('devCareNote').hidden = !auth.isDev;
+  document.getElementById('devTitle').textContent = auth.isDev ? $t('🛠 개발자 도구') : $tt('🔑 실장 도구 (이 연구실의 공지·네온·채팅)', '🔑 Lab manager tools (notice, neon, chat)');
+  document.getElementById('jRoom').textContent = !ROOM ? $tt('아직 연구실에 들어가지 않았어요.', "You haven't entered a lab yet.") : ROOM.key === 'vip' ? `👑 ${VIP_NAME}` : $tt(`🔑 ${ROOM.name} · 번호 ${ROOM.key} · 정원 ${ROOM.cap}명${ROOM.owner === myUid ? ' · 내가 실장' : ''}`, `🔑 ${ROOM.name} · code ${ROOM.key} · up to ${ROOM.cap}${ROOM.owner === myUid ? ' · you manage it' : ''}`);
+  document.querySelectorAll('#journey [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === (LANG || 'ko')));
   if (full) {
     document.getElementById('renameInput').value = auth.ok ? me.name : '';
-    if (auth.isDev) { noticeLines.forEach((ln, i) => { document.getElementById('notice' + i).value = ln; }); document.getElementById('neonInput').value = neonText; }
+    if (roomAdmin) { noticeLines.forEach((ln, i) => { document.getElementById('notice' + i).value = ln; }); document.getElementById('neonInput').value = neonText; }
   }
-  if (auth.isDev) renderMembers();
+  if (auth.isDev) { renderMembers(); renderVip(); }
 }
 function renderMembers() {
   const ul = document.getElementById('memberList'); ul.textContent = '';
   const rows = [...auth.names.entries()].filter(([id]) => id !== myUid).sort((a, b) => (a[1].since || 0) - (b[1].since || 0));
-  if (!rows.length) { ul.appendChild(el('li', '', '아직 다른 회원이 없어요.')); return; }
+  if (!rows.length) { ul.appendChild(el('li', '', $t('아직 다른 회원이 없어요.'))); return; }
   for (const [id, v] of rows) {
-    const li = el('li'); const nm = el('span', '', v.nick); if (v.since) nm.appendChild(el('small', '', new Date(v.since).toLocaleDateString('ko-KR') + ' 가입'));
-    const b = el('button', 'btn small danger', '기록 삭제'); b.type = 'button';
+    const li = el('li'); const nm = el('span', '', v.nick); if (v.since) nm.appendChild(el('small', '', new Date(v.since).toLocaleDateString('ko-KR') + $t(' 가입')));
+    const b = el('button', 'btn small danger', $t('기록 삭제')); b.type = 'button';
     b.addEventListener('click', async () => {
-      if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = '정말 삭제'; return; }
+      if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = $t('정말 삭제'); return; }
       b.disabled = true;
-      try { await Promise.all([db.doc('att/' + id).delete(), db.doc('chat/' + id).delete(), db.doc('names/' + id).delete()]); msg2('devMsg', `${v.nick} 님의 출석·채팅 기록과 별명을 지웠어요.`, true); }
-      catch { msg2('devMsg', '지우지 못했어요. 잠시 뒤 다시 해 주세요.'); b.disabled = false; }
+      try { await Promise.all([db.doc('att/' + id).delete(), db.doc('chat/' + id).delete(), db.doc('names/' + id).delete()]); msg2('devMsg', $tt(`${v.nick} 님의 출석·채팅 기록과 별명을 지웠어요.`, `Deleted ${v.nick}'s attendance, chat and nickname.`), true); }
+      catch { msg2('devMsg', $t('지우지 못했어요. 잠시 뒤 다시 해 주세요.')); b.disabled = false; }
     });
     li.append(nm, b); ul.appendChild(li);
   }
@@ -2592,87 +2920,88 @@ function renderMembers() {
 setInterval(() => renderJourney(false), 15000);
 document.getElementById('renameBtn').addEventListener('click', async () => {
   const nick = clean(document.getElementById('renameInput').value);
-  if (!nick) return msg2('acctMsg', '새 별명을 입력해 주세요.');
-  if (normNick(nick) === normNick(me.name)) return msg2('acctMsg', '지금 쓰는 별명과 같아요.');
+  if (!nick) return msg2('acctMsg', $t('새 별명을 입력해 주세요.'));
+  if (normNick(nick) === normNick(me.name)) return msg2('acctMsg', $t('지금 쓰는 별명과 같아요.'));
   try {
-    if (nickTaken(nick) || (await db.doc('logins/' + nickKey(nick)).get()).exists) return msg2('acctMsg', '이미 쓰고 있는 별명이에요.');
+    if (nickTaken(nick) || (await db.doc('logins/' + nickKey(nick)).get()).exists) return msg2('acctMsg', $t('이미 쓰고 있는 별명이에요.'));
     await db.doc('logins/' + nickKey(nick)).set({ uid: myUid, email: auth.acct.email });
     await db.doc('logins/' + nickKey(me.name)).delete().catch(() => {});
     await db.doc('profiles/' + myUid).set({ nick, createdAt: auth.acct.createdAt });
-  } catch { return msg2('acctMsg', '저장하지 못했어요. 잠시 뒤 다시 해 주세요.'); }
+  } catch { return msg2('acctMsg', $t('저장하지 못했어요. 잠시 뒤 다시 해 주세요.')); }
   auth.acct.nick = nick; me.name = nick; saveProfile(); publishName(); persist(); publish(); renderJourney(true);
-  msg2('acctMsg', `이제 별명은 ${nick} 이에요. 다음 로그인부터 새 별명을 쓰세요.`, true);
+  msg2('acctMsg', $tt(`이제 별명은 ${nick} 이에요. 다음 로그인부터 새 별명을 쓰세요.`, `Your nickname is now ${nick}. Use it next time you log in.`), true);
 });
 document.getElementById('pinBtn').addEventListener('click', async () => {
   const o = document.getElementById('pinOld').value.trim(), n = document.getElementById('pinNew').value.trim();
-  if (!/^\d{4}$/.test(n)) return msg2('acctMsg', '새 비밀번호는 숫자 4자리예요.');
-  try { await FB.reauth(pw(o)); } catch (e) { return msg2('acctMsg', authErr(e).replace('별명이나 ', '지금 ')); }
-  try { await FB.updatePassword(pw(n)); } catch { return msg2('acctMsg', '바꾸지 못했어요. 잠시 뒤 다시 해 주세요.'); }
+  if (!/^\d{4}$/.test(n)) return msg2('acctMsg', $t('새 비밀번호는 숫자 4자리예요.'));
+  try { await FB.reauth(pw(o)); } catch (e) { return msg2('acctMsg', authErr(e).replace($t('별명이나 '), $t('지금 '))); }
+  try { await FB.updatePassword(pw(n)); } catch { return msg2('acctMsg', $t('바꾸지 못했어요. 잠시 뒤 다시 해 주세요.')); }
   document.getElementById('pinOld').value = document.getElementById('pinNew').value = '';
-  msg2('acctMsg', '비밀번호를 바꿨어요.', true);
+  msg2('acctMsg', $t('비밀번호를 바꿨어요.'), true);
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-  leaveSeat(); setPanel(null); await FB.signOut().catch(() => {}); toast('로그아웃했어요. 오늘 기록은 저장됐어요.');
+  leaveSeat(); setPanel(null); toast($t('로그아웃했어요. 오늘 기록은 저장됐어요.')); await sleep(500); await FB.signOut().catch(() => {}); leaveToLobby();
 });
 document.getElementById('deleteBtn').addEventListener('click', () => { document.getElementById('deleteRow').hidden = false; document.getElementById('pinDel').focus(); });
 document.getElementById('deleteGo').addEventListener('click', async () => {
   const pin = document.getElementById('pinDel').value.trim();
-  try { await FB.reauth(pw(pin)); } catch { return msg2('acctMsg', '비밀번호가 맞지 않아요.'); }
+  try { await FB.reauth(pw(pin)); } catch { return msg2('acctMsg', $t('비밀번호가 맞지 않아요.')); }
   const uid = myUid, nickNow = me.name;
   leaveSeat();
   try {
-    await Promise.all(['att', 'chat', 'names', 'feedback', 'profiles'].map(c => db.doc(c + '/' + uid).delete().catch(() => {})));
+    await Promise.all(['att', 'chat', 'names', 'feedback', 'profiles', 'vipReq', RP + 'att', RP + 'chat'].map(c => db.doc(c + '/' + uid).delete().catch(() => {})));
+    if (RP) await db.doc(RP + 'members/' + uid).delete().catch(() => {});
     await db.doc('logins/' + nickKey(nickNow)).delete().catch(() => {});
     await FB.deleteUser();
-  } catch { return msg2('acctMsg', '일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.'); }
-  ['jsdsr-att', 'jsdsr-profile'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  } catch { return msg2('acctMsg', $t('일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.')); }
+  [ATT_LS, 'jsdsr-profile', 'jsdsr-rooms'].forEach(k => { try { localStorage.removeItem(k); } catch {} });
   myAtt = { days: {} }; me.todayMs = 0; me.name = ''; myChat.msgs = [];
   document.getElementById('deleteRow').hidden = true; document.getElementById('pinDel').value = '';
-  setPanel(null); toast('계정과 기록을 모두 지웠어요.');
+  setPanel(null); toast($t('계정과 기록을 모두 지웠어요.')); await sleep(900); leaveToLobby();
 });
 // 개발자 도구
 document.getElementById('neonSave').addEventListener('click', async () => {
   const text = clean(document.getElementById('neonInput').value, 16);
-  if (!text) return msg2('devMsg', '네온 문구를 적어 주세요.');
-  try { await db.doc('board/neon').set({ text }); msg2('devMsg', '네온사인 문구를 바꿨어요.', true); } catch { msg2('devMsg', '저장하지 못했어요.'); }
+  if (!text) return msg2('devMsg', $t('네온 문구를 적어 주세요.'));
+  try { await db.doc(RP + 'board/neon').set({ text }); msg2('devMsg', $t('네온사인 문구를 바꿨어요.'), true); } catch { msg2('devMsg', $t('저장하지 못했어요.')); }
 });
 document.getElementById('noticeSave').addEventListener('click', async () => {
   const lines = [0, 1, 2].map(i => clean(document.getElementById('notice' + i).value, 24)).filter(Boolean);
-  try { await db.doc('board/notice').set({ lines }); msg2('devMsg', '화이트보드 공지를 바꿨어요.', true); } catch { msg2('devMsg', '저장하지 못했어요.'); }
+  try { await db.doc(RP + 'board/notice').set({ lines }); msg2('devMsg', $t('화이트보드 공지를 바꿨어요.'), true); } catch { msg2('devMsg', $t('저장하지 못했어요.')); }
 });
 document.getElementById('chatClear').addEventListener('click', async e => {
   const b = e.currentTarget;
-  if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = '정말 전부 지우기'; return; }
-  b.dataset.armed = ''; b.textContent = '채팅 전체 지우기';
+  if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = $t('정말 전부 지우기'); return; }
+  b.dataset.armed = ''; b.textContent = $t('채팅 전체 지우기');
   try {
-    const t = Date.now();
-    await db.doc('board/meta').set({ devId: myUid, chatClearedAt: t });
-    await Promise.all([...chatDocIds].map(id => db.doc('chat/' + id).delete()));
-    myChat.msgs = []; msg2('devMsg', '채팅을 모두 지웠어요.', true);
-  } catch { msg2('devMsg', '지우지 못했어요.'); }
+    const tc = Date.now();
+    await db.doc(RP + 'board/meta').set({ devId: devId || '', chatClearedAt: tc });
+    await Promise.all([...chatDocIds].map(id => db.doc(RP + 'chat/' + id).delete()));
+    myChat.msgs = []; msg2('devMsg', $t('채팅을 모두 지웠어요.'), true);
+  } catch { msg2('devMsg', $t('지우지 못했어요.')); }
 });
 // 피드백: 각자 자기 문서에만 쓰고, 개발자(소유자)만 전체를 읽는다
 let myFeedback = []; const fbDocs = new Map();
 document.getElementById('fbSend').addEventListener('click', async () => {
   const ta = document.getElementById('fbText'), text = String(ta.value).replace(/[\u0000-\u0008\u000b-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g, '').trim().slice(0, 500);
-  if (!auth.ok) return msg2('fbMsg', '로그인하면 보낼 수 있어요.');
-  if (!text) return msg2('fbMsg', '내용을 적어 주세요.');
-  if (!(db && myUid && dbWritable)) return msg2('fbMsg', '이 링크 권한으로는 피드백을 저장할 수 없어요.');
+  if (!auth.ok) return msg2('fbMsg', $t('로그인하면 보낼 수 있어요.'));
+  if (!text) return msg2('fbMsg', $t('내용을 적어 주세요.'));
+  if (!(db && myUid && dbWritable)) return msg2('fbMsg', $t('이 링크 권한으로는 피드백을 저장할 수 없어요.'));
   const item = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), text, nick: me.name };
   const next = [...myFeedback, item].slice(-50);
-  try { await db.doc('feedback/' + myUid).set({ nick: me.name, items: next }); myFeedback = next; ta.value = ''; msg2('fbMsg', '고마워요! 개발자에게 전달했어요.', true); }
-  catch { msg2('fbMsg', '보내지 못했어요. 잠시 뒤 다시 해 주세요.'); }
+  try { await db.doc('feedback/' + myUid).set({ nick: me.name, items: next }); myFeedback = next; ta.value = ''; msg2('fbMsg', $t('고마워요! 개발자에게 전달했어요.'), true); }
+  catch { msg2('fbMsg', $t('보내지 못했어요. 잠시 뒤 다시 해 주세요.')); }
 });
 function renderFeedback() {
   const ul = document.getElementById('fbList'); if (!ul) return; ul.textContent = '';
   const all = [];
-  for (const [uid, d] of fbDocs) for (const it of (Array.isArray(d.items) ? d.items : [])) if (it && typeof it.text === 'string' && Number.isFinite(it.t)) all.push({ uid, ...it, nick: (typeof it.nick === 'string' && clean(it.nick)) || (typeof d.nick === 'string' && clean(d.nick)) || '익명' });
+  for (const [uid, d] of fbDocs) for (const it of (Array.isArray(d.items) ? d.items : [])) if (it && typeof it.text === 'string' && Number.isFinite(it.t)) all.push({ uid, ...it, nick: (typeof it.nick === 'string' && clean(it.nick)) || (typeof d.nick === 'string' && clean(d.nick)) || $t('익명') });
   all.sort((a, b) => b.t - a.t);
-  if (!all.length) { ul.appendChild(el('li', '', '아직 받은 피드백이 없어요.')); return; }
+  if (!all.length) { ul.appendChild(el('li', '', $t('아직 받은 피드백이 없어요.'))); return; }
   for (const it of all.slice(0, 40)) {
     const li = el('li'), meta = el('div', 'meta2'); meta.append(el('span', '', `${it.nick} · ${new Date(it.t).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`));
-    const del = el('button', 'btn small', '지우기'); del.type = 'button';
-    del.addEventListener('click', async () => { const d = fbDocs.get(it.uid) || {}; try { await db.doc('feedback/' + it.uid).set({ ...d, items: (d.items || []).filter(x => x && x.id !== it.id) }); } catch { msg2('devMsg', '지우지 못했어요.'); } });
+    const del = el('button', 'btn small', $t('지우기')); del.type = 'button';
+    del.addEventListener('click', async () => { const d = fbDocs.get(it.uid) || {}; try { await db.doc('feedback/' + it.uid).set({ ...d, items: (d.items || []).filter(x => x && x.id !== it.id) }); } catch { msg2('devMsg', $t('지우지 못했어요.')); } });
     meta.append(del); li.append(meta, el('div', '', it.text.slice(0, 500))); ul.appendChild(li);
   }
 }
@@ -2680,10 +3009,10 @@ function onBoardSnap(qs) {
   for (const d of qs.docs) {
     const v = d.data() || {};
     if (d.id === 'meta') { devId = typeof v.devId === 'string' ? v.devId : null; chatClearedAt = Number.isFinite(v.chatClearedAt) ? v.chatClearedAt : 0; }
-    if (d.id === 'neon' && typeof v.text === 'string') { const nt = clean(v.text, 16) || '졸업하고 싶다'; if (nt !== neonText) { neonText = nt; redraw(neonTex); } }
+    if (d.id === 'neon' && typeof v.text === 'string') { const nt = clean(v.text, 16) || $t('졸업하고 싶다'); if (nt !== neonText) { neonText = nt; redraw(neonTex); } }
     if (d.id === 'notice' && Array.isArray(v.lines)) noticeLines = v.lines.slice(0, 3).map(x => clean(String(x), 24)).filter(Boolean);
   }
-  if (auth.isDev && myUid && devId !== myUid) db.doc('board/meta').set({ devId: myUid, chatClearedAt }).catch(() => {});
+  if (auth.isDev && myUid && roomReady && devId !== myUid) db.doc(RP + 'board/meta').set({ devId: myUid, chatClearedAt }).catch(() => {});
   for (const [k, m] of chatMsgs) if (m.t < chatClearedAt) chatMsgs.delete(k);
   chatDirty = true; boardKey = ''; refresh();
 }
@@ -2706,7 +3035,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (takenSeats().has(seat) || seat === me.seat) return;
   if (!me.joined) { me.wantSeat = seat; openJoin(); return; }
   if (me.seat === null && me.mode === 'focus') me.segStart = Date.now();
-  me.seat = seat; publish(); toast('자리를 옮겼어요.'); if (view === 'face') goView('face');
+  me.seat = seat; publish(); toast($t('자리를 옮겼어요.')); if (view === 'face') goView('face');
 });
 
 /* ================= 카메라 ================= */
@@ -2828,12 +3157,12 @@ function makeDb(fs, fdb) {
   const wrap = sn => ({ id: sn.id, exists: sn.exists(), data: () => sn.data() });
   return {
     doc: p => { const r = fs.doc(fdb, p); return { id: r.id, path: p, get: async () => wrap(await fs.getDoc(r)), set: d => fs.setDoc(r, d), delete: () => fs.deleteDoc(r), onSnapshot: (n, e) => fs.onSnapshot(r, sn => n(wrap(sn)), err => e && e(err)) }; },
-    collection: p => { const r = fs.collection(fdb, p); return { path: p, onSnapshot: (n, e) => fs.onSnapshot(r, qs => n({ docs: qs.docs.map(wrap), size: qs.size, empty: qs.empty }), err => e && e(err)) }; },
+    collection: p => { const r = fs.collection(fdb, p); return { path: p, get: async () => { const qs = await fs.getDocs(r); return { docs: qs.docs.map(wrap), size: qs.size, empty: qs.empty }; }, onSnapshot: (n, e) => fs.onSnapshot(r, qs => n({ docs: qs.docs.map(wrap), size: qs.size, empty: qs.empty }), err => e && e(err)) }; },
   };
 }
-function makeRoom(rt, rdb, getUid) {
-  // 지금 열려 있는 사람들: Realtime Database의 room/{접속ID}, 창을 닫으면 자동 삭제
-  const connRef = rt.push(rt.ref(rdb, 'room')), me2 = connRef.key;
+function makeRoom(rt, rdb, getUid, path) {
+  // 지금 열려 있는 사람들: Realtime Database의 room/{연구실}/{접속ID}, 창을 닫으면 자동 삭제
+  const connRef = rt.push(rt.ref(rdb, path)), me2 = connRef.key;
   let mine = {}, list = [], connected = false;
   const peerCbs = [], connCbs = [];
   const write = () => {
@@ -2842,7 +3171,7 @@ function makeRoom(rt, rdb, getUid) {
     return rt.set(connRef, { uid, p: mine, t: Date.now() });
   };
   rt.onValue(rt.ref(rdb, '.info/connected'), sn => { connected = !!sn.val(); if (connected) write().catch(() => {}); connCbs.forEach(f => f(connected)); });
-  rt.onValue(rt.ref(rdb, 'room'), sn => {
+  rt.onValue(rt.ref(rdb, path), sn => {
     const v = sn.val() || {}, uid = getUid();
     list = Object.entries(v).map(([k, d]) => ({ peer: k, by: d && d.uid || null, isMe: !!uid && d && d.uid === uid, sameTab: k === me2, kind: 'viewer', guest: false, presence: (d && d.p) || {}, updatedAt: (d && d.t) || 0 }));
     if (!list.some(p => p.sameTab)) list.push({ peer: me2, by: uid, isMe: true, sameTab: true, kind: 'viewer', guest: false, presence: mine, updatedAt: Date.now() });
@@ -2858,13 +3187,13 @@ function makeRoom(rt, rdb, getUid) {
 (async () => {
   const cfg = window.JSDSR_CONFIG || {};
   if (!cfg.firebase || !cfg.firebase.apiKey || /^여기/.test(cfg.firebase.apiKey)) {
-    refresh(); document.getElementById('authLede').textContent = 'config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.'; return;
+    refresh(); if (!LANG) document.getElementById('langPick').classList.add('open'); document.getElementById('authLede').textContent = $t('config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.'); return;
   }
   OWNER_UID = typeof cfg.ownerUid === 'string' ? cfg.ownerUid.trim() : '';
   const V = 'https://www.gstatic.com/firebasejs/10.14.1/';
   let appM, authM, fsM, rtM;
   try { [appM, authM, fsM, rtM] = await Promise.all(['firebase-app.js', 'firebase-auth.js', 'firebase-firestore.js', 'firebase-database.js'].map(f => import(V + f))); }
-  catch { document.getElementById('authLede').textContent = 'Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.'; return; }
+  catch { document.getElementById('authLede').textContent = $t('Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.'); return; }
   const app = appM.initializeApp(cfg.firebase);
   const fauth = authM.getAuth(app);
   db = makeDb(fsM, fsM.getFirestore(app)); dbWritable = true;
@@ -2876,35 +3205,13 @@ function makeRoom(rt, rdb, getUid) {
     updatePassword: p => authM.updatePassword(fauth.currentUser, p),
     deleteUser: () => authM.deleteUser(fauth.currentUser),
   };
-  // 공개 데이터 (로그인 전에도 읽기)
-  db.collection('att').onSnapshot(qs => {
-    attDocs.clear();
-    for (const d of qs.docs) { const v = d.data() || {}; attDocs.set(d.id, { name: (typeof v.name === 'string' && clean(v.name)) || '익명 독수리', color: Number.isInteger(v.color) ? v.color : 0, kind: own(KINDS, v.kind) ? v.kind : 'eagle', days: v.days && typeof v.days === 'object' ? v.days : {} }); }
-    renderRoster(); updateBoard(seatedList());
-  }, () => {});
-  db.collection('care').onSnapshot(onCareSnap, () => {});
-  db.collection('board').onSnapshot(onBoardSnap, () => {});
-  db.collection('names').onSnapshot(qs => { auth.names.clear(); for (const d of qs.docs) { const v = d.data() || {}; if (typeof v.nick === 'string') auth.names.set(d.id, { nick: clean(v.nick), since: Number.isFinite(v.since) ? v.since : 0 }); } renderJourney(false); }, () => {});
-  db.collection('chat').onSnapshot(qs => {
-    chatDocIds = new Set(qs.docs.map(d => d.id));
-    for (const d of qs.docs) {
-      const v = d.data() || {}; const nm = (typeof v.name === 'string' && clean(v.name)) || '익명 독수리';
-      for (const m of (Array.isArray(v.msgs) ? v.msgs : [])) {
-        if (!m || typeof m.id !== 'string' || typeof m.text !== 'string' || !Number.isFinite(m.t)) continue;
-        if (Date.now() - m.t > 12 * 3600000 || m.t < chatClearedAt || chatMsgs.has(m.id)) continue;
-        const text = clean(m.text, 140); if (!text) continue;
-        chatMsgs.set(m.id.slice(0, 40), { id: m.id, t: m.t, text, name: nm, color: Number.isInteger(v.color) ? v.color : 0 }); chatDirty = true;
-      }
-    }
-    renderChat();
-  }, () => {});
-  // 실시간 방
-  room = makeRoom(rtM, rtM.getDatabase(app), () => myUid); roomLive = true;
+  // 별명 목록은 공개 (로그인 전 중복 확인용). 연구실 데이터는 입장한 뒤에 구독
+  db.collection('names').onSnapshot(qs => { auth.names.clear(); for (const d of qs.docs) { const v = d.data() || {}; if (typeof v.nick === 'string') auth.names.set(d.id, { nick: clean(v.nick), since: Number.isFinite(v.since) ? v.since : 0 }); } renderJourney(false); if (lobbyEl.classList.contains('open')) document.getElementById('lbVipSub').textContent = $tt(`${ownerNick()} 님이 허락한 독수리만 들어갈 수 있어요`, `Only eagles approved by ${ownerNick()}`); }, () => {});
+  RTDB = { rt: rtM, rdb: rtM.getDatabase(app) };
   setTimeout(() => { toastReady = true; }, 2500);
-  room.onPeers(ch => { const mine = ch.peers.find(p => p.sameTab); if (mine) myPeer = mine.peer; resolveConflicts(); refresh(); });
-  room.onConnection(c => { if (c) room.presence(myPresence()).catch(() => {}); });
   // 로그인 상태
   authM.onAuthStateChanged(fauth, user => { handleUser(user).catch(() => {}); });
+  if (!LANG) document.getElementById('langPick').classList.add('open');
 })();
 </script>
 </body>
