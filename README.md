@@ -95,4 +95,5 @@ You can also send an email to me: sohyung.bella.kim@gmail.com.
 
 ---
 
+This webiste is generated with the help of generative AI by Claude Code and powered by Google Firebase.
 *Made for grad students who need a little company to keep going. Head to head, soar like eagles!* 🦅
