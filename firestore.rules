@@ -1,35 +1,53 @@
 rules_version = '2';
-// 정수리 독수리 연구소 Firestore 규칙
-// OWNER_UID 자리를 '나의 연구 여정'에 보이는 벨라의 계정 ID로 바꾼 뒤 [게시]하세요.
+// 정수리 독수리 연구소 Firestore 규칙 (연구실 · VIP 클럽 버전)
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function isOwner() { return signedIn() && request.auth.uid == 'OWNER_UID'; }
+    function isOwner() { return signedIn() && request.auth.uid == '7HDvsEkQLFVYyl7hnp4ZC2wKO3E3'; }
     function self(uid) { return signedIn() && request.auth.uid == uid; }
+    function isVip() {
+      return isOwner() || (signedIn()
+        && exists(/databases/$(database)/documents/vip/allow)
+        && request.auth.uid in get(/databases/$(database)/documents/vip/allow).data.members);
+    }
 
-    // 출석·집중 기록, 채팅, 별명 목록: 누구나 읽고, 자기 것만 쓰기 (개발자는 정리 가능)
-    match /att/{uid}   { allow read: if true; allow write: if self(uid) || isOwner(); }
-    match /chat/{uid}  { allow read: if true; allow write: if self(uid) || isOwner(); }
-    match /names/{uid} { allow read: if true; allow write: if self(uid) || isOwner(); }
-
-    // 내 프로필(별명, 가입일): 본인만
+    // ---- 모든 연구실 공통: 계정, 별명, 피드백 ----
+    match /names/{uid}    { allow read: if true; allow write: if self(uid) || isOwner(); }
     match /profiles/{uid} { allow read, write: if self(uid); }
-
-    // 별명 → 로그인 정보 연결: 별명 하나에 한 사람, 남의 것은 못 바꿈
     match /logins/{key} {
       allow read: if true;
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
       allow update: if false;
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
-
-    // 화이트보드 공지, 네온 문구, 개발자 표시: 개발자만 쓰기
-    match /board/{doc} { allow read: if true; allow write: if isOwner(); }
-
-    // 식물 물주기, 동물 밥주기: 로그인한 사람
-    match /care/{doc} { allow read: if true; allow write: if signedIn(); }
-
-    // 피드백: 본인만 쓰고, 개발자만 모두 읽기
     match /feedback/{uid} { allow read, write: if self(uid) || isOwner(); }
+
+    // ---- 독수리 VIP 클럽 (예전부터 있던 기록) : 허락받은 사람만 ----
+    match /vip/allow      { allow read: if signedIn(); allow write: if isOwner(); }
+    match /vipReq/{uid}   { allow read, delete: if self(uid) || isOwner(); allow create, update: if self(uid); }
+    match /att/{uid}      { allow read: if isVip(); allow write: if (self(uid) && isVip()) || isOwner(); }
+    match /chat/{uid}     { allow read: if isVip(); allow write: if (self(uid) && isVip()) || isOwner(); }
+    match /care/{doc}     { allow read, write: if isVip(); }
+    match /board/{doc}    { allow read: if isVip(); allow write: if isOwner(); }
+
+    // ---- 번호로 들어가는 일반 연구실 ----
+    match /rooms/{code} {
+      function member() { return signedIn() && exists(/databases/$(database)/documents/rooms/$(code)/members/$(request.auth.uid)); }
+      function manager() { return signedIn() && get(/databases/$(database)/documents/rooms/$(code)).data.owner == request.auth.uid; }
+
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.owner == request.auth.uid;
+      allow update, delete: if (signedIn() && resource.data.owner == request.auth.uid) || isOwner();
+
+      match /members/{uid} {
+        allow read: if signedIn();
+        allow create: if self(uid) && exists(/databases/$(database)/documents/rooms/$(code));
+        allow delete: if self(uid) || manager() || isOwner();
+      }
+      match /att/{uid}   { allow read: if member() || isOwner(); allow write: if (self(uid) && member()) || manager() || isOwner(); }
+      match /chat/{uid}  { allow read: if member() || isOwner(); allow write: if (self(uid) && member()) || manager() || isOwner(); }
+      match /care/{doc}  { allow read, write: if member() || isOwner(); }
+      match /board/{doc} { allow read: if member() || isOwner(); allow write: if manager() || isOwner(); }
+    }
   }
 }
