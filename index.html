@@ -74,7 +74,7 @@ html, body { height: 100%; margin: 0; background: var(--night); color: var(--pap
 .top { top: calc(12px + var(--safe-t)); left: calc(16px + var(--safe-l)); right: calc(16px + var(--safe-r)); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; pointer-events: none; }
 .brand { pointer-events: auto; min-width: 0; }
 .brand h1 { word-break: keep-all; margin: 0; font-family: var(--font-title); font-weight: 400; font-size: clamp(24px, 3.6vw, 34px); letter-spacing: .01em; text-wrap: balance; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
-.brand p { word-break: keep-all; margin: 4px 0 0; font-family: var(--font-light); font-weight: 400; font-size: 15px; color: var(--paper); display: inline-block; padding: 3px 8px; border-radius: 8px; background: rgba(17,21,26,.6); }
+.brand p { word-break: keep-all; margin: 4px 0 0; font-family: var(--font-light); font-weight: 400; font-size: 15px; color: var(--paper); display: inline-block; padding: 3px 0; text-shadow: 0 1px 3px rgba(0,0,0,.6), 0 0 14px rgba(0,0,0,.4); }
 .pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .pill { pointer-events: auto; font: 500 13px/1 var(--font-body); color: var(--paper); background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); white-space: nowrap; }
 .pill b { color: var(--amber); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -188,11 +188,29 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 #langPick, #lobby { position: fixed; inset: 0; z-index: 11; display: none; align-items: center; justify-content: center; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: rgba(8, 10, 13, 0.72); }
 #langPick { z-index: 13; }
 #langPick.open, #lobby.open { display: flex; }
+#popup { position: fixed; inset: 0; z-index: 14; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(8, 10, 13, 0.6); }
+#popup.open { display: flex; }
+#popup .card { max-width: 400px; text-align: center; }
+#popup h2 { font-size: 26px; }
+#popup .lede { white-space: pre-line; }
+#popup .actions { justify-content: center; }
+#popup input { width: 100%; font: 500 16px var(--font-body); color: var(--paper); background: #222b33; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 4px 0 6px; }
+.qc { position: fixed; left: 0; top: 0; z-index: 4; width: 48px; height: 48px; border-radius: 50%; font-size: 24px; line-height: 1; background: rgba(17,21,26,.78); border: 2px solid var(--mint); color: var(--paper); cursor: pointer; pointer-events: auto; animation: qcPulse 1.6s ease-in-out infinite; }
+.qc[hidden] { display: none; }
+@keyframes qcPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(127,240,182,.55); } 50% { box-shadow: 0 0 0 10px rgba(127,240,182,0); } }
+@media (prefers-reduced-motion: reduce) { .qc { animation: none; } }
+#soundMenu { position: fixed; z-index: 9; display: none; min-width: 220px; padding: 12px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#soundMenu.open { display: grid; gap: 6px; }
+#soundMenu button { text-align: left; }
+#soundMenu .btn.on { border-color: var(--amber); color: var(--amber); }
+#soundMenu label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); margin-top: 4px; }
+#soundMenu input[type=range] { width: 100%; accent-color: var(--amber); }
 .lbpane { display: grid; gap: 10px; }
 .bigbtn { display: grid; gap: 4px; text-align: left; font: 500 15px var(--font-body); color: var(--paper); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; cursor: pointer; }
 .bigbtn b { font-family: var(--font-title); font-weight: 400; font-size: 19px; }
 .bigbtn small { color: var(--muted); font-size: 13px; }
 .bigbtn:hover, .bigbtn:focus-visible { background: rgba(255,255,255,.1); border-color: var(--amber); }
+.bigbtn.lib { border-color: rgba(127,208,255,.5); background: linear-gradient(135deg, rgba(127,208,255,.14), rgba(255,255,255,.04)); }
 .bigbtn.vip { border-color: rgba(243,178,60,.55); background: linear-gradient(135deg, rgba(243,178,60,.16), rgba(255,143,200,.08)); }
 .lbrecent { display: flex; flex-wrap: wrap; gap: 6px; }
 .lbrecent:empty { display: none; }
@@ -203,6 +221,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 .roomchip { pointer-events: auto; display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; padding: 4px 5px 4px 10px; border-radius: 999px; background: rgba(17,21,26,.6); border: 1px solid var(--line); width: fit-content; max-width: 70vw; }
 .roomchip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .roomchip button { font: 500 12px var(--font-body); color: var(--amber); background: none; border: 1px solid rgba(243,178,60,.4); border-radius: 999px; padding: 3px 9px; cursor: pointer; }
+#journey select { flex: 1; min-width: 0; font: 500 14px var(--font-body); color: var(--paper); background: #222b33; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
 #vipList, #vipReqList { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 #vipList li, #vipReqList li { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 2px; border-top: 1px solid var(--line); }
 #vipList li span, #vipReqList li span { flex: 1; }
@@ -272,9 +291,9 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     <div class="roomchip" id="roomChip" hidden><span id="roomName"></span><button type="button" id="roomCopy">복사</button><button type="button" id="roomExit">🚪 나가기</button></div>
   </div>
   <div class="pills">
-    <button class="pill" id="soundBtn" type="button" aria-pressed="false">백색소음</button>
+    <button class="pill" id="soundBtn" type="button" aria-expanded="false" aria-controls="soundMenu" aria-label="배경 소리">🎶</button>
     <button class="pill" id="shotBtn" type="button">📸 캡처</button>
-    <button class="pill" id="careBtn" type="button" aria-expanded="false" aria-controls="care">돌봄 <b id="careBadge"></b></button>
+    <button class="pill" id="careBtn" type="button" aria-expanded="false" aria-controls="care">밥 주기 <b id="careBadge"></b></button>
     <button class="pill" id="journeyBtn" type="button" aria-expanded="false" aria-controls="journey">나의 연구 여정</button>
     <button class="pill" id="rosterBtn" type="button" aria-expanded="false" aria-controls="roster">벤치 <b id="count">0</b>/14 · 출석부</button>
   </div>
@@ -301,6 +320,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
   <h3>연구실</h3>
   <div class="acct">
     <p class="note" id="jRoom"></p>
+    <div class="row" id="neonRow"><label for="neonPublic">네온사인 문구</label><input type="text" id="neonPublic" maxlength="16" autocomplete="off"><button class="btn small" type="button" id="neonPublicBtn">네온 바꾸기</button></div>
     <div class="row"><button class="btn small" type="button" id="roomLeave">🚪 다른 연구실로</button><button class="btn small danger" type="button" id="roomQuit" hidden>연구실 탈퇴</button></div>
   </div>
   <h3>언어 · Language</h3>
@@ -308,6 +328,8 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
   <h3>계정 관리</h3>
   <div class="acct">
     <div class="row"><label for="renameInput">별명 바꾸기</label><input type="text" id="renameInput" maxlength="20" autocomplete="off"><button class="btn small" type="button" id="renameBtn">바꾸기</button></div>
+    <div class="row"><label for="acctCc">지금 사는 나라</label><select id="acctCc" class="ccsel"></select></div>
+    <div class="row"><label for="acctMj">전공</label><input type="text" id="acctMj" maxlength="20" autocomplete="off" placeholder="예: 식물생물학, 바이오메디컬, 바이오인포매틱스"><button class="btn small" type="button" id="acctProfSave">저장</button></div>
     <div class="row"><label for="pinOld">비밀번호 바꾸기</label><input type="password" id="pinOld" inputmode="numeric" maxlength="4" placeholder="지금 번호"><input type="password" id="pinNew" inputmode="numeric" maxlength="4" placeholder="새 번호" aria-label="새 비밀번호"><button class="btn small" type="button" id="pinBtn">바꾸기</button></div>
     <div class="row"><button class="btn small" type="button" id="logoutBtn">로그아웃</button><button class="btn small danger" type="button" id="deleteBtn">계정 삭제</button></div>
     <div class="row" id="deleteRow" hidden><label for="pinDel">정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.</label><input type="password" id="pinDel" inputmode="numeric" maxlength="4"><button class="btn small danger" type="button" id="deleteGo">영구 삭제</button></div>
@@ -362,6 +384,15 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="flash" aria-hidden="true"></div>
+<div id="soundMenu" role="dialog" aria-label="배경 소리">
+  <button class="btn small" type="button" data-snd="off">🔇 끄기</button>
+  <button class="btn small" type="button" data-snd="white">🌫️ 백색소음</button>
+  <button class="btn small" type="button" data-snd="rain">🌧️ 빗소리</button>
+  <button class="btn small" type="button" data-snd="music">🎹 잔잔한 집중 음악</button>
+  <label>볼륨<input type="range" id="sndVol" min="0" max="100" value="50" aria-label="볼륨"></label>
+</div>
+<button class="qc" id="qcWater" type="button" hidden aria-label="식물에 물 주기">💦</button>
+<button class="qc" id="qcFeed" type="button" hidden aria-label="동물에게 밥 주기">🫘</button>
 <div id="zoomBar"><button class="pill" id="boardBack" type="button" hidden>← 돌아가기</button><button class="pill" id="zoomAct" type="button" hidden></button><button class="pill" id="doorExit" type="button" hidden>🚪 복도로 나가기</button></div>
 
 <nav id="dock" class="hud panel" aria-label="내 자리">
@@ -397,6 +428,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     <div id="lbHome" class="lbpane">
       <button class="bigbtn" type="button" id="lbCreate"><b>🧪 새로운 연구실 만들기</b><small>이름을 짓고 번호를 받아 친구들을 불러요</small></button>
       <button class="bigbtn" type="button" id="lbEnter"><b>🔑 연구실 입장하기</b><small>받은 번호로 들어가요</small></button>
+      <button class="bigbtn lib" type="button" id="lbLib"><b>📚 도서관 입장</b><small>초대 코드 없이 바로 들어가요 · 최대 100명</small></button>
       <button class="bigbtn vip" type="button" id="lbVip"><b>👑 독수리 VIP 클럽 입장하기</b><small id="lbVipSub">개발자가 승인한 독수리만 들어갈 수 있어요</small></button>
     </div>
     <form id="lbCreatePane" class="lbpane" hidden autocomplete="off">
@@ -419,6 +451,15 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     </div>
     <p class="err" id="lbMsg" role="alert"></p>
     <div class="actions lbfoot"><button class="btn small" type="button" id="lbLang">English</button><button class="btn small" type="button" id="lbLogout">로그아웃</button></div>
+  </div>
+</div>
+
+<div id="popup" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+  <div class="card">
+    <h2 id="popTitle"></h2>
+    <p class="lede" id="popText"></p>
+    <input type="text" id="popInput" hidden maxlength="16" autocomplete="off" aria-label="입력">
+    <div class="actions"><button class="btn" type="button" id="popNo"></button><button class="btn primary" type="button" id="popYes"></button></div>
   </div>
 </div>
 
@@ -456,7 +497,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 /* ================= 언어 ================= */
 const LANG = (() => { try { const v = localStorage.getItem('jsdsr-lang'); return v === 'en' || v === 'ko' ? v : null; } catch { return null; } })();
 const isEN = LANG === 'en';
-const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Endive", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "I want to graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Crown to crown,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Apex Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Apex Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Crown", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Crowns together, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, crown to crown", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head and touches crowns. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "개발자가 승인한 독수리만 들어갈 수 있어요": "Only eagles approved by the developer", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add", "지금 사는 나라": "Country you live in", "전공": "Field of study", "예: 식물생물학, 바이오메디컬, 바이오인포매틱스": "e.g. Plant biology, Biomedical, Bioinformatics", "전공 · 집중할 때 이름표에 보여요": "Field of study · shown on your name tag while you focus", "연구실 탈퇴": "Leave this lab", "🚪 방 나가기": "🚪 Leave lab", "🚪 복도로 나가기": "🚪 Step into the hallway", "🚪 나가기": "🚪 Leave"};
+const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Endive", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "I want to graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Crown to crown,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Apex Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Apex Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Crown", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Crowns together, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, crown to crown", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head and touches crowns. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "개발자가 승인한 독수리만 들어갈 수 있어요": "Only eagles approved by the developer", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add", "지금 사는 나라": "Country you live in", "전공": "Field of study", "예: 식물생물학, 바이오메디컬, 바이오인포매틱스": "e.g. Plant biology, Biomedical, Bioinformatics", "전공 · 집중할 때 이름표에 보여요": "Field of study · shown on your name tag while you focus", "연구실 탈퇴": "Leave this lab", "🚪 방 나가기": "🚪 Leave lab", "🚪 복도로 나가기": "🚪 Step into the hallway", "🚪 나가기": "🚪 Leave", "배경 소리": "Background sound", "🔇 끄기": "🔇 Off", "🌫️ 백색소음": "🌫️ White noise", "🌧️ 빗소리": "🌧️ Rain", "🎹 잔잔한 집중 음악": "🎹 Calm focus music", "볼륨": "Volume", "식물에 물 주기": "Water the plants", "동물에게 밥 주기": "Feed the animals", "입력": "Input", "네온 바꾸기": "Change neon", "📚 도서관 입장": "📚 Enter the library", "초대 코드 없이 바로 들어가요 · 최대 100명": "No invite code needed · up to 100 people"};
 const $t = s => isEN && Object.prototype.hasOwnProperty.call(EN, s) ? EN[s] : s;
 const $tt = (ko, en) => isEN ? en : ko;
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -469,7 +510,8 @@ if (isEN) {
   const st = document.createElement('style'); st.textContent = '.tag.me .nm::after { content: " (me)"; }'; document.head.appendChild(st);
 }
 // 들어갈 연구실: 주소 끝 #r=번호 (vip는 VIP 클럽)
-const ROOM_KEY = (() => { const m = /[#&]r=([A-Za-z0-9]{3,12})/.exec(location.hash); return m ? (m[1].toLowerCase() === 'vip' ? 'vip' : m[1].toUpperCase()) : null; })();
+const ROOM_KEY = (() => { const m = /[#&]r=([A-Za-z0-9]{3,12})/.exec(location.hash); if (!m) return null; const k = m[1].toLowerCase(); return k === 'vip' || k === 'lib' ? k : m[1].toUpperCase(); })();
+const IS_LIB = ROOM_KEY === 'lib';
 const ATT_LS = 'jsdsr-att-' + (ROOM_KEY || 'none');
 let RP = '', ROOM = null, roomReady = false, RTDB = null;
 
@@ -508,14 +550,20 @@ const TASKS = {
 const own = (o, k) => typeof k === 'string' && Object.prototype.hasOwnProperty.call(o, k);
 const BENCH_H = 0.92, BENCH_L = 6.4, BENCH_W = 1.3;
 const SZ = 0.83, EX = 3.55;
-const SEATS = [
+const LIB_ROWS = [-6, -3, 0, 3, 6];
+const SEATS = IS_LIB ? (() => {
+  const pairs = []; for (const rz of LIB_ROWS) for (let k = 0; k < 10; k++) pairs.push({ x: -4.5 + k, rz });
+  pairs.sort((a, b) => (Math.abs(a.x) + Math.abs(a.rz) * 0.6) - (Math.abs(b.x) + Math.abs(b.rz) * 0.6));
+  const out = []; for (const p of pairs) out.push({ x: p.x, z: p.rz + SZ, ry: Math.PI, row: p.rz }, { x: p.x, z: p.rz - SZ, ry: 0, row: p.rz });
+  return out;
+})() : [
   { x: -0.5, z:  SZ, ry: Math.PI }, { x: -0.5, z: -SZ, ry: 0 },
   { x:  0.5, z:  SZ, ry: Math.PI }, { x:  0.5, z: -SZ, ry: 0 },
   { x: -1.5, z:  SZ, ry: Math.PI }, { x: -1.5, z: -SZ, ry: 0 },
   { x:  1.5, z:  SZ, ry: Math.PI }, { x:  1.5, z: -SZ, ry: 0 },
   { x: -2.5, z:  SZ, ry: Math.PI }, { x: -2.5, z: -SZ, ry: 0 },
   { x:  2.5, z:  SZ, ry: Math.PI }, { x:  2.5, z: -SZ, ry: 0 },
-  { x: -EX, z: 0, ry: Math.PI / 2 }, { x: EX, z: 0, ry: -Math.PI / 2 },
+  { x: -EX, z: 0, ry: Math.PI / 2, end: true }, { x: EX, z: 0, ry: -Math.PI / 2, end: true },
 ];
 const LEAN_F = 0.62, HT_F = 0.5, LEAN_B = -0.06, HT_B = -0.12;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -538,7 +586,7 @@ scene.fog = new THREE.Fog('#11151a', 16, 30);
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 60);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; controls.dampingFactor = 0.08;
-controls.minDistance = 2.2; controls.maxDistance = 16; controls.maxPolarAngle = 1.42; controls.enablePan = false; controls.zoomSpeed = 2.6;
+controls.minDistance = 2.2; controls.maxDistance = IS_LIB ? 30 : 16; controls.maxPolarAngle = 1.42; controls.enablePan = false; controls.zoomSpeed = 2.6;
 controls.target.set(0, 1.3, 0);
 
 /* ================= 도우미 ================= */
@@ -592,6 +640,7 @@ scene.add(lamp, lamp.target);
 const windowLight = new THREE.DirectionalLight('#a9bcff', 0.5); windowLight.position.set(3, 4, -7); scene.add(windowLight);
 const neonLight = new THREE.PointLight('#ff6fb5', 5, 6, 2); neonLight.position.set(-6.3, 2.2, 2.4); scene.add(neonLight);
 
+const PRE_ROOM = new Set(scene.children);
 /* ================= 방 ================= */
 const floorTex = canvasTex(256, 256, (g, w, h) => {
   g.fillStyle = '#b6bcb8'; g.fillRect(0, 0, w, h);
@@ -627,7 +676,8 @@ function drawSky(g, w, h) {
 }
 const skyTex = canvasTex(256, 128, drawSky);
 const WIN_X = 3.4;
-mesh(new THREE.PlaneGeometry(3.2, 1.5), new THREE.MeshBasicMaterial({ map: skyTex }), WIN_X, 1.85, 0.02, back);
+const ghentTex = new THREE.TextureLoader().load('ghent.jpg'); ghentTex.colorSpace = THREE.SRGBColorSpace;
+mesh(new THREE.PlaneGeometry(3.2, 1.5), new THREE.MeshBasicMaterial({ map: ghentTex }), WIN_X, 1.85, 0.02, back);
 const frameMat = std('#eef0ee', { roughness: 0.5 });
 [[0, 0.78, 3.4, 0.08], [0, -0.78, 3.4, 0.08], [-1.64, 0, 0.08, 1.64], [1.64, 0, 0.08, 1.64], [0, 0, 0.05, 1.5]].forEach(([x, y, w, h]) => mesh(box(w, h, 0.08), frameMat, WIN_X + x, 1.85 + y, 0.05, back));
 mesh(box(3.5, 0.05, 0.22), frameMat, WIN_X, 1.07, 0.12, back);
@@ -837,6 +887,31 @@ const ultBox = new THREE.Mesh(box(0.85, 1.95, 0.85), [std('#eef0ee'), std('#eef0
 ultBox.position.y = 0.975; ult.add(ultBox);
 const led = mesh(sph(0.018, 10, 8), glow('#4dff9a'), 0.3, 1.82, 0.43, ult);
 
+// 아미노산 코돈표 포스터 (세포 배양 플라스크 위)
+const CODE = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';
+const AA3 = { F: 'Phe', L: 'Leu', S: 'Ser', Y: 'Tyr', '*': 'Stop', C: 'Cys', W: 'Trp', P: 'Pro', H: 'His', Q: 'Gln', R: 'Arg', I: 'Ile', M: 'Met', T: 'Thr', N: 'Asn', K: 'Lys', V: 'Val', A: 'Ala', D: 'Asp', E: 'Glu', G: 'Gly' };
+const AAC = { F: '#ffe2a8', L: '#ffe2a8', I: '#ffe2a8', M: '#c8f0c0', V: '#ffe2a8', A: '#ffe2a8', P: '#ffe2a8', W: '#ffe2a8', G: '#ffe2a8', S: '#cfe6ff', T: '#cfe6ff', Y: '#cfe6ff', C: '#cfe6ff', N: '#cfe6ff', Q: '#cfe6ff', H: '#d9ccff', K: '#d9ccff', R: '#d9ccff', D: '#ffc9d6', E: '#ffc9d6', '*': '#5a5f66' };
+const codonTex = canvasTex(1024, 760, (g, w, h) => {
+  g.fillStyle = '#fdfcf6'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#1d2126'; g.font = '44px "A2Z SemiBold", sans-serif'; g.textAlign = 'center'; g.fillText('THE GENETIC CODE', w / 2, 58);
+  g.font = '22px "A2Z SemiBold", sans-serif'; g.fillStyle = '#5d6762'; g.fillText(isEN ? 'mRNA codon → amino acid' : '코돈표 · 외워야 졸업함', w / 2, 92);
+  const B = 'UCAG', x0 = 86, y0 = 130, cw = (w - x0 - 40) / 4, ch = (h - y0 - 30) / 4;
+  g.font = '26px "A2Z SemiBold", sans-serif'; g.fillStyle = '#2a7fd4';
+  for (let k = 0; k < 4; k++) { g.fillText(B[k], x0 + cw * k + cw / 2, y0 - 10); g.fillText(B[k], 44, y0 + ch * k + ch / 2 + 8); }
+  for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) {
+    const cx = x0 + cw * b, cy = y0 + ch * a;
+    g.strokeStyle = '#9aa3a8'; g.lineWidth = 2; g.strokeRect(cx, cy, cw, ch);
+    for (let c = 0; c < 4; c++) {
+      const aa = CODE[a * 16 + b * 4 + c], ly = cy + 8 + c * (ch - 12) / 4;
+      g.fillStyle = AAC[aa]; g.fillRect(cx + 4, ly, cw - 8, (ch - 12) / 4 - 4);
+      g.fillStyle = aa === '*' ? '#ffffff' : '#1d2126'; g.textAlign = 'left'; g.font = '19px monospace'; g.fillText(B[a] + B[b] + B[c], cx + 12, ly + 26);
+      g.font = '19px "A2Z SemiBold", sans-serif'; g.fillText(aa === 'M' ? 'Met ▶' : AA3[aa], cx + 82, ly + 26);
+    }
+  }
+}, { text: true });
+mesh(new THREE.PlaneGeometry(1.08, 0.8), new THREE.MeshStandardMaterial({ map: codonTex, roughness: 0.9 }), 3.55, 2.12, 0.02, left);
+[[-0.5, 0.36], [0.5, 0.36], [-0.5, -0.36], [0.5, -0.36]].forEach(([x, y]) => mesh(box(0.06, 0.02, 0.006), std('#e9e1b0'), 3.55 + x, 2.12 + y, 0.025, left));
+
 let neonText = $t('졸업하고 싶다');
 const neonTex = canvasTex(1024, 256, (g, w, h) => {
   g.clearRect(0, 0, w, h); g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -846,7 +921,7 @@ const neonTex = canvasTex(1024, 256, (g, w, h) => {
   g.font = '70px \"A2Z SemiBold\", sans-serif'; g.fillStyle = '#ffd3ec'; g.fillText('♡', w - 70, 70);
 }, { text: true });
 const neon = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshBasicMaterial({ map: neonTex, transparent: true, depthWrite: false }));
-neon.position.set(-2.4, 2.35, 0.03); left.add(neon); // 월드 z=2.4
+neon.position.set(-2.4, 2.35, 0.03); left.add(neon); neon.userData.neon = true; // 월드 z=2.4
 
 const STICKY = [[$t('새벽 2시 공초점 예약'), '#ffc2de'], [$t('졸업하고 싶다'), '#ffc2de'], [$t('왜 안 돼'), '#fff07a'], [$t('교수님 미팅 10시'), '#bff0d9'], [$t('다시 하자...'), '#ffc2de'], [$t('밴드 안 뜸 ㅠ'), '#fff07a'], [$t('엄마한테 전화'), '#c9d7ff'], [$t('나는 할 수 있다(?)'), '#ffd8a8'], [$t('리뷰어 2 왜그래'), '#ffc2de'], [$t('밥 먹기!!'), '#bff0d9'], [$t('n=3 채우기'), '#fff07a'], [$t('잠은 졸업하고'), '#c9d7ff'], [$t('괜찮아 괜찮아'), '#ffd8a8']];
 STICKY.push(STICKY.shift());
@@ -864,18 +939,41 @@ function sticky(parent, i, x, y, z, ry = 0, rx = 0) {
 for (let i = 0; i < 9; i++) sticky(back, i, WB_X + 1.0 + (i % 5) * 0.14, 0.62 + Math.floor(i / 5) * 0.14, 0.035);
 for (let i = 0; i < 6; i++) sticky(left, i + 3, -2.0 - (i % 3) * 0.15, 1.6 + Math.floor(i / 3) * 0.15, 0.03);
 for (let i = 0; i < 5; i++) sticky(back, i + 6, CX - 1.6 + i * 0.5, 1.3, 0.03);
-// 낮잠 코너: 침낭, 베개, 담요, 인형
-const nap = new THREE.Group(); nap.position.set(-4.3, 0, 1.0); left.add(nap); // 월드 z=4.3, x≈-6
-const bag = mesh(new THREE.CapsuleGeometry(0.28, 1.4, 6, 16), std('#5c7fd6', { roughness: 0.9 }), 0, 0.16, 0, nap); bag.rotation.z = Math.PI / 2; bag.scale.set(1, 1, 0.55);
-mesh(box(0.5, 0.12, 0.34), std('#ffc2de', { roughness: 1 }), 0.95, 0.12, 0, nap);
-mesh(box(1.1, 0.04, 0.9), std('#b48ad8', { roughness: 1 }), -0.2, 0.25, 0.05, nap).rotation.y = 0.2;
-const plush = new THREE.Group(); plush.position.set(1.3, 0, 0.35); nap.add(plush);
-mesh(sph(0.12, 14, 10), std('#f2e6d0', { roughness: 1 }), 0, 0.12, 0, plush); mesh(sph(0.09, 14, 10), std('#f2e6d0', { roughness: 1 }), 0, 0.29, 0, plush);
-for (const s of [1, -1]) mesh(sph(0.035, 8, 6), std('#f2e6d0', { roughness: 1 }), s * 0.06, 0.37, 0, plush);
-mesh(box(0.08, 0.025, 0.02), std('#ffffff'), 0, 0.29, 0.09, plush); mesh(box(0.025, 0.08, 0.02), std('#ffffff'), 0, 0.29, 0.09, plush);
-cupTower(nap, -1.0, 0, 0.45, 5); canPile(nap, -0.6, 0, 0.55, 8);
-for (let i = 0; i < 4; i++) mesh(cyl(0.07, 0.055, 0.08, 14), std(['#f2efe6', '#e0603a'][i % 2]), 0.3 + i * 0.13, 0.04, 0.6, nap); // 컵라면
-for (let i = 0; i < 6; i++) { const p = mesh(box(0.22, 0.004, 0.3), std('#fbfbf7'), -0.3 + rnd() * 0.8, 0.002 + i * 0.004, 0.75 + rnd() * 0.2, nap); p.rotation.y = rnd() * 2; }
+// 낮잠 침대 (쉬기를 누르면 한 명이 잠깐 누울 수 있음), 커피머신, 종이 산더미
+const nap = new THREE.Group(); nap.position.set(-4.3, 0, 1.0); left.add(nap); // 월드 z=4.3, x≈-6 (nap 로컬 x = -월드 z)
+const bedWood = std('#c9a77e', { roughness: 0.8 });
+mesh(box(2.05, 0.22, 1.0), bedWood, 0, 0.22, 0, nap);
+[[-0.97, -0.44], [-0.97, 0.44], [0.97, -0.44], [0.97, 0.44]].forEach(([x, z]) => mesh(box(0.08, 0.14, 0.08), bedWood, x, 0.07, z, nap));
+mesh(box(1.95, 0.2, 0.92), std('#f6f3ec', { roughness: 0.95 }), 0, 0.43, 0, nap);
+mesh(box(0.07, 0.75, 1.0), bedWood, 1.04, 0.5, 0, nap);
+mesh(box(0.34, 0.12, 0.62), std('#ffc2de', { roughness: 1 }), 0.78, 0.58, 0, nap);
+mesh(box(1.12, 0.06, 0.96), std('#b48ad8', { roughness: 1 }), -0.42, 0.56, 0, nap);
+const plush = new THREE.Group(); plush.position.set(0.75, 0.52, 0.36); nap.add(plush);
+mesh(sph(0.1, 14, 10), std('#f2e6d0', { roughness: 1 }), 0, 0.1, 0, plush); mesh(sph(0.075, 14, 10), std('#f2e6d0', { roughness: 1 }), 0, 0.24, 0, plush);
+for (const s2 of [1, -1]) mesh(sph(0.03, 8, 6), std('#f2e6d0', { roughness: 1 }), s2 * 0.05, 0.31, 0, plush);
+mesh(box(0.07, 0.022, 0.02), std('#ffffff'), 0, 0.24, 0.075, plush); mesh(box(0.022, 0.07, 0.02), std('#ffffff'), 0, 0.24, 0.075, plush);
+const BED = { pos: new THREE.Vector3(-6.0, -0.2, 4.55), ry: 0 };
+// 커피머신 (침대 발치)
+const coffee = new THREE.Group(); coffee.position.set(-1.5, 0, -0.55); nap.add(coffee);
+mesh(box(0.55, 0.8, 0.48), std('#e9e6df', { roughness: 0.7 }), 0, 0.4, 0, coffee);
+mesh(box(0.32, 0.42, 0.3), std('#2b2f33', { roughness: 0.4, metalness: 0.3 }), 0, 1.01, 0, coffee);
+mesh(box(0.26, 0.1, 0.02), std('#c9ced1', { metalness: 0.8, roughness: 0.25 }), 0, 1.12, 0.16, coffee);
+mesh(box(0.05, 0.02, 0.01), glow('#ff5a4a'), 0.08, 1.15, 0.172, coffee);
+mesh(box(0.2, 0.02, 0.14), std('#9aa3a8', { metalness: 0.7, roughness: 0.3 }), 0, 0.82, 0.08, coffee);
+mesh(cyl(0.04, 0.034, 0.09, 14), std('#ffffff'), 0, 0.875, 0.08, coffee);
+for (let k = 0; k < 4; k++) mesh(cyl(0.04, 0.034, 0.09, 14), std(['#ffffff', '#f3b23c', '#7ad3ff', '#ff8fc8'][k]), -0.16 + k * 0.1, 0.845, -0.16, coffee);
+sign('COFFEE = LIFE', 0.34, 0.08, { w: 400, h: 90, bg: '#2b2f33', fg: '#f3b23c' }, coffee, 0, 1.3, 0.12);
+// 종이 산더미
+const paperMat = [std('#fbfbf7', { roughness: 1 }), std('#f2efe4', { roughness: 1 }), std('#fff8d8', { roughness: 1 })];
+function paperPile(p, x, z, hgt) {
+  let y = 0; const n = Math.max(2, Math.round(hgt / 0.045));
+  for (let k = 0; k < n; k++) { const t = 0.03 + rnd() * 0.03; const m = mesh(box(0.26 + rnd() * 0.04, t, 0.34 + rnd() * 0.04), paperMat[k % 3], x + (rnd() - .5) * 0.05, y + t / 2, z + (rnd() - .5) * 0.05, p); m.rotation.y = (rnd() - .5) * 0.5; y += t; }
+  if (rnd() < 0.6) { const m = mesh(box(0.22, 0.004, 0.3), paperMat[0], x + 0.05, y + 0.003, z, p); m.rotation.set(0.15, rnd() * 2, 0.1); }
+}
+[[-0.4, 0.75, 0.9], [-0.05, 0.8, 0.55], [0.3, 0.78, 0.75], [0.7, 0.72, 0.35], [1.25, 0.55, 0.7], [1.35, 0.15, 0.45], [-1.2, 0.45, 0.6], [-1.15, 0.85, 0.35], [-0.8, 0.95, 0.5], [0.95, 0.95, 0.4], [-1.3, 0.1, 0.5], [1.32, -0.35, 0.5]].forEach(([x, z, h]) => paperPile(nap, x, z, h));
+for (let k = 0; k < 14; k++) { const m = mesh(box(0.22, 0.004, 0.3), paperMat[k % 3], -1.3 + rnd() * 2.7, 0.004 + k * 0.0006, 0.6 + rnd() * 0.6, nap); m.rotation.y = rnd() * 3; }
+for (let k = 0; k < 5; k++) { const m = mesh(box(0.22, 0.004, 0.3), paperMat[k % 3], -0.7 + k * 0.32, 0.6 + k * 0.002, -0.1 + rnd() * 0.3, nap); m.rotation.y = rnd() * 3; }
+cupTower(nap, 1.45, 0, 0.9, 5); canPile(nap, -1.45, 0, 0.95, 8);
 // 바이오해저드 스티커와 폐기물 통
 function bioSymbol(g, cx, cy, size) {
   const off = document.createElement('canvas'); off.width = off.height = 256; const o = off.getContext('2d');
@@ -1228,7 +1326,6 @@ paper(front, -5.25, -3.65, 1.5, 3.3, 0.012, 0, 'covers');
 paper(front, -3.55, -1.2, 2.62, 3.32, 0.012, 3, 'covers');
 paper(front, -1.1, 1.0, 1.45, 3.3, 0.012, 6, 'covers');
 paper(front, -6.9, -5.35, 1.5, 3.3, 0.012, 0, 'photos');
-paper(left, -3.55, -1.0, 0.85, 2.05, 0.012, 2, 'photos');
 paper(left, -6.45, -4.75, 0.95, 3.0, 0.012, 6, 'photos');
 
 // ---- 급훈 액자 (출입문 오른쪽) ----
@@ -1846,6 +1943,12 @@ class Student {
     this.angryT = -1;
     this.fumes = [];
     for (let i = 0; i < 4; i++) { const f = mesh(sph(0.05, 10, 8), new THREE.MeshBasicMaterial({ color: i % 2 ? '#ff6a5a' : '#ffffff', transparent: true, opacity: 0, depthWrite: false }), 0, 0.5, 0, this.head); this.fumes.push(f); }
+    // 1시간 연속 집중: 정수리 불꽃
+    this.flames = new THREE.Group(); this.flames.position.y = 0.52; this.flames.visible = false; this.head.add(this.flames);
+    [['#ff4a1c', 0.13, 0.42, 0, 0], ['#ff8a1c', 0.1, 0.34, 0.07, 0.03], ['#ff8a1c', 0.1, 0.32, -0.07, -0.02], ['#ffd23c', 0.07, 0.26, 0.02, 0.05], ['#ffd23c', 0.06, 0.22, -0.04, -0.05], ['#fff3a8', 0.045, 0.16, 0, 0.01]].forEach(([c, r, h, x, z], i) => {
+      const f = new THREE.Mesh(new THREE.ConeGeometry(r, h, 10), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.88, depthWrite: false }));
+      f.position.set(x, h / 2, z); f.userData = { h, ph: i * 1.7 }; this.flames.add(f);
+    });
     this.items = buildItems(s.task, R, accent); this.items.position.set(0, BENCH_H, 0.28);
     this.mug = new THREE.Group(); this.mug.position.set(-0.3, BENCH_H, 0.2); R.add(this.mug);
     mesh(cyl(0.042, 0.038, 0.1, 18), std(accent, { roughness: 0.4 }), 0, 0.05, 0, this.mug);
@@ -1897,13 +2000,34 @@ class Student {
     } else this.torso.rotation.z = 0;
     for (const a of this.arms) a.rotation.x = -this.lean * 0.95 - 0.1;
     if (!focus) this.arms[1].rotation.x = -0.9;
+    if (focus && this.angryT >= 0) {
+      // 집중하다 화나면 고개를 들고 두 팔을 빙빙
+      this.torso.rotation.x = 0.04; this.head.rotation.x = -0.18;
+      const w = this.angryT * 15; this.arms[0].rotation.x = -w; this.arms[1].rotation.x = -w + Math.PI;
+    }
+    const burning = (s.fire || 0) > Date.now();
+    this.flames.visible = burning;
+    if (burning) this.flames.children.forEach(f => { const q = reduceMotion ? 1 : 0.8 + 0.35 * Math.abs(Math.sin(t * 9 + f.userData.ph)); f.scale.set(1, q, 1); f.position.y = f.userData.h * q / 2; });
+    // 낮잠: 침대에 눕기
+    if (this.nap && BED) {
+      this.root.position.copy(BED.pos); this.root.rotation.y = BED.ry;
+      this.torso.rotation.set(-1.42, 0, 0); this.head.rotation.set(0.12, 0, 0.25);
+      this.arms.forEach(a => { a.rotation.set(0.15, 0, 0); });
+      if (!this._napSmile) { this.setSmile(true); this.vSigns.forEach(v => { v.visible = false; }); this._napSmile = true; }
+      this.items.visible = this.mug.visible = false;
+    } else if (this._napSmile || this._wasNap) {
+      if (this._napSmile) { this.setSmile(false); this._napSmile = false; }
+      this.items.visible = this.mug.visible = true;
+      const st = SEATS[this.seat]; if (st) { this.root.position.set(st.x, 0, st.z); this.root.rotation.y = st.ry; }
+    }
+    this._wasNap = !!this.nap;
     if (this.crown && !reduceMotion) this.crown.rotation.z = Math.sin(t * 2.1 + this.phase) * 0.1;
     this.steam.forEach((p, i) => {
       if (focus || reduceMotion) { p.material.opacity = 0; return; }
       const q = ((t * 0.5 + i / 3) % 1); p.position.set(Math.sin(q * 6 + i) * 0.015, 0.11 + q * 0.18, 0); p.material.opacity = 0.35 * (1 - q); p.scale.setScalar(0.8 + q * 1.4);
     });
-    if (photoMode) this.applyPhoto(); else if (this._posed) this.clearPhoto();
-    const meta = focus ? `${TASKS[s.task].icon} ${fmtShort(liveTotal(s))}${s.mj ? ' · 🎓 ' + s.mj : ''}` : $tt(`☕ 휴식 · ${fmtShort(liveTotal(s))}`, `☕ Break · ${fmtShort(liveTotal(s))}`);
+    if (photoMode && !this.nap) this.applyPhoto(); else if (this._posed) this.clearPhoto();
+    const meta = this.nap ? $tt(`💤 낮잠 중 · ${fmtShort(liveTotal(s))}`, `💤 Napping · ${fmtShort(liveTotal(s))}`) : focus ? `${burning ? '🔥 ' : ''}${TASKS[s.task].icon} ${fmtShort(liveTotal(s))}${s.mj ? ' · 🎓 ' + s.mj : ''}` : $tt(`☕ 휴식 · ${fmtShort(liveTotal(s))}`, `☕ Break · ${fmtShort(liveTotal(s))}`);
     if (this._meta !== meta) { this._meta = meta; this.label.querySelector('.meta').textContent = meta; this._w = 0; }
     this.anchor.set(0, 1.28, -0.28 - (this.stagger || 0)); this.root.localToWorld(this.anchor); this.anchor.project(camera);
     const vis = this.anchor.z < 1 && Math.abs(this.anchor.x) < 1.2 && Math.abs(this.anchor.y) < 1.2;
@@ -1947,7 +2071,7 @@ const me = {
   color: Number.isInteger(saved.color) && saved.color >= 0 && saved.color < COLORS.length ? saved.color : Math.floor(Math.random() * COLORS.length),
   kind: own(KINDS, saved.kind) ? saved.kind : 'eagle',
   task: own(TASKS, migrateTask(saved.task)) ? migrateTask(saved.task) : 'thesis',
-  seat: null, mode: 'focus', since: Date.now(), nod: 0, angry: 0, joinedAt: 0, joined: false, wantSeat: null,
+  seat: null, mode: 'break', since: Date.now(), nod: 0, angry: 0, joinedAt: 0, joined: false, wantSeat: null, streakDone: 0, napT: null, fire: 0,
   todayMs: 0, segStart: null, dayKey: dayKey(), say: null,
   cc: ccOk(saved.cc) ? saved.cc : '', major: typeof saved.major === 'string' ? clean(saved.major, 20) : '',
 };
@@ -1987,11 +2111,13 @@ function sanitize(o) {
     segStart: Number.isFinite(o.segStart) ? Math.min(o.segStart, Date.now()) : null,
     cc: ccOk(o.cc) ? o.cc : '',
     mj: typeof o.mj === 'string' ? clean(o.mj, 20) : '',
+    napT: Number.isFinite(o.napT) ? o.napT : null,
+    fire: Number.isFinite(o.fire) ? o.fire : 0,
   };
 }
 function myPresence() {
   return me.joined && me.seat !== null
-    ? { v: 1, name: me.name, color: me.color, kind: me.kind, task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major }
+    ? { v: 1, name: me.name, color: me.color, kind: me.kind, task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major, napT: me.mode === 'break' ? me.napT : null, fire: me.fire || 0 }
     : { v: 0, seat: null };
 }
 function publish() { if (room && roomLive) room.presence(myPresence()).catch(() => {}); refresh(); }
@@ -2065,11 +2191,13 @@ function seatedList() {
 function refresh() {
   const list = seatedList();
   const keep = new Set();
+  let napKey = null, napT = Infinity;
+  if (!IS_LIB) for (const it of list) if (it.s.mode === 'break' && it.s.napT && it.s.napT < napT) { napT = it.s.napT; napKey = it.key; }
   for (const it of list) {
     keep.add(it.key);
     let st = students.get(it.key);
     if (!st) { st = new Student(it.key); students.set(it.key, st); if (!it.isMe && toastReady && !known.has(it.key)) toast($tt(`${it.s.name} 님이 벤치에 앉았어요.`, `${it.s.name} sat down at the bench.`)); }
-    st.sync(it.s, it.isMe, it.isMe ? auth.isDev : !!(devId && it.by && it.by === devId));
+    st.sync(it.s, it.isMe, it.isMe ? auth.isDev : !!(devId && it.by && it.by === devId)); st.nap = it.key === napKey;
     if (it.s.say && !chatMsgs.has(it.s.say.id) && it.s.say.t >= chatClearedAt && Date.now() - it.s.say.t < 12 * 3600000) { chatMsgs.set(it.s.say.id, { ...it.s.say, name: it.s.name, color: it.s.color }); chatDirty = true; }
   }
   for (const [k, st] of students) if (!keep.has(k)) { st.dispose(); students.delete(k); }
@@ -2106,6 +2234,58 @@ function updateTrophy() {
   trophyInfo = { name: top ? top.name : '', hours: top ? (top.ms / 3600000).toFixed(1) : '0.0', month: new Date().getMonth() + 1 };
   redraw(plaqueTex);
 }
+
+/* ---- 네온 아래: 독수리·야채 단체 사진과 웨스턴 블롯의 신 포스터 ---- */
+const GROUP_SHOTS = [
+  [[['carrot', 4], ['eagle', 0], ['tomato', 1]], '#ffe4b8', $tt('랩 MT 🍖', 'Lab retreat 🍖')],
+  [[['cabbage', 2], ['eagle', 0]], '#cfe9ff', $tt('학회 포스터 발표!', 'Poster session!')],
+  [[['broccoli', 6], ['onion', 7], ['eagle', 0], ['potato', 3]], '#ffd6e8', $tt('논문 억셉된 날 🎉', 'Paper accepted 🎉')],
+];
+function smileFig(fig) { fig.traverse(o => { const f = o.userData && o.userData.face; if (f) { f.eyes.forEach(e => { e.visible = false; }); f.happy.forEach(hh => { hh.visible = true; }); if (f.smile) f.smile.visible = true; } }); }
+GROUP_SHOTS.forEach(([cast, bg, cap], i) => {
+  const rt = new THREE.WebGLRenderTarget(320, 256, { samples: 4 }); rt.texture.colorSpace = THREE.SRGBColorSpace;
+  const grp = new THREE.Group(); pScene.add(grp);
+  cast.forEach(([k, c], n) => { const f = buildFigure(k, c); smileFig(f); f.position.set((n - (cast.length - 1) / 2) * 0.52, 0, n % 2 ? -0.12 : 0); f.rotation.y = (n - (cast.length - 1) / 2) * -0.12; grp.add(f); });
+  if (pFig) pFig.visible = false;
+  pScene.background = new THREE.Color(bg);
+  const oa = pCam.aspect; pCam.aspect = 320 / 256; pCam.updateProjectionMatrix();
+  pCam.position.set(0, 1.05, 2.5 + cast.length * 0.25); pCam.lookAt(0, 0.88, 0);
+  renderer.setRenderTarget(rt); renderer.render(pScene, pCam); renderer.setRenderTarget(null);
+  pCam.aspect = oa; pCam.updateProjectionMatrix(); pScene.remove(grp); if (pFig) pFig.visible = true;
+  const frameTex = canvasTex(256, 300, (g, w, h) => { g.fillStyle = '#fbfaf5'; g.fillRect(0, 0, w, h); g.fillStyle = '#2b2f33'; g.font = `30px ${HAND}`; g.textAlign = 'center'; g.fillText(cap, w / 2, h - 26); }, { text: true });
+  const pol = new THREE.Group(); pol.position.set([-3.42, -3.0, -2.62][i], i === 1 ? 1.12 : 1.55, 0.02); pol.rotation.z = [0.09, -0.06, 0.05][i]; left.add(pol);
+  mesh(new THREE.PlaneGeometry(0.42, 0.49), new THREE.MeshStandardMaterial({ map: frameTex, roughness: 0.9 }), 0, 0, 0, pol);
+  mesh(new THREE.PlaneGeometry(0.36, 0.29), new THREE.MeshBasicMaterial({ map: rt.texture }), 0, 0.05, 0.002, pol);
+  mesh(box(0.1, 0.03, 0.004), std('#f2e7a0', { roughness: 1 }), 0, 0.24, 0.004, pol).rotation.z = 0.1;
+});
+pScene.background = null; trophyKey = '';
+const westernTex = canvasTex(560, 760, (g, w, h) => {
+  const rg = g.createRadialGradient(w / 2, h * 0.47, 30, w / 2, h * 0.47, w * 0.8); rg.addColorStop(0, '#fff2b0'); rg.addColorStop(0.35, '#f5b942'); rg.addColorStop(1, '#4b1d6e');
+  g.fillStyle = rg; g.fillRect(0, 0, w, h);
+  g.save(); g.translate(w / 2, h * 0.47); for (let k = 0; k < 24; k++) { g.rotate(Math.PI / 12); g.fillStyle = k % 2 ? 'rgba(255,255,255,.12)' : 'rgba(255,240,170,.08)'; g.beginPath(); g.moveTo(0, 0); g.lineTo(-30, -w); g.lineTo(30, -w); g.fill(); } g.restore();
+  g.textAlign = 'center'; g.fillStyle = '#fff8e0'; g.strokeStyle = '#4b1d6e'; g.lineWidth = 6;
+  g.font = '40px "A2Z SemiBold", sans-serif'; const t1 = isEN ? 'O GOD OF' : '웨스턴 블롯의 신이시여', t2 = isEN ? 'WESTERN BLOTS' : '🙏 강림하소서 🙏';
+  g.strokeText(t1, w / 2, 70); g.fillText(t1, w / 2, 70); g.strokeText(t2, w / 2, 122); g.fillText(t2, w / 2, 122);
+  // 후광을 두른 완벽한 멤브레인
+  const mx = 110, my = 230, mw = 340, mh = 230;
+  g.shadowColor = '#fffbe0'; g.shadowBlur = 50; g.fillStyle = '#eef0f2'; g.fillRect(mx, my, mw, mh); g.shadowBlur = 0;
+  g.strokeStyle = '#f5c64a'; g.lineWidth = 8; g.beginPath(); g.ellipse(w / 2, my - 18, 150, 22, 0, 0, Math.PI * 2); g.stroke();
+  for (let l = 0; l < 7; l++) {
+    const lx = mx + 22 + l * 44;
+    if (l === 0) { [0.18, 0.3, 0.42, 0.55, 0.7, 0.84].forEach(p => { g.fillStyle = '#5b6470'; g.fillRect(lx, my + mh * p, 30, 5); }); continue; }
+    g.fillStyle = '#1d2126'; g.fillRect(lx, my + mh * 0.38, 30, 11); g.fillStyle = 'rgba(29,33,38,.85)'; g.fillRect(lx, my + mh * 0.78, 30, 8);
+  }
+  g.fillStyle = '#5d6762'; g.font = '15px "A2Z SemiBold", sans-serif'; g.fillText(isEN ? 'target · 42 kDa' : '타깃 · 42 kDa', w / 2, my + mh + 26); g.fillText(isEN ? 'loading control (perfectly even)' : '로딩 컨트롤 (완벽하게 균일)', w / 2, my + mh + 48);
+  g.font = `46px ${HAND}`; g.fillStyle = '#fff8e0'; g.strokeStyle = '#4b1d6e'; g.lineWidth = 5;
+  const L1 = isEN ? 'grant us clean bands' : '깨끗한 밴드를 내려주소서', L2 = isEN ? 'and no smiling bands. amen' : '스마일 밴드는 거두어 주소서 아멘';
+  g.strokeText(L1, w / 2, 620); g.fillText(L1, w / 2, 620); g.font = `36px ${HAND}`; g.strokeText(L2, w / 2, 676); g.fillText(L2, w / 2, 676);
+  g.font = '30px sans-serif'; g.fillText('🕯️  ✨  🧪  ✨  🕯️', w / 2, 735);
+}, { text: true });
+mesh(new THREE.PlaneGeometry(0.8, 1.085), new THREE.MeshStandardMaterial({ map: westernTex, roughness: 0.8, emissive: '#3a2a10', emissiveIntensity: 0.25 }), -1.65, 1.45, 0.02, left);
+// 제단: 작은 선반 위 촛불 두 개와 팁 박스 공물
+mesh(box(0.7, 0.03, 0.16), bedWood, -1.65, 0.86, 0.08, left);
+[-1.92, -1.38].forEach(x => { mesh(cyl(0.025, 0.025, 0.11, 12), std('#fbf6e8'), x, 0.93, 0.09, left); mesh(sph(0.018, 8, 6), glow('#ffcf5a'), x, 1.005, 0.09, left); });
+mesh(box(0.14, 0.05, 0.09), std('#3fb07a'), -1.65, 0.9, 0.09, left);
 
 /* ---- 화이트보드: 떠든 사람 (지금 앉은 사람 중 10분마다 무작위, 모두에게 같은 결과) ---- */
 let boardKey = '';
@@ -2334,7 +2514,7 @@ document.getElementById('shotBtn').addEventListener('click', async () => {
   // 필름 느낌: 살짝 따뜻하고 바랜 색
   g.filter = 'sepia(0.22) saturate(1.12) contrast(1.06) brightness(1.03)'; g.drawImage(src, 0, 0); g.filter = 'none';
   g.save(); g.scale(k, k);
-  if (labelsOn) for (const st of students.values()) if (st._vis) drawTagShot(g, st);
+
   g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 8; g.fillStyle = 'rgba(255,255,255,.95)'; g.textBaseline = 'alphabetic';
   g.font = '28px "A2Z SemiBold", sans-serif'; g.fillText($t('정수리 독수리 연구소'), 20, 44);
   if (me.name) { g.font = '18px "A2Z SemiBold", sans-serif'; g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText(me.name, 22, 72); }
@@ -2362,31 +2542,83 @@ document.getElementById('shotBtn').addEventListener('click', async () => {
 let toastTimer;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); }
 
+/* ---- 팝업 ---- */
+const popEl = document.getElementById('popup');
+let popResolve = null, popHasInput = false;
+function popup({ title, text, yes, no, input }) {
+  return new Promise(res => {
+    if (popResolve) popResolve(null);
+    popResolve = res; popHasInput = input !== undefined;
+    document.getElementById('popTitle').textContent = title || '';
+    document.getElementById('popText').textContent = text || '';
+    const inp = document.getElementById('popInput'); inp.hidden = !popHasInput; if (popHasInput) inp.value = input;
+    const y = document.getElementById('popYes'), n = document.getElementById('popNo');
+    y.textContent = yes || $tt('확인', 'OK'); n.hidden = !no; n.textContent = no || '';
+    popEl.classList.add('open');
+    setTimeout(() => (popHasInput ? inp : y).focus(), 30);
+  });
+}
+function closePop(v) { popEl.classList.remove('open'); const r = popResolve; popResolve = null; if (r) r(v); }
+document.getElementById('popYes').addEventListener('click', () => closePop(popHasInput ? document.getElementById('popInput').value : true));
+document.getElementById('popNo').addEventListener('click', () => closePop(false));
+document.getElementById('popInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closePop(e.target.value); } });
+popEl.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(null); });
+popEl.addEventListener('click', e => { if (e.target === popEl) closePop(null); });
+
 /* ---- 도크 ---- */
 const dock = document.getElementById('dock');
 const modeBtn = document.getElementById('modeBtn');
 function updateDock() {
   const seated = me.joined && me.seat !== null;
   modeBtn.disabled = document.getElementById('angryBtn').disabled = !seated;
-  modeBtn.textContent = me.mode === 'focus' ? $t('쉬기') : $t('집중');
+  modeBtn.textContent = me.mode === 'focus' ? $t('쉬기') : $tt('집중 시작', 'Start focus');
   dock.classList.toggle('rest', seated && me.mode === 'break');
   document.getElementById('modeLabel').textContent = !me.joined ? $t('입장 전') : me.seat === null ? $t('서서 구경 중') : me.mode === 'focus' ? `${TASKS[me.task].label}` : $t('쉬는 중');
   document.getElementById('editBtn').textContent = me.joined ? $t('캐릭터') : $t('입장');
 }
 function tickTimer() {
   const el2 = document.getElementById('timer');
+  if (me.joined && me.seat !== null && me.mode === 'focus') {
+    const done = Math.floor((Date.now() - me.since) / SESSION_MS), prev = me.streakDone || 0;
+    if (done > prev) {
+      const d = myAtt.days[me.dayKey] || (myAtt.days[me.dayKey] = {});
+      d.sess = (Number(d.sess) || 0) + (done - prev); me.streakDone = done; checkpoint(); renderCare();
+      toast($t('🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.'));
+      if (Math.floor(done / 2) > Math.floor(prev / 2)) {
+        me.fire = Date.now() + 60000; publish();
+        popup({ title: $tt('정수리 불타는 중!🔥', 'Crown on fire! 🔥'), text: $tt(`${done / 2}시간째 쉬지 않고 집중했어요. 1분 동안 정수리가 활활 타올라요!`, `${done / 2} hour${done > 2 ? 's' : ''} of nonstop focus. Your crown is blazing for a minute!`), yes: $tt('계속 불태우기', 'Keep burning') });
+      }
+    }
+  }
   const sn = sessionsToday();
-  if (me.lastSn !== undefined && sn > me.lastSn && me.joined) { toast($t('🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.')); renderCare(); }
-  me.lastSn = sn;
-  document.getElementById('todayLabel').textContent = $tt(`오늘 ${fmtMin(liveMe())} · 세션 ${sn} · 다음까지 ${minsToNext()}분`, `Today ${fmtMin(liveMe())} · ${sn} sessions · next in ${minsToNext()} min`);
+  const tail = !me.joined || me.seat === null ? '' : me.mode === 'focus' ? $tt(` · 다음 휴식까지 ${minsToNext()}분`, ` · break in ${minsToNext()} min`) : $tt(" · '집중 시작'을 누르면 세션 시작", " · press 'Start focus' to begin a session");
+  document.getElementById('todayLabel').textContent = $tt(`오늘 ${fmtMin(liveMe())} · 완료 세션 ${sn}`, `Today ${fmtMin(liveMe())} · ${sn} done`) + tail;
   if (!me.joined || me.seat === null) { el2.textContent = '00:00'; return; }
   const s = Math.max(0, Math.floor((Date.now() - me.since) / 1000)), h = Math.floor(s / 3600);
   el2.textContent = (h ? h + ':' + pad(Math.floor(s / 60) % 60) : pad(Math.floor(s / 60))) + ':' + pad(s % 60);
 }
-modeBtn.addEventListener('click', () => {
-  checkpoint();
-  if (me.mode === 'focus') { me.mode = 'break'; me.segStart = null; } else { me.mode = 'focus'; me.segStart = Date.now(); }
-  me.since = Date.now(); persist(); publish(); tickTimer();
+async function startFocus() {
+  const ok = await popup({ title: $tt('정수리 맞대기 시작', 'Head-to-head time'), text: $tt('정수리(영문: head-to-head)를 맞대기 시작합니다. 30분 세션을 완료할 때마다 식물이나 동물을 돌볼 수 있는 기회가 주어집니다. 화이팅!', 'Starting head-to-head (정수리 맞대기). Each 30-minute session you complete gives you a chance to care for the plants or animals. You got this!'), yes: $tt('확인', 'OK'), no: $tt('취소', 'Cancel') });
+  if (ok !== true || !me.joined || me.seat === null || me.mode === 'focus') return;
+  checkpoint(); me.mode = 'focus'; me.segStart = Date.now(); me.since = Date.now(); me.streakDone = 0; me.napT = null;
+  persist(); publish(); tickTimer();
+}
+function bedTaken() { return others().some(o => o.s && o.s.mode === 'break' && o.s.napT); }
+function goBreak() {
+  checkpoint(); me.mode = 'break'; me.segStart = null; me.since = Date.now(); me.streakDone = 0;
+  me.napT = !IS_LIB && !bedTaken() ? Date.now() : null;
+  persist(); publish(); tickTimer();
+  toast(IS_LIB ? $t('자리를 비웠어요. 오늘 기록은 저장됐어요.') : me.napT ? $tt('침대에서 잠깐 낮잠 자요. 💤', 'Taking a quick nap in the bed. 💤') : $tt('침대가 차 있어서 자리에서 커피 마시며 쉬어요. ☕', 'The bed is taken, so you rest at your seat with coffee. ☕'));
+}
+// 세션 중간에 그만두려 하면 한 번 붙잡기
+async function confirmStop() {
+  if (!me.joined || me.seat === null || me.mode !== 'focus') return true;
+  const r = await popup({ title: $tt('조금만 더 버텨요!', 'Hang in there!'), text: $tt(`이번 세션이 끝날 때까지 ${minsToNext()}분 남았어요.\n지금 그만두면 이번 세션은 완료되지 않아요. 그래도 끝낼까요?`, `${minsToNext()} min left in this session.\nIf you stop now, it won't count as complete. Stop anyway?`), yes: $tt('계속 집중하기', 'Keep focusing'), no: $tt('그래도 끝내기', 'Stop anyway') });
+  return r === false;
+}
+modeBtn.addEventListener('click', async () => {
+  if (me.mode === 'focus') { if (await confirmStop()) goBreak(); }
+  else startFocus();
 });
 document.getElementById('angryBtn').addEventListener('click', () => { me.angry++; publish(); });
 let view = 'crown';
@@ -2439,8 +2671,8 @@ careBtn.addEventListener('click', () => setCare(!careEl.classList.contains('open
 function ago(t) { const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? $t('방금') : m < 60 ? $tt(`${m}분 전`, `${m} min ago`) : m < 1440 ? $tt(`${Math.floor(m / 60)}시간 전`, `${Math.floor(m / 60)} h ago`) : $tt(`${Math.floor(m / 1440)}일 전`, `${Math.floor(m / 1440)} d ago`); }
 const SESSION_MS = 30 * 60000, CARE_RESET = 15 * 60000;
 function liveMe() { return liveTotal({ todayMs: me.todayMs, segStart: me.segStart, mode: me.mode }); }
-function sessionsToday() { return Math.floor(liveMe() / SESSION_MS); }
-function minsToNext() { return Math.ceil((SESSION_MS - liveMe() % SESSION_MS) / 60000); }
+function sessionsToday() { return Number(myAtt.days[me.dayKey]?.sess) || 0; }
+function minsToNext() { return me.mode === 'focus' && me.joined ? Math.max(1, Math.ceil((SESSION_MS - (Date.now() - me.since) % SESSION_MS) / 60000)) : 30; }
 function careCredits() { const used = Number(myAtt.days[me.dayKey]?.careUsed) || 0; return (me.freeCare ? 1 : 0) + Math.max(0, sessionsToday() - used); }
 function sinceCare(kind) { return care[kind]?.t ? Date.now() - care[kind].t : Infinity; }
 function needLevel(kind) { const e = sinceCare(kind); if (e === Infinity) return 0.6; return e < CARE_RESET ? 0 : Math.min(1, 0.35 + (e - CARE_RESET) / (45 * 60000) * 0.65); }
@@ -2459,7 +2691,7 @@ function renderCare() {
   ps.textContent = w > 0.6 ? $t('목말라요, 시들고 있어요') : w > 0 ? $t('목말라요') : $tt(`촉촉해요 · ${left('water')}분 뒤 다시 목말라요`, `Watered · thirsty again in ${left('water')} min`); ps.classList.toggle('bad', w > 0);
   as.textContent = h > 0.6 ? $t('배고파서 기운이 없어요') : h > 0 ? $t('배고파요') : $tt(`배불러요 · ${left('feed')}분 뒤 다시 배고파요`, `Full · hungry again in ${left('feed')} min`); as.classList.toggle('bad', h > 0);
   const cr = careCredits();
-  document.getElementById('careCredit').textContent = auth.isDev ? $t('🛠 개발자: 세션 없이 무제한 돌봄') : $tt(`돌봄 가능 ${cr}회${me.freeCare ? ' (입장 보너스 1회 포함)' : ''} · 다음 세션까지 ${minsToNext()}분`, `Care available: ${cr}${me.freeCare ? ' (incl. 1 arrival bonus)' : ''} · next session in ${minsToNext()} min`);
+  document.getElementById('careCredit').textContent = auth.isDev ? $t('🛠 개발자: 세션 없이 무제한 돌봄') : $tt(`돌봄 가능 ${cr}회${me.freeCare ? ' (입장 보너스 1회 포함)' : ''}${me.mode === 'focus' ? ` · 다음 휴식까지 ${minsToNext()}분` : ''}`, `Care available: ${cr}${me.freeCare ? ' (incl. 1 arrival bonus)' : ''}${me.mode === 'focus' ? ` · break in ${minsToNext()} min` : ''}`);
   document.getElementById('waterBtn').disabled = !auth.isDev && (w === 0 || cr < 1 || !me.joined);
   document.getElementById('feedBtn').disabled = !auth.isDev && (h === 0 || cr < 1 || !me.joined);
   document.getElementById('plantLast').textContent = care.water?.t ? $tt(`마지막: ${care.water.name} · ${ago(care.water.t)}`, `Last: ${care.water.name} · ${ago(care.water.t)}`) : $t('아직 아무도 물을 안 줬어요');
@@ -2469,11 +2701,26 @@ function renderCare() {
   careBtn.classList.toggle('alert', need > 0);
   applyCare();
 }
+const QC = [
+  { kind: 'water', el: document.getElementById('qcWater'), pos: new THREE.Vector3(6.55, 2.35, -1.3) },
+  { kind: 'feed', el: document.getElementById('qcFeed'), pos: new THREE.Vector3(6.55, 2.35, 2.95) },
+];
+QC.forEach(q => q.el.addEventListener('click', () => doCare(q.kind)));
+const qcV = new THREE.Vector3();
+function updateQuickCare() {
+  for (const q of QC) {
+    const ok = !IS_LIB && roomReady && me.joined && !photoMode && !boardZoomed && needLevel(q.kind) > 0 && (auth.isDev || (sessionsToday() >= 1 && careCredits() > 0));
+    let show = false;
+    if (ok) { qcV.copy(q.pos).project(camera); show = qcV.z < 1 && Math.abs(qcV.x) < 0.95 && Math.abs(qcV.y) < 0.9; }
+    if (q.el.hidden === show) q.el.hidden = !show;
+    if (show) q.el.style.transform = `translate(${((qcV.x + 1) / 2 * innerWidth - 24).toFixed(1)}px, ${((1 - qcV.y) / 2 * innerHeight - 24).toFixed(1)}px)`;
+  }
+}
 function doCare(kind) {
   if (!auth.ok || !me.joined) { toast($t('벤치에 앉은 사람만 돌볼 수 있어요.')); return; }
   if (!auth.isDev) {
     if (sinceCare(kind) < CARE_RESET) { toast($tt(`아직 괜찮아요. ${Math.ceil((CARE_RESET - sinceCare(kind)) / 60000)}분 뒤에 다시 필요해요.`, `They're fine for now. Needed again in ${Math.ceil((CARE_RESET - sinceCare(kind)) / 60000)} min.`)); return; }
-    if (careCredits() < 1) { toast($tt(`30분 집중 세션을 마치면 돌볼 수 있어요. 다음 세션까지 ${minsToNext()}분.`, `Finish a 30-minute focus session to do care. Next session in ${minsToNext()} min.`)); return; }
+    if (careCredits() < 1) { toast((me.mode === 'focus' ? $tt(`30분 집중 세션을 마치면 돌볼 수 있어요. 세션 완료까지 ${minsToNext()}분.`, `Finish a 30-minute focus session to do care. ${minsToNext()} min to go.`) : $tt("30분 집중 세션을 마치면 돌볼 수 있어요. '집중 시작'을 눌러 보세요.", "Finish a 30-minute focus session to do care. Press 'Start focus'."))); return; }
     if (me.freeCare) me.freeCare = false;
     else { const d = myAtt.days[me.dayKey] || (myAtt.days[me.dayKey] = {}); d.careUsed = (Number(d.careUsed) || 0) + 1; }
   } else if (sinceCare(kind) < 3000) return;
@@ -2524,27 +2771,89 @@ function animateCare(dt, t) {
   }
 }
 
-// 백색소음
-let audio = null;
-const soundBtn = document.getElementById('soundBtn');
-soundBtn.addEventListener('click', () => {
-  try {
-    if (!audio) {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-      let last = 0; for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.2; }
-      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
-      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
-      const gain = ctx.createGain(); gain.gain.value = 0;
-      const hum = ctx.createOscillator(); hum.frequency.value = 98; const hg = ctx.createGain(); hg.gain.value = 0.012;
-      src.connect(lp).connect(gain); hum.connect(hg).connect(gain); gain.connect(ctx.destination);
-      src.start(); hum.start(); audio = { ctx, gain, on: false };
+// 배경 소리: 백색소음, 빗소리, 잔잔한 집중 음악 (모두 브라우저에서 직접 만들어서 라이선스 걱정 없음)
+const soundBtn = document.getElementById('soundBtn'), soundMenu = document.getElementById('soundMenu');
+const snd = { ctx: null, master: null, cur: 'off', nodes: [], timer: null, vol: 0.5 };
+{ const v = lsGet('jsdsr-sound'); if (v && typeof v.vol === 'number') snd.vol = Math.min(1, Math.max(0, v.vol)); }
+document.getElementById('sndVol').value = Math.round(snd.vol * 100);
+function sndCtx() {
+  if (!snd.ctx) { snd.ctx = new (window.AudioContext || window.webkitAudioContext)(); snd.master = snd.ctx.createGain(); snd.master.gain.value = snd.vol * snd.vol; snd.master.connect(snd.ctx.destination); }
+  snd.ctx.resume(); return snd.ctx;
+}
+function noiseBuf(ctx, sec, fill) { const len = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(2, len, ctx.sampleRate); for (let c = 0; c < 2; c++) fill(b.getChannelData(c), ctx.sampleRate, c); return b; }
+function stopSound() {
+  clearInterval(snd.timer); snd.timer = null;
+  const now = snd.ctx ? snd.ctx.currentTime : 0;
+  for (const n of snd.nodes) { try { if (n.gain) n.gain.setTargetAtTime(0, now, 0.25); if (n.stop) n.stop(now + 1.2); } catch {} }
+  snd.nodes = [];
+}
+function playWhite(ctx) {
+  const src = ctx.createBufferSource(); src.loop = true;
+  src.buffer = noiseBuf(ctx, 4, d => { let last = 0; for (let i = 0; i < d.length; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.2; } });
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+  const g = ctx.createGain(); g.gain.value = 0; g.gain.setTargetAtTime(0.9, ctx.currentTime, 0.5);
+  src.connect(lp).connect(g).connect(snd.master); src.start(); snd.nodes.push(src, g);
+}
+function playRain(ctx) {
+  const src = ctx.createBufferSource(); src.loop = true;
+  src.buffer = noiseBuf(ctx, 6, (d, sr) => {
+    let a = 0, b = 0;
+    for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; a = a * 0.6 + w * 0.4; b = b * 0.985 + w * 0.015; d[i] = a * 0.22 + b * 0.9; }
+    for (let k = 0; k < 900; k++) { // 빗방울
+      const st = Math.floor(Math.random() * (d.length - 800)), f = 1800 + Math.random() * 3400, amp = 0.05 + Math.random() * 0.22, dec = 0.0025 + Math.random() * 0.006;
+      for (let n = 0; n < 800; n++) d[st + n] += Math.sin(n / sr * f * 6.283) * amp * Math.exp(-n / (sr * dec));
     }
-    audio.ctx.resume(); audio.on = !audio.on;
-    audio.gain.gain.setTargetAtTime(audio.on ? 0.32 : 0, audio.ctx.currentTime, 0.4);
-    soundBtn.classList.toggle('on', audio.on); soundBtn.setAttribute('aria-pressed', String(audio.on));
-  } catch { toast($t('이 브라우저에서는 소리를 낼 수 없어요.')); }
+  });
+  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 160;
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200;
+  const g = ctx.createGain(); g.gain.value = 0; g.gain.setTargetAtTime(0.8, ctx.currentTime, 0.6);
+  src.connect(hp).connect(lp).connect(g).connect(snd.master); src.start(); snd.nodes.push(src, g);
+}
+function playMusic(ctx) {
+  // 느린 로파이 코드 진행 + 부드러운 멜로디, 피드백 딜레이로 잔향
+  const out = ctx.createGain(); out.gain.value = 0; out.gain.setTargetAtTime(0.55, ctx.currentTime, 1.0);
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1700;
+  const dl = ctx.createDelay(1.5); dl.delayTime.value = 0.42; const fb = ctx.createGain(); fb.gain.value = 0.38; const wet = ctx.createGain(); wet.gain.value = 0.35;
+  lp.connect(out); lp.connect(dl); dl.connect(fb).connect(dl); dl.connect(wet).connect(out); out.connect(snd.master);
+  snd.nodes.push(out);
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  const CH = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]]; // Fmaj7 Em7 Dm7 Cmaj7
+  const MEL = [72, 74, 76, 79, 81, 84];
+  const BAR = 4.2; let next = ctx.currentTime + 0.1, bar = 0;
+  const voice = (f, t0, dur, type, vol, atk) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; o.detune.value = (Math.random() - 0.5) * 8;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + atk); g.gain.setTargetAtTime(0, t0 + dur - 0.6, 0.5);
+    o.connect(g).connect(lp); o.start(t0); o.stop(t0 + dur + 2);
+  };
+  const sched = () => {
+    while (next < ctx.currentTime + 2.5) {
+      const ch = CH[bar % CH.length];
+      ch.forEach((m, k) => voice(hz(m), next, BAR + 0.4, k ? 'triangle' : 'sine', k ? 0.045 : 0.07, 1.2));
+      voice(hz(ch[0] - 12), next, BAR, 'sine', 0.08, 0.3);
+      for (let b = 0; b < 4; b++) if (Math.random() < 0.55) voice(hz(MEL[Math.floor(Math.random() * MEL.length)]), next + b * BAR / 4 + (Math.random() < 0.3 ? BAR / 8 : 0), 1.4, 'sine', 0.05, 0.02);
+      next += BAR; bar++;
+    }
+  };
+  sched(); snd.timer = setInterval(sched, 700);
+}
+function setSound(kind) {
+  try {
+    const ctx = sndCtx(); stopSound(); snd.cur = kind;
+    if (kind === 'white') playWhite(ctx); else if (kind === 'rain') playRain(ctx); else if (kind === 'music') playMusic(ctx);
+  } catch { toast($t('이 브라우저에서는 소리를 낼 수 없어요.')); snd.cur = 'off'; }
+  soundBtn.classList.toggle('on', snd.cur !== 'off');
+  soundMenu.querySelectorAll('[data-snd]').forEach(b => b.classList.toggle('on', b.dataset.snd === snd.cur));
+  lsSet('jsdsr-sound', { vol: snd.vol });
+}
+soundMenu.querySelectorAll('[data-snd]').forEach(b => b.addEventListener('click', () => setSound(b.dataset.snd)));
+document.getElementById('sndVol').addEventListener('input', e => {
+  snd.vol = Number(e.target.value) / 100; if (snd.master) snd.master.gain.setTargetAtTime(snd.vol * snd.vol, snd.ctx.currentTime, 0.05);
+  lsSet('jsdsr-sound', { vol: snd.vol });
 });
+function placeSoundMenu() { const r = soundBtn.getBoundingClientRect(); soundMenu.style.top = `${r.bottom + 8}px`; soundMenu.style.left = `${Math.max(8, Math.min(innerWidth - 236, r.right - 228))}px`; }
+soundBtn.addEventListener('click', e => { e.stopPropagation(); const open = !soundMenu.classList.contains('open'); if (open) placeSoundMenu(); soundMenu.classList.toggle('open', open); soundBtn.setAttribute('aria-expanded', String(open)); });
+document.addEventListener('pointerdown', e => { if (soundMenu.classList.contains('open') && !soundMenu.contains(e.target) && e.target !== soundBtn) { soundMenu.classList.remove('open'); soundBtn.setAttribute('aria-expanded', 'false'); } });
+soundMenu.querySelectorAll('[data-snd]').forEach(b => b.classList.toggle('on', b.dataset.snd === 'off'));
 
 /* ---- 입장 폼 ---- */
 const joinEl = document.getElementById('join'), form = document.getElementById('joinForm');
@@ -2579,20 +2888,20 @@ form.addEventListener('submit', e => {
   me.color = Number(fd.get('color')); if (!(me.color >= 0 && me.color < COLORS.length)) me.color = 0;
   me.kind = own(KINDS, String(fd.get('kind'))) ? String(fd.get('kind')) : 'eagle';
   const newTask = own(TASKS, String(fd.get('task'))) ? String(fd.get('task')) : 'thesis';
-  if (newTask !== me.task && me.joined) me.since = Date.now();
   me.task = newTask;
   saveProfile();
   if (!me.joined) {
-    me.joined = true; me.joinedAt = Date.now(); me.mode = 'focus'; me.since = Date.now(); me.freeCare = true;
+    me.joined = true; me.joinedAt = Date.now(); me.mode = 'break'; me.since = Date.now(); me.streakDone = 0; me.napT = null; me.freeCare = true;
     me.seat = chooseSeat(me.wantSeat);
-    me.segStart = me.seat !== null ? Date.now() : null;
-    toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $t('앉았어요. 정수리를 맞대고 시작해요.'));
+    me.segStart = null;
+    toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $tt("앉았어요. '집중 시작'을 누르면 정수리를 맞대요.", "You're seated. Press 'Start focus' to go head-to-head."));
   }
   persist(); closeJoin(); publish();
+  if (IS_LIB) goView(view);
 });
 document.getElementById('cancelBtn').addEventListener('click', closeJoin);
 function leaveSeat() { if (me.joined) checkpoint(); me.segStart = null; me.joined = false; me.seat = null; me.say = null; publish(); }
-document.getElementById('leaveBtn').addEventListener('click', () => { closeJoin(); toast($tt('연구실에서 나왔어요. 오늘 기록은 저장됐어요.', "You left the lab. Today's record is saved.")); exitLab(); });
+document.getElementById('leaveBtn').addEventListener('click', () => { closeJoin(); exitLab($tt('연구실에서 나왔어요. 오늘 기록은 저장됐어요.', "You left the lab. Today's record is saved.")); });
 document.getElementById('editBtn').addEventListener('click', openJoin);
 
 
@@ -2705,13 +3014,13 @@ async function loadMyRecords() {
 }
 /* ---- 연구실: 새로 만들기 · 번호로 입장 · 독수리 VIP 클럽 ---- */
 const lobbyEl = document.getElementById('lobby');
-const VIP_NAME = $tt('독수리 VIP 클럽', 'Eagle VIP Club');
+const VIP_NAME = $tt('독수리 VIP 클럽', 'Eagle VIP Club'), LIB_NAME = $tt('독수리 도서관', 'Eagle Library');
 const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const roomUrl = code => location.origin + location.pathname + '#r=' + code;
 function recentRooms() { const v = lsGet('jsdsr-rooms'); return Array.isArray(v) ? v.filter(x => x && typeof x.code === 'string').slice(0, 5) : []; }
 function rememberRoom(code, name) { lsSet('jsdsr-rooms', [{ code, name: clean(String(name || code), 20) }, ...recentRooms().filter(x => x.code !== code)].slice(0, 5)); }
 function goRoom(code) { if (me.joined) leaveSeat(); setTimeout(() => { if (location.hash === '#r=' + code) location.reload(); else location.hash = 'r=' + code; }, me.joined ? 500 : 0); }
-async function exitLab() { if (me.joined) leaveSeat(); try { await Promise.race([attDone, new Promise(r => setTimeout(r, 1500))]); } catch {} leaveToLobby(); }
+async function exitLab(msg) { if (!(await confirmStop())) return false; if (msg) toast(msg); if (me.joined) leaveSeat(); try { await Promise.race([attDone, new Promise(r => setTimeout(r, 1500))]); } catch {} leaveToLobby(); }
 function leaveToLobby() { history.replaceState(null, '', location.pathname + location.search); location.reload(); }
 addEventListener('hashchange', () => location.reload());
 const errTag = e => e && e.code ? ` [${e.code}]` : '';
@@ -2729,6 +3038,7 @@ function showLobby(pane = 'lbHome', msg = '') {
 // 들어갈 수 있는지 확인. join이면 일반 연구실 회원으로 등록까지
 async function checkRoom(key, join) {
   try {
+    if (key === 'lib') return { ok: true, info: { key: 'lib', name: LIB_NAME, cap: 100, owner: OWNER_UID } };
     if (key === 'vip') {
       const info = { key: 'vip', name: VIP_NAME, cap: 14, owner: OWNER_UID };
       if (auth.isDev) return { ok: true, info };
@@ -2766,11 +3076,11 @@ async function routeAfterLogin() {
   showLobby();
 }
 async function enterRoom(info) {
-  ROOM = info; RP = info.key === 'vip' ? '' : `rooms/${info.key}/`; roomReady = true;
+  ROOM = info; RP = info.key === 'vip' ? '' : info.key === 'lib' ? 'library/main/' : `rooms/${info.key}/`; roomReady = true;
   rememberRoom(info.key, info.name);
   document.getElementById('roomChip').hidden = false;
-  document.getElementById('roomName').textContent = info.key === 'vip' ? `👑 ${VIP_NAME}` : `🔑 ${info.name} · ${info.key}`;
-  document.getElementById('roomCopy').hidden = info.key === 'vip';
+  document.getElementById('roomName').textContent = info.key === 'vip' ? `👑 ${VIP_NAME}` : info.key === 'lib' ? `📚 ${LIB_NAME}` : `🔑 ${info.name} · ${info.key}`;
+  document.getElementById('roomCopy').hidden = info.key === 'vip' || info.key === 'lib';
   subscribeRoom();
   await loadMyRecords();
   lobbyEl.classList.remove('open'); closeAuth();
@@ -2798,7 +3108,7 @@ function subscribeRoom() {
     }
     renderChat();
   }, () => {});
-  if (ROOM.key !== 'vip') db.doc('rooms/' + ROOM.key).onSnapshot(sn => {
+  if (ROOM.key !== 'vip' && ROOM.key !== 'lib') db.doc('rooms/' + ROOM.key).onSnapshot(sn => {
     if (sn.exists || roomClosing) return;
     roomClosing = true; dropRecent(ROOM.key); if (me.joined) leaveSeat(); setPanel(null);
     toast($tt('실장이 연구실을 없앴어요. 로비로 돌아가요.', 'The lab manager closed this lab. Back to the lobby.'));
@@ -2814,6 +3124,7 @@ for (let n = 2; n <= 14; n++) { const o = el('option', '', $tt(`${n}명`, `${n} 
 document.getElementById('lbCreate').addEventListener('click', () => { lbShow('lbCreatePane'); document.getElementById('lbName').focus(); });
 document.getElementById('lbEnter').addEventListener('click', () => { lbShow('lbEnterPane'); document.getElementById('lbCodeIn').focus(); });
 document.getElementById('lbVip').addEventListener('click', () => tryEnter('vip'));
+document.getElementById('lbLib').addEventListener('click', () => tryEnter('lib'));
 lobbyEl.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => lbShow('lbHome')));
 let madeCode = null;
 document.getElementById('lbCreatePane').addEventListener('submit', async e => {
@@ -2868,8 +3179,8 @@ document.getElementById('lbVipReq').addEventListener('click', async () => {
 });
 document.getElementById('lbLogout').addEventListener('click', async () => { await FB.signOut().catch(() => {}); leaveToLobby(); });
 document.getElementById('roomLeave').addEventListener('click', () => { setPanel(null); exitLab(); });
-document.getElementById('roomExit').addEventListener('click', () => { setPanel(null); closeJoin(); toast($tt('연구실에서 나왔어요. 오늘 기록은 저장됐어요.', "You left the lab. Today's record is saved.")); exitLab(); });
-document.getElementById('doorExit').addEventListener('click', () => { toast($tt('복도로 나갔어요. 오늘 기록은 저장됐어요.', "You stepped into the hallway. Today's record is saved.")); exitLab(); });
+document.getElementById('roomExit').addEventListener('click', () => { setPanel(null); closeJoin(); exitLab($tt('연구실에서 나왔어요. 오늘 기록은 저장됐어요.', "You left the lab. Today's record is saved.")); });
+document.getElementById('doorExit').addEventListener('click', () => exitLab($tt('복도로 나갔어요. 오늘 기록은 저장됐어요.', "You stepped into the hallway. Today's record is saved.")));
 // 연구실 탈퇴. 실장이 나가면 연구실 자체가 사라짐
 let roomClosing = false;
 function dropRecent(code) { lsSet('jsdsr-rooms', recentRooms().filter(x => x.code !== code)); }
@@ -2973,7 +3284,7 @@ function renderJourney(full) {
   document.getElementById('jSince').textContent = since && auth.ok ? $tt(`가입 ${Math.floor((Date.now() - since) / 86400000) + 1}일째`, `Day ${Math.floor((Date.now() - since) / 86400000) + 1} since joining`) : '';
   const keys = new Set(Object.keys(myAtt.days)); if (me.joined) keys.add(dayKey());
   let total = 0, sessions = 0, best = 0;
-  for (const k of keys) { const ms = myDayMs(k); total += ms; sessions += Math.floor(ms / SESSION_MS); best = Math.max(best, ms); }
+  for (const k of keys) { const ms = myDayMs(k), dd = myAtt.days[k]; total += ms; sessions += Number.isFinite(dd?.sess) ? dd.sess : Math.floor(ms / SESSION_MS); best = Math.max(best, ms); }
   let streak = 0; for (let i = 0; i < 400; i++) { const d = new Date(); d.setDate(d.getDate() - i); if (keys.has(dayKey(d))) streak++; else if (i > 0) break; }
   const st = document.getElementById('jStats'); st.textContent = '';
   [[fmtShort(total), $t('총 집중')], [$tt(`${sessions}회`, `${sessions}`), $t('완료한 세션')], [$tt(`${keys.size}일`, `${keys.size}`), $t('출석한 날')], [$tt(`${streak}일`, `${streak}`), $t('연속 출석')], [fmtShort(best), $t('하루 최고')], [$tt(`${(myAtt.careWater || 0) + (myAtt.careFeed || 0)}회`, `${(myAtt.careWater || 0) + (myAtt.careFeed || 0)}`), $t('돌봄')]]
@@ -2991,6 +3302,8 @@ function renderJourney(full) {
   }
   document.getElementById('jCare').textContent = $tt(`물 준 횟수 ${myAtt.careWater || 0}회 · 밥 준 횟수 ${myAtt.careFeed || 0}회 · 지금 돌봄 가능 ${auth.isDev ? '무제한' : careCredits() + '회'}`, `Watered ${myAtt.careWater || 0}× · Fed ${myAtt.careFeed || 0}× · Care available now: ${auth.isDev ? 'unlimited' : careCredits()}`);
   ['renameBtn', 'pinBtn', 'logoutBtn', 'deleteBtn', 'fbSend'].forEach(id => { document.getElementById(id).disabled = !auth.ok; });
+  if (full) { document.getElementById('acctCc').value = me.cc || ''; document.getElementById('acctMj').value = me.major || ''; document.getElementById('neonPublic').value = neonText; }
+  document.getElementById('neonRow').hidden = IS_LIB || !roomReady;
   document.getElementById('myUidNote').textContent = auth.ok && myUid ? $tt(`내 계정 ID: ${myUid}`, `My account ID: ${myUid}`) : '';
   const roomAdmin = auth.ok && roomReady && (auth.isDev || (ROOM && ROOM.owner === myUid));
   document.getElementById('devTools').hidden = !roomAdmin;
@@ -2998,9 +3311,9 @@ function renderJourney(full) {
   document.getElementById('devCareNote').hidden = !auth.isDev;
   document.getElementById('devTitle').textContent = auth.isDev ? $t('🛠 개발자 도구') : $tt('🔑 실장 도구 (이 연구실의 공지·네온·채팅)', '🔑 Lab manager tools (notice, neon, chat)');
   const rq = document.getElementById('roomQuit'), mgr = !!ROOM && ROOM.owner === myUid;
-  rq.hidden = !ROOM || ROOM.key === 'vip';
+  rq.hidden = !ROOM || ROOM.key === 'vip' || ROOM.key === 'lib';
   if (rq.dataset.armed !== '1') rq.textContent = mgr ? $tt('🗑 연구실 없애기', '🗑 Close this lab') : $tt('연구실 탈퇴', 'Leave this lab');
-  document.getElementById('jRoom').textContent = !ROOM ? $tt('아직 연구실에 들어가지 않았어요.', "You haven't entered a lab yet.") : ROOM.key === 'vip' ? `👑 ${VIP_NAME}` : $tt(`🔑 ${ROOM.name} · 번호 ${ROOM.key} · 정원 ${ROOM.cap}명${ROOM.owner === myUid ? ' · 내가 실장' : ''}`, `🔑 ${ROOM.name} · code ${ROOM.key} · up to ${ROOM.cap}${ROOM.owner === myUid ? ' · you manage it' : ''}`);
+  document.getElementById('jRoom').textContent = !ROOM ? $tt('아직 연구실에 들어가지 않았어요.', "You haven't entered a lab yet.") : ROOM.key === 'vip' ? `👑 ${VIP_NAME}` : ROOM.key === 'lib' ? $tt(`📚 ${LIB_NAME} · 누구나 · 최대 100명`, `📚 ${LIB_NAME} · open to all · up to 100`) : $tt(`🔑 ${ROOM.name} · 번호 ${ROOM.key} · 정원 ${ROOM.cap}명${ROOM.owner === myUid ? ' · 내가 실장' : ''}`, `🔑 ${ROOM.name} · code ${ROOM.key} · up to ${ROOM.cap}${ROOM.owner === myUid ? ' · you manage it' : ''}`);
   document.querySelectorAll('#journey [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === (LANG || 'ko')));
   if (full) {
     document.getElementById('renameInput').value = auth.ok ? me.name : '';
@@ -3025,6 +3338,26 @@ function renderMembers() {
   }
 }
 setInterval(() => renderJourney(false), 15000);
+document.getElementById('acctProfSave').addEventListener('click', async () => {
+  const cc = document.getElementById('acctCc').value, major = clean(document.getElementById('acctMj').value, 20);
+  if (!ccOk(cc) || !major) return msg2('acctMsg', $tt('나라와 전공을 모두 적어 주세요.', 'Please fill in both country and field of study.'));
+  try { await db.doc('profiles/' + myUid).set({ nick: me.name, createdAt: auth.acct?.createdAt || Date.now(), cc, major }); }
+  catch (err) { return msg2('acctMsg', $t('저장하지 못했어요. 잠시 뒤 다시 해 주세요.') + errTag(err)); }
+  me.cc = cc; me.major = major; saveProfile(); publish();
+  msg2('acctMsg', $tt('나라와 전공을 바꿨어요.', 'Country and field of study updated.'), true);
+});
+// 네온사인은 이 연구실 사람 누구나
+async function setNeon(text) {
+  const tx = clean(text, 16); if (!tx) return msg2('acctMsg', $t('네온 문구를 적어 주세요.'));
+  try { await db.doc(RP + 'board/neon').set({ text: tx, by: me.name, t: Date.now() }); toast($t('네온사인 문구를 바꿨어요.')); }
+  catch (err) { msg2('acctMsg', $t('저장하지 못했어요. 잠시 뒤 다시 해 주세요.') + errTag(err)); }
+}
+document.getElementById('neonPublicBtn').addEventListener('click', () => setNeon(document.getElementById('neonPublic').value));
+async function editNeonPopup() {
+  if (!auth.ok || !roomReady || IS_LIB) return;
+  const v = await popup({ title: $tt('네온사인 바꾸기', 'Change the neon sign'), text: $tt('이 연구실 사람 누구나 바꿀 수 있어요. (16자까지)', 'Anyone in this lab can change it. (up to 16 characters)'), input: neonText, yes: $tt('바꾸기', 'Change'), no: $tt('취소', 'Cancel') });
+  if (typeof v === 'string') setNeon(v);
+}
 document.getElementById('renameBtn').addEventListener('click', async () => {
   const nick = clean(document.getElementById('renameInput').value);
   if (!nick) return msg2('acctMsg', $t('새 별명을 입력해 주세요.'));
@@ -3047,6 +3380,7 @@ document.getElementById('pinBtn').addEventListener('click', async () => {
   msg2('acctMsg', $t('비밀번호를 바꿨어요.'), true);
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => {
+  if (!(await confirmStop())) return;
   leaveSeat(); setPanel(null); toast($t('로그아웃했어요. 오늘 기록은 저장됐어요.')); await sleep(500); await FB.signOut().catch(() => {}); leaveToLobby();
 });
 document.getElementById('deleteBtn').addEventListener('click', () => { document.getElementById('deleteRow').hidden = false; document.getElementById('pinDel').focus(); });
@@ -3132,9 +3466,10 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
   ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
-  const hit = ray.intersectObjects([wbMesh, ...doorHits, ...careHits, ...focusHits, ...stools, benchTop], false)[0];
+  const hit = ray.intersectObjects(IS_LIB ? stools : [wbMesh, neon, ...doorHits, ...careHits, ...focusHits, ...stools, benchTop], false)[0];
   if (!hit) return;
   const ud = hit.object.userData;
+  if (ud.neon) { editNeonPopup(); return; }
   if (ud.focus) { zoomTo(ud.focus); return; }
   if (ud.door) { toggleDoor(); return; }
   if (ud.seat === undefined) return;
@@ -3142,13 +3477,23 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (takenSeats().has(seat) || seat === me.seat) return;
   if (!me.joined) { me.wantSeat = seat; openJoin(); return; }
   if (me.seat === null && me.mode === 'focus') me.segStart = Date.now();
-  me.seat = seat; publish(); toast($t('자리를 옮겼어요.')); if (view === 'face') goView('face');
+  me.seat = seat; publish(); toast($t('자리를 옮겼어요.')); if (view === 'face' || IS_LIB) goView(view);
 });
 
 /* ================= 카메라 ================= */
 function isPortrait() { return innerHeight > innerWidth * 1.05; }
 function viewSpec(kind) {
   const aspect = innerWidth / innerHeight, tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), tanH = tanV * aspect, portrait = isPortrait();
+  if (IS_LIB && kind !== 'face') {
+    const st = me.seat !== null && me.seat !== undefined ? SEATS[me.seat] : null;
+    if (kind === 'crown') {
+      const halfLong = 3.0, halfShort = 1.6, m = portrait ? 1.3 : 1.25;
+      const d = (portrait ? Math.max(halfLong / tanV, halfShort / tanH) : Math.max(halfLong / tanH, halfShort / tanV)) * m;
+      return { r: d, phi: 0.2, theta: portrait ? Math.PI / 2 : 0, target: new THREE.Vector3(st ? st.x : 0, 1.4, st ? st.row : 0) };
+    }
+    const d = 8.6 / Math.min(tanV, tanH) * (portrait ? 0.95 : 0.8);
+    return { r: d, phi: portrait ? 0.95 : 1.0, theta: portrait ? -Math.PI / 2 + 0.35 : -0.6, target: new THREE.Vector3(0, 0.8, 0) };
+  }
   if (kind === 'crown') {
     const halfLong = 4.2, halfShort = 1.45, m = portrait ? 1.34 : 1.3;
     const d = (portrait ? Math.max(halfLong / tanV, halfShort / tanH) : Math.max(halfLong / tanH, halfShort / tanV)) * m;
@@ -3156,12 +3501,12 @@ function viewSpec(kind) {
   }
   if (kind === 'face') {
     // 내 자리 맞은편 위에서, 고개 든 내 쪽 줄의 얼굴을 본다
-    const st = SEATS[me.seat ?? 0], end = Math.abs(st.x) > 2;
+    const st = SEATS[me.seat ?? 0], end = !!st.end, rowZ = st.row || 0;
     if (end) {
       const sx = Math.sign(st.x), target = new THREE.Vector3(st.x - sx * 0.35, 1.5, 0);
       return { target, pos: target.clone().add(new THREE.Vector3(-sx * 2.6, 1.6, 0)) };
     }
-    const sz = Math.sign(st.z), target = new THREE.Vector3(portrait ? st.x : 0, 1.5, st.z * 0.85);
+    const sz = Math.sign(st.z - rowZ), target = new THREE.Vector3(portrait || IS_LIB ? st.x : 0, 1.5, rowZ + (st.z - rowZ) * 0.85);
     const d = portrait ? 3.0 : Math.max(3.2, 2.3 / tanH);
     return { target, pos: target.clone().add(new THREE.Vector3(0, 0.62, -sz).normalize().multiplyScalar(d)) };
   }
@@ -3198,6 +3543,70 @@ function onResize() {
 }
 let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(onResize, 120); });
 
+/* ================= 도서관 (코드 없이 입장, 100석, 통유리) ================= */
+if (IS_LIB) {
+  for (const c of scene.children.slice()) if (!PRE_ROOM.has(c)) c.visible = false;
+  lamp.visible = neonLight.visible = windowLight.visible = false;
+  scene.background = new THREE.Color('#a9bccd'); if (scene.fog) scene.fog = null;
+  stools.length = 0;
+  const L = new THREE.Group(); scene.add(L);
+  L.add(new THREE.HemisphereLight('#f4f6ff', '#8f8676', 1.25));
+  const sun = new THREE.DirectionalLight('#fff3dd', 1.3); sun.position.set(-6, 12, -14); L.add(sun);
+  const W = 15, D = 17, H = 3.4;
+  const carpet = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#b9b09c'; g.fillRect(0, 0, w, h); for (let k = 0; k < 2600; k++) { g.fillStyle = `rgba(${k % 2 ? '90,82,66' : '255,250,235'},${(k * 7 % 11) / 120})`; g.fillRect((k * 53) % w, (k * 97) % h, 2, 2); } }, { repeat: [10, 12] });
+  const fl = mesh(new THREE.PlaneGeometry(W, D), std('#ffffff', { map: carpet, roughness: 1 }), 0, 0, 0, L); fl.rotation.x = -Math.PI / 2;
+  const dark = std('#3d4246', { roughness: 0.85 }), darker = std('#2c3034', { roughness: 0.9 });
+  // 통유리 너머 겐트 (세 면), 앞쪽은 책장 벽
+  const winWall = (len, px, pz, ry, off) => {
+    const t = ghentTex.clone(); t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = len / 3.1 / 2.13; t.offset.x = off; t.needsUpdate = true;
+    const g = new THREE.Group(); g.position.set(px, 0, pz); g.rotation.y = ry; L.add(g);
+    mesh(new THREE.PlaneGeometry(len + 4, 3.1), new THREE.MeshBasicMaterial({ map: t }), 0, 1.88, -0.9, g);
+    mesh(box(len, 0.35, 0.3), darker, 0, 0.175, 0, g);
+    mesh(box(len, 0.32, 0.5), dark, 0, H - 0.16, 0, g);
+    for (let x = -len / 2; x <= len / 2 + 0.01; x += 3) mesh(box(0.42, H, 0.42), dark, x, H / 2, 0, g);
+    for (let x = -len / 2 + 1.5; x < len / 2; x += 3) mesh(box(0.05, H - 0.6, 0.06), darker, x, 1.85, 0.02, g);
+    mesh(box(len, 0.04, 0.06), darker, 0, 0.36, 0.02, g);
+  };
+  winWall(W, 0, -D / 2, 0, 0.1);
+  winWall(D, -W / 2, 0, Math.PI / 2, 0.35);
+  winWall(D, W / 2, 0, -Math.PI / 2, 0.6);
+  // 앞쪽 벽: 책장, 정숙 안내, 비상구
+  const front2 = new THREE.Group(); front2.position.z = D / 2; front2.rotation.y = Math.PI; L.add(front2);
+  mesh(new THREE.PlaneGeometry(W, H), std('#d8d6cf', { roughness: 0.9 }), 0, H / 2, 0.01, front2);
+  const spines = canvasTex(512, 256, (g, w, h) => { g.fillStyle = '#5a4a3a'; g.fillRect(0, 0, w, h); for (let r = 0; r < 4; r++) { let x = 4; while (x < w - 10) { const bw = 8 + (x * 7 % 13); g.fillStyle = ['#8c2f39', '#2f5d8c', '#3f7a4a', '#c9a24a', '#6b4a8c', '#d9d2c0', '#2b2f33'][(x + r * 3) % 7]; g.fillRect(x, r * 64 + 6, bw, 54 - (x % 9)); x += bw + 2; } g.fillStyle = '#3b3028'; g.fillRect(0, r * 64 + 60, w, 4); } });
+  for (const x of [-5.4, -2.6, 2.6, 5.4]) { mesh(box(2.4, 2.3, 0.4), std('#6b5846', { roughness: 0.8 }), x, 1.15, 0.22, front2); mesh(new THREE.PlaneGeometry(2.25, 2.1), std('#ffffff', { map: spines, roughness: 0.9 }), x, 1.15, 0.43, front2); }
+  sign(isEN ? 'SILENCE · STILTE · 정숙' : '정숙 · STILTE · SILENCE', 1.5, 0.3, { w: 900, h: 180, bg: '#1d2126', fg: '#f3f1e8' }, front2, 0, 2.55, 0.03);
+  sign('EXIT', 0.4, 0.16, { w: 400, h: 160, bg: '#1f9d55', fg: '#ffffff' }, front2, 0, 3.1, 0.03);
+  // 회색 긴 책상, 가운데 스탠드, 의자
+  const deskMat = std('#b8b7b1', { roughness: 0.6 }), sideMat = std('#a6a59f', { roughness: 0.7 }), postMat = std('#e8e8e4', { roughness: 0.4, metalness: 0.2 });
+  const chairMat = std('#1f2226', { roughness: 0.5, metalness: 0.4 });
+  const props = [std('#e8f4ff', { transparent: true, opacity: 0.75, roughness: 0.1 }), std('#ff8fb0'), std('#2f5d8c'), std('#f4f1e8'), std('#c9a24a')];
+  for (const rz of LIB_ROWS) {
+    mesh(box(10.6, 0.05, 1.3), deskMat, 0, BENCH_H - 0.025, rz, L);
+    mesh(box(10.4, 0.62, 0.04), sideMat, 0, BENCH_H - 0.36, rz, L);
+    for (const sx of [-1, 1]) mesh(box(0.05, BENCH_H - 0.05, 1.2), sideMat, sx * 5.25, (BENCH_H - 0.05) / 2, rz, L);
+    for (let x = -4; x <= 4; x += 2) {
+      mesh(cyl(0.025, 0.025, 0.6, 10), postMat, x, BENCH_H + 0.3, rz, L);
+      mesh(box(0.55, 0.04, 0.3), postMat, x, BENCH_H + 0.62, rz, L);
+      mesh(box(0.5, 0.01, 0.25), glow('#fffbe8'), x, BENCH_H + 0.598, rz, L);
+    }
+    for (let k = 0; k < 8; k++) {
+      const x = -4.9 + rnd() * 9.8, z = rz + (rnd() < 0.5 ? -1 : 1) * (0.15 + rnd() * 0.35), t = Math.floor(rnd() * 5);
+      if (t === 0) mesh(cyl(0.035, 0.035, 0.22, 10), props[0], x, BENCH_H + 0.11, z, L);
+      else mesh(box(0.2, 0.03 + rnd() * 0.04, 0.27), props[t], x, BENCH_H + 0.03, z, L).rotation.y = rnd() * 3;
+    }
+  }
+  SEATS.forEach((st, k) => {
+    const g = new THREE.Group(); g.position.set(st.x, 0, st.z + (st.z > st.row ? 0.12 : -0.12)); g.rotation.y = st.ry; L.add(g);
+    mesh(box(0.42, 0.04, 0.4), chairMat, 0, 0.66, 0, g);
+    mesh(box(0.42, 0.4, 0.03), chairMat, 0, 0.9, -0.2, g);
+    for (const [x, z] of [[-0.19, -0.18], [0.19, -0.18], [-0.19, 0.18], [0.19, 0.18]]) mesh(cyl(0.012, 0.012, 0.66, 6), chairMat, x, 0.33, z, g);
+    const hit = new THREE.Mesh(cyl(0.26, 0.26, 0.8, 10), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = 0.4; hit.userData.seat = k; g.add(hit); stools.push(hit);
+  });
+  const rb = document.getElementById('rosterBtn'); rb.innerHTML = rb.innerHTML.replace('/14', '/100').replace('벤치', '도서관').replace('Bench', 'Library');
+  document.getElementById('careBtn').hidden = true;
+}
+
 /* ================= 루프 ================= */
 const clk = new THREE.Clock();
 let lastSec = -1, lastSky = Date.now();
@@ -3215,6 +3624,7 @@ function frame() {
   for (const st of students.values()) st.update(dt, t);
   animateCare(dt, t);
   animateDoor(dt);
+  updateQuickCare();
   if (!reduceMotion) { platform.rotation.y += dt * 0.9; platform.position.x = Math.sin(t * 12) * 0.012; platform.position.z = Math.cos(t * 12) * 0.012; }
   if (!reduceMotion) {
     const hg = hunger(), feeding = careAnim.feed >= 0;
