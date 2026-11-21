@@ -10,6 +10,15 @@ No install, no email. It works in your browser on a laptop or a phone, in landsc
 
 ---
 
+## 🆕 What's new (v1.6)
+- 👥 Friends: add by nickname, see who's online
+- 🛏 Rest options: nap in the bed or zone out at your seat
+- Updated on November 21st, 2026
+
+[See all updates →](CHANGELOG.md)
+
+---
+
 ## What is this?
 
 Writing a thesis alone at 2 a.m. is lonely. Here you join a virtual lab as a little character: an eagle by default, or a vegetable if you prefer. You sit at a shared bench with your friends. When you focus, everyone bows their head until your crowns touch, and you work in silence together.
