@@ -28,9 +28,15 @@ It's a body-doubling space for researchers, with some lab chaos: messy reagent s
    - 🧪 **Create a new lab**: give it a name and a size (2–14 people). You get a 6-character code and a link to share.
    - 🔑 **Enter a lab**: type a code a friend sent you, or just open their link.
    - 🧪 **Join the public library**: you can join the room without a code up to 100 people. 
+
+      ![Lab view](sources/library.png)
+
    - 👑 **Eagle VIP Club**: only for people approved by the developer. Send a request and wait for approval.
 4. **Pick a spot to sit**: pick your character, point color and today's task. Put yourself head to head and start focusing! One session lasts 30 minutes and after each session you get a chance to water the plants or feed the laboratory animals. 
 5. **Rest**: You can take a rest either sitting still or taking a nap on the bed in the corner (max 1 person). 
+
+![Lab view](sources/sleep.png)
+
 
 You can log in with the same nickname and PIN on any device.
 
