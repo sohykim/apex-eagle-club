@@ -5,6 +5,33 @@ Newest first.
 
 ---
 
+## v1.8 · Ghent by day and night
+- The view of Ghent outside the windows now follows your local time:
+  - **6:00–18:00**: daytime
+  - **18:00–20:00**: 🌇 sunset sky
+  - **20:00–6:00**: 🌃 navy night sky with stars and the towers lit up
+- Shared links now show the English name first: **Apex Eagle Club · 정수리 독수리 연구소**.
+
+## v1.7 · Reagent storage, more libraries & iPhone shortcut
+
+### 🧴 Reagent storage
+- A new narrow storeroom packed with reagent bottles and boxes, reachable from the lobby **before entering a room**.
+- Everything personal in one place: **👥 Friends**, **👤 My account** (nickname, country, field, PIN), **❓ How to use** and **📱 iPhone shortcut**.
+- Tap the corners at the back of the room or the buttons at the bottom. **🚪 Back to lobby** takes you back.
+
+### 📚 Library
+- **Exit door**: tap the door under the EXIT sign to leave the library.
+- **Overflow libraries**: when a library reaches 100 people, a new one opens (Eagle Library 2, 3, …). New arrivals go to the least crowded library.
+- Friends can follow you into any library.
+
+### 📱 iPhone
+- New **📱 iPhone shortcut** guide: add the lab to your home screen from Safari, or build a Shortcuts-app shortcut for Siri and study-time automations.
+- The home-screen icon is now the eagle. The guide also lets you open the icon image to use in a shortcut.
+
+### ✨ Smaller fixes
+- Long lists in popups (like the guide) are wider and easier to read: smaller title, and wrapped lines stay indented under their bullet.
+- The guide now mentions friends, the reagent storage and the library door.
+
 ## v1.6 · Friends & rest options
 
 ### 👥 Friends
