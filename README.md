@@ -1,6 +1,6 @@
 # 🦅 Apex Eagle Lab
 
-**A quiet 3D lab bench where grad students study together, crown to crown.**
+**A quiet 3D lab bench where grad students study together, head to head!**
 
 👉 **Open the lab: [sohykim.github.io/apex-eagle-club](https://sohykim.github.io/apex-eagle-club/)**
 
