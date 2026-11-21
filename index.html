@@ -10,14 +10,14 @@
 <meta property="og:title" content="Apex Eagle Club">
 <meta property="og:description" content="Virtual Lab for Graduate Students">
 <meta property="og:url" content="https://sohykim.github.io/apex-eagle-club/">
-<meta property="og:image" content="https://sohykim.github.io/apex-eagle-club/og-image.png">
+<meta property="og:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="An eagle and vegetable friends in lab coats waving peace signs at a lab bench">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Apex Eagle Club">
 <meta name="twitter:description" content="Virtual Lab for Graduate Students">
-<meta name="twitter:image" content="https://sohykim.github.io/apex-eagle-club/og-image.png">
+<meta name="twitter:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gaegu:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Poor+Story&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
@@ -725,7 +725,7 @@ function drawSky(g, w, h) {
 }
 const skyTex = canvasTex(256, 128, drawSky);
 const WIN_X = 3.4;
-const ghentTex = new THREE.TextureLoader().load('ghent.jpg'); ghentTex.colorSpace = THREE.SRGBColorSpace;
+const ghentTex = new THREE.TextureLoader().load('/sources/ghent.jpg'); ghentTex.colorSpace = THREE.SRGBColorSpace;
 mesh(new THREE.PlaneGeometry(3.2, 1.5), new THREE.MeshBasicMaterial({ map: ghentTex }), WIN_X, 1.85, 0.02, back);
 const frameMat = std('#eef0ee', { roughness: 0.5 });
 [[0, 0.78, 3.4, 0.08], [0, -0.78, 3.4, 0.08], [-1.64, 0, 0.08, 1.64], [1.64, 0, 0.08, 1.64], [0, 0, 0.05, 1.5]].forEach(([x, y, w, h]) => mesh(box(w, h, 0.08), frameMat, WIN_X + x, 1.85 + y, 0.05, back));
@@ -2959,7 +2959,7 @@ function playWhite(ctx) {
 let rainBuf = null, rainLoading = null;
 function loadRain(ctx) {
   if (rainBuf) return Promise.resolve(rainBuf);
-  if (!rainLoading) rainLoading = fetch('rain.mp3').then(r => { if (!r.ok) throw new Error('rain'); return r.arrayBuffer(); }).then(a => new Promise((res, rej) => ctx.decodeAudioData(a, res, rej))).then(b => (rainBuf = b)).catch(e => { rainLoading = null; throw e; });
+  if (!rainLoading) rainLoading = fetch('/sources/rain.mp3').then(r => { if (!r.ok) throw new Error('rain'); return r.arrayBuffer(); }).then(a => new Promise((res, rej) => ctx.decodeAudioData(a, res, rej))).then(b => (rainBuf = b)).catch(e => { rainLoading = null; throw e; });
   return rainLoading;
 }
 function playRain(ctx) {
