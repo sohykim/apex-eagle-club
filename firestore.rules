@@ -1,0 +1,35 @@
+rules_version = '2';
+// 정수리 독수리 연구소 Firestore 규칙
+// OWNER_UID 자리를 '나의 연구 여정'에 보이는 벨라의 계정 ID로 바꾼 뒤 [게시]하세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner() { return signedIn() && request.auth.uid == 'OWNER_UID'; }
+    function self(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // 출석·집중 기록, 채팅, 별명 목록: 누구나 읽고, 자기 것만 쓰기 (개발자는 정리 가능)
+    match /att/{uid}   { allow read: if true; allow write: if self(uid) || isOwner(); }
+    match /chat/{uid}  { allow read: if true; allow write: if self(uid) || isOwner(); }
+    match /names/{uid} { allow read: if true; allow write: if self(uid) || isOwner(); }
+
+    // 내 프로필(별명, 가입일): 본인만
+    match /profiles/{uid} { allow read, write: if self(uid); }
+
+    // 별명 → 로그인 정보 연결: 별명 하나에 한 사람, 남의 것은 못 바꿈
+    match /logins/{key} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // 화이트보드 공지, 네온 문구, 개발자 표시: 개발자만 쓰기
+    match /board/{doc} { allow read: if true; allow write: if isOwner(); }
+
+    // 식물 물주기, 동물 밥주기: 로그인한 사람
+    match /care/{doc} { allow read: if true; allow write: if signedIn(); }
+
+    // 피드백: 본인만 쓰고, 개발자만 모두 읽기
+    match /feedback/{uid} { allow read, write: if self(uid) || isOwner(); }
+  }
+}
