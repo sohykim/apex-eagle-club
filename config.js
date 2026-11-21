@@ -10,5 +10,5 @@ window.JSDSR_CONFIG = {
     appId: "1:376788252560:web:81664eb23e1c50d84ae515"
   },
   // 사이트에서 '벨라'로 가입한 뒤, '나의 연구 여정' 맨 아래 "내 계정 ID"를 여기 넣으면 개발자 권한이 생겨요.
-  ownerUid: ""
+  ownerUid: "7HDvsEkQLFVYyl7hnp4ZC2wKO3E3"
 };
