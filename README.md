@@ -46,7 +46,6 @@ It's a body-doubling space for researchers, with some lab chaos: messy reagent s
 
 ![Lab view](sources/sleep.png)
 
-
 You can log in with the same nickname and PIN on any device.
 
 ## Connect with your friend
