@@ -1,34 +1,74 @@
-# 정수리 독수리 연구소 — 공개 사이트 올리기
+# 🦅 Apex Eagle Lab
 
-준비물: GitHub 계정, Google 계정 (Firebase 무료 요금제로 충분해요). 시간은 20분쯤 걸려요.
+**A quiet 3D lab bench where grad students study together, crown to crown.**
 
-## 1. Firebase 프로젝트 만들기 (데이터·로그인 담당)
-1. https://console.firebase.google.com → **프로젝트 추가** → 이름 `jeongsuri-lab` (애널리틱스는 꺼도 돼요)
-2. 왼쪽 **빌드 > Authentication** → 시작하기 → 로그인 방법에서 **이메일/비밀번호** 사용 설정
-3. **빌드 > Firestore Database** → 데이터베이스 만들기 → 위치 `europe-west1 (Belgium)` → **프로덕션 모드**
-   - **규칙** 탭에 `firestore.rules` 내용을 통째로 붙여 넣고 **게시**
-4. **빌드 > Realtime Database** → 데이터베이스 만들기 → 위치 `europe-west1` → **잠금 모드**
-   - **규칙** 탭에 `database.rules.json` 내용을 붙여 넣고 **게시**
-5. 프로젝트 개요 옆 톱니 → **프로젝트 설정** → 아래 **내 앱**에서 웹 아이콘 `</>` → 앱 등록
-   - 나오는 `firebaseConfig` 값들을 `config.js`의 `firebase: { ... }` 안에 붙여 넣기
-   - `databaseURL`이 안 보이면 Realtime Database 화면 위쪽 주소(https://…firebasedatabase.app)를 넣으세요
+👉 **Open the lab: [sohykim.github.io/apex-eagle-club](https://sohykim.github.io/apex-eagle-club/)**
 
-## 2. GitHub Pages에 올리기 (사이트 담당)
-1. GitHub → **New repository** → 이름 예: `jeongsuri-lab` → **Public** → Create
-2. **Add file > Upload files** → 이 폴더의 `index.html`, `config.js`, `fonts` 폴더를 끌어다 놓기 → Commit
-3. 저장소 **Settings > Pages** → Source: **Deploy from a branch**, Branch: `main` / `(root)` → Save
-4. 1~2분 뒤 주소가 나와요: `https://<깃허브아이디>.github.io/jeongsuri-lab/`
-5. Firebase **Authentication > 설정 > 승인된 도메인**에 `<깃허브아이디>.github.io` 추가
+No install, no email. It works in your browser on a laptop or a phone, in landscape or portrait. The site is available in English and Korean (한국어).
 
-## 3. 벨라에게 개발자 권한 주기
-1. 사이트에 들어가서 **처음 왔어요 · 가입하기** → 별명 `벨라`, 비밀번호 4자리로 가입
-2. **나의 연구 여정** 창 맨 아래 **내 계정 ID**를 복사
-3. `config.js`의 `ownerUid: ""` 따옴표 안에 붙여 넣고 GitHub에 다시 업로드
-4. Firebase Firestore **규칙**에서 `'OWNER_UID'`를 같은 ID로 바꾸고 **게시**
-5. 새로고침하면 화이트보드 공지, 네온 문구, 피드백 확인 같은 개발자 기능이 열려요
+---
 
-## 알아 둘 것
-- `config.js`의 Firebase 값은 공개돼도 괜찮아요. 누가 무엇을 쓸 수 있는지는 위 규칙이 지켜요.
-- 비밀번호가 숫자 4자리라 강하지 않아요. Firebase가 반복 시도를 막고, 사이트도 5번 틀리면 30초 잠가요. 그래도 중요한 정보는 넣지 마세요.
-- 온글잎 승훈체는 웹사이트에 올려 써도 되는지 라이선스를 한 번 확인해 주세요.
-- 고칠 때는 `index.html`만 다시 올리면 돼요.
+## What is this?
+
+Writing a thesis alone at 2 a.m. is lonely. Here you join a virtual lab as a little character: an eagle by default, or a vegetable if you prefer. You sit at a shared bench with your friends. When you focus, everyone bows their head until your crowns touch, and you work in silence together.
+
+It's a body-doubling space for researchers, with some lab chaos: messy reagent shelves, a whiteboard full of half-finished calculations, plants that wilt if nobody waters them, and a neon sign that says *I want to graduate*.
+
+## Get started in 1 minute
+
+1. **Pick a language**: English or 한국어.
+2. **Sign up** with:
+   - a **nickname** (up to 20 characters)
+   - a **4-digit PIN**
+   - the **country** you live in (shown as a flag 🇧🇪)
+   - your **field of study** (e.g. Plant biology, Biomedical, Bioinformatics)
+3. **Choose a lab**:
+   - 🧪 **Create a new lab**: give it a name and a size (2–14 people). You get a 6-character code and a link to share.
+   - 🔑 **Enter a lab**: type a code a friend sent you, or just open their link.
+   - 👑 **Eagle VIP Club**: only for people approved by the developer. Send a request and wait for approval.
+4. **Sit at the bench**: pick your character, T-shirt color and today's task. Then focus.
+
+You can log in with the same nickname and PIN on any device.
+
+## While you're in the lab
+
+| Button | What it does |
+|---|---|
+| **Focus / Break** | Focus bows your head toward the others and starts your timer. Break lets you lean back with a coffee ☕. |
+| **Get angry!** | For when the Western blot fails again. 💢 |
+| **Chat** | Press Enter to chat. Talk too much and your name goes on the whiteboard. |
+| **Bench view / Face view** | Change the camera. You can also tap the whiteboard, plants, animals or the confocal microscope to look closer. |
+| **📸 Capture** | Everyone smiles and makes a peace sign ✌️. The photo gets a film-camera date stamp. |
+| **Care** | Water the plants 🌱 and feed the mice, rabbit, zebrafish and frogs 🐭🐰🐟🐸. |
+| **My research journey** | Your focus time, sessions, streak, monthly calendar, account settings and language. |
+| **Attendance** | Who is here now, who came today, and the weekly record. |
+
+Your name tag shows your flag and your field of study while you focus.
+
+## Little rules of the lab
+
+- **Sessions are 30 minutes.** Each finished focus session earns you one care action.
+- **Care resets every 15 minutes.** You also get one free care when you arrive.
+- **The whiteboard keeps score.** It shows a monthly study-hours graph, and the month's top studier gets a framed portrait by the door. 🏆
+- **Lab managers** (whoever created the lab) can change the whiteboard notice and the neon sign, and clear the chat.
+
+## FAQ
+
+**I forgot my PIN.**
+There's no email, so there's no reset link yet. You'll need to make a new account. Write your PIN down somewhere safe.
+
+**Can my friends see my data?**
+Other people in your lab can see your nickname, flag, field of study, focus time and chat messages. Each lab keeps its own records.
+
+**Is my PIN secure?**
+It's a 4-digit PIN for a study room, not a bank. Don't reuse a PIN you use anywhere important.
+
+**Why do I see "BE" instead of a 🇧🇪 flag?**
+Windows doesn't draw flag emojis. Mac, iPhone and Android do.
+
+**Something's broken, or I have an idea.**
+Open *My research journey → Send feedback*. Only the developer can read it.
+
+---
+
+*Made for grad students who need a little company to keep going. Crown to crown, soar like eagles!* 🦅
