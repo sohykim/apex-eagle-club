@@ -289,7 +289,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
   <div class="acct"><div class="row"><button class="btn small" type="button" data-lang="ko">한국어</button><button class="btn small" type="button" data-lang="en">English</button></div></div>
   <h3>계정 관리</h3>
   <div class="acct">
-    <div class="row"><label for="renameInput">별명 바꾸기</label><input type="text" id="renameInput" maxlength="12" autocomplete="off"><button class="btn small" type="button" id="renameBtn">바꾸기</button></div>
+    <div class="row"><label for="renameInput">별명 바꾸기</label><input type="text" id="renameInput" maxlength="20" autocomplete="off"><button class="btn small" type="button" id="renameBtn">바꾸기</button></div>
     <div class="row"><label for="pinOld">비밀번호 바꾸기</label><input type="password" id="pinOld" inputmode="numeric" maxlength="4" placeholder="지금 번호"><input type="password" id="pinNew" inputmode="numeric" maxlength="4" placeholder="새 번호" aria-label="새 비밀번호"><button class="btn small" type="button" id="pinBtn">바꾸기</button></div>
     <div class="row"><button class="btn small" type="button" id="logoutBtn">로그아웃</button><button class="btn small danger" type="button" id="deleteBtn">계정 삭제</button></div>
     <div class="row" id="deleteRow" hidden><label for="pinDel">정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.</label><input type="password" id="pinDel" inputmode="numeric" maxlength="4"><button class="btn small danger" type="button" id="deleteGo">영구 삭제</button></div>
@@ -315,7 +315,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     <ul id="vipReqList"></ul>
     <p class="note">VIP 회원</p>
     <ul id="vipList"></ul>
-    <div class="row"><input type="text" id="vipAdd" maxlength="12" autocomplete="off" aria-label="VIP에 추가할 별명"><button class="btn small" type="button" id="vipAddBtn">추가</button></div>
+    <div class="row"><input type="text" id="vipAdd" maxlength="20" autocomplete="off" aria-label="VIP에 추가할 별명"><button class="btn small" type="button" id="vipAddBtn">추가</button></div>
     <h3>받은 피드백</h3>
     <ul id="fbList"></ul>
     <h3>회원 목록</h3>
@@ -360,7 +360,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
     <div class="cardtop"><h2 id="authTitle">연구소 입장</h2><button class="btn small" type="button" id="authLang">English</button></div>
     <p class="lede" id="authLede">연구소 문을 여는 중이에요…</p>
     <form id="authForm" autocomplete="off" hidden>
-      <div class="field"><label for="authNick"><span>별명</span></label><input type="text" id="authNick" maxlength="12"></div>
+      <div class="field"><label for="authNick"><span>별명</span></label><input type="text" id="authNick" maxlength="20"></div>
       <div class="field"><label for="authPin"><span>비밀번호 (숫자 4자리)</span></label><input type="password" id="authPin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></div>
       <div class="field" id="pin2Row"><label for="authPin2"><span>비밀번호 확인</span></label><input type="password" id="authPin2" inputmode="numeric" maxlength="4"></div>
       <div class="field" id="ccRow"><label for="authCc"><span>지금 사는 나라</span></label><select id="authCc" class="ccsel"></select></div>
@@ -1917,7 +1917,7 @@ const pad = n => String(n).padStart(2, '0');
 const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 function fmtMin(ms) { const m = Math.floor(ms / 60000); return m < 60 ? $tt(`${m}분`, `${m} min`) : $tt(`${Math.floor(m / 60)}시간 ${pad(m % 60)}분`, `${Math.floor(m / 60)} h ${pad(m % 60)} min`); }
 function fmtShort(ms) { const m = Math.floor(ms / 60000); return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? pad(m % 60) : ''}`; }
-function clean(str, n = 12) { return String(str).replace(/[\u0000-\u001f\u007f\u00ad\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g, '').trim().slice(0, n); }
+function clean(str, n = 20) { return String(str).replace(/[\u0000-\u001f\u007f\u00ad\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g, '').trim().slice(0, n); }
 function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
@@ -2854,7 +2854,7 @@ function subscribeVipAdmin() {
   db.collection('vipReq').onSnapshot(qs => { vipReqs.clear(); for (const d of qs.docs) vipReqs.set(d.id, d.data() || {}); renderVip(); }, () => {});
 }
 async function setVip(uid, nick, on) {
-  const next = { ...vipMembers }; if (on) next[uid] = clean(String(nick || ''), 12) || '?'; else delete next[uid];
+  const next = { ...vipMembers }; if (on) next[uid] = clean(String(nick || '')) || '?'; else delete next[uid];
   await db.doc('vip/allow').set({ members: next }); vipMembers = next; renderVip();
 }
 function renderVip() {
