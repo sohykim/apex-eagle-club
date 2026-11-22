@@ -5,6 +5,15 @@ Newest first.
 
 ---
 
+## v1.9 · Name tags, naps & veggie touch-ups
+- Name tags (with status) now always float **above each character's head**, in every view.
+- **Tap someone's name tag to add them as a friend.** If they already sent you a request, you can accept it right there.
+- Friend requests show a **red badge** on the 👥 button and in the lobby.
+- **Zzz…** floats above eagles napping in the bed. 💤
+- The 🫑 bell pepper is bumpier and chunkier.
+- English names: the endive is now **Chicory**, and the neon sign reads **"Please let me graduate"**.
+- New home-screen icon: the eagle in the reagent storage.
+
 ## v1.8 · Ghent by day and night
 - The view of Ghent outside the windows now follows your local time:
   - **6:00–18:00**: daytime
