@@ -5,6 +5,13 @@ Newest first.
 
 ---
 
+## v2.4 · Pick your task at every session
+- **Today's task is chosen when you press Start focus**, every session. Clicking a chair now seats you right away.
+- 🇧🇪 "Dutch homework" is now **🌎 Language study**. The textbook is a yellow language book; members living in Belgium keep the Dutch (Nederlands) textbook.
+- **Fewer database writes**: your records are saved when you enter, take a break, or leave, not every 5 minutes. While the screen is off, time is kept on your device and saved at the next save point.
+- The class motto frame no longer has the red sticker, and yellow buttons use the same font as the others.
+- 🧴 Reagent storage: same fonts as the lab, character back to 80% size, biohazard logo printed directly on the orange bin, and the fridge door opens the other way.
+
 ## v2.3 · Gloves on, one seat per eagle
 - **One account, one place**: opening the same account in another browser or tab disconnects the older one, with a button to switch back.
 - **Easier seating**: entering a room asks you to click the chair you want. The seating window now shows your nickname, country and field from sign-up and only asks for today's task, then **Sit at the bench**. The dock button is always **Character**.
