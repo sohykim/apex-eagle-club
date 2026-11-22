@@ -4787,7 +4787,7 @@ function openStoreItem(key) {
   if (key === 'bin') return storeBinNote();
   if (key === 'fridge') { const u = storeFridge.userData; u.open = u.open ? 0 : 1; if (u.open) toast($tt('🍺 시료 냉장고에… 캔맥주가 굴러다녀요. 못 본 걸로 해요. 쉿!', "🍺 Beer cans rolling around in the sample fridge… You didn't see that. Shh!")); return; }
   if (key === 'dev') return popup({ title: $tt('🦅 독수리 1호 · 개발자', '🦅 Eagle No.1 · Developer'), text: $tt(
-`김 소형. 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이였지. 하지만 다들 점점 모이기가 어려워지고, 다른 나라로 떠나는 등 모종의 이유로 모임이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
+`김소형은 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이였지. 하지만 다들 점점 모이기가 어려워지고, 다른 나라로 떠나는 등 모종의 이유로 모임이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
 `So Hyung Kim (Korean: 김소형). I'm the developer of the Apex Eagle Lab and a PhD student in agricultural biotechnology in Belgium. The lab started as an evening study group of PhD friends who met to read papers closely together, eagles reading papers head to head. Over time it got harder to meet: people got busy, some moved to other countries. So I wished for a place where we could gather online even when we're far apart, and this lab was born. Welcome to the Apex Eagle Lab! Let's focus together and soar high like eagles!`), yes: $tt('반가워요! 🦅', 'Nice to meet you! 🦅') });
   if (key === 'out') return exitStore();
 }
