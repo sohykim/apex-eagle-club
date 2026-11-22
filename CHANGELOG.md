@@ -5,6 +5,38 @@ Newest first.
 
 ---
 
+## v2.1 · Phone-friendly focus & lighter data use
+- **Pick up where you left off**: if your phone closes the app mid-session, reopening the same room puts you back in your seat and continues your focus session (within 3 hours).
+- **Away-time check**: if the screen was off for 20+ minutes during focus, you're asked whether you kept studying. Choose "No" and that time is left out of your focus time, sessions and level.
+- Your own leftover connection from before the app closed no longer takes your seat.
+- The attendance list is now loaded when you enter a room and when you open Attendance or My journey, instead of streaming every update. People at the bench still update live. This keeps the lab well within the free database limits as more people join.
+
+## v2.0 · Levels, characters & my reagent storage
+
+### ⭐ Levels & awards
+- Everyone starts at **Lv.1** and goes up one level for every **10 finished sessions**.
+- Awards at **Lv.10** 🥉, **Lv.20** 🥈 and **Lv.30** 🥇. Levels show on name tags, and **tapping someone's name tag** opens their card with level, field and awards (plus the friend button).
+- Earlier sessions in each room are counted once, so existing members don't start from zero.
+
+### 🎨 Characters
+- The default is a **yellow eagle**.
+- Your character, color and new **👓 glasses** are saved to your account and follow you into every room. No more picking them each time you enter.
+- Change them anytime: **🎨 Change character** in the reagent storage, or the **Character** button inside a room.
+
+### 🧴 My reagent storage
+- Bigger room with a **fridge**, a rattling **autoclave** puffing steam, and a **biohazard bin** for notes to the developer.
+- Your character stands in the middle and waves. 👋
+- **📊 My records**: days attended, total focus time, sessions, level progress, and time per activity (thesis, reading, Dutch homework, …).
+- The view stays fixed, even after opening and closing panels.
+- All text in the storage uses the subtitle font. The **iPhone shortcut** now lives only here.
+
+### 🎓 Lab hosts
+- The person who created a lab wears a **graduation cap**.
+
+### Smaller things
+- The neon sign follows your language ("졸업하고 싶다" ↔ "Please let me graduate").
+- The developer menu shows how many people are online right now.
+
 ## v1.9 · Name tags, naps & veggie touch-ups
 - Name tags (with status) now always float **above each character's head**, in every view.
 - **Tap someone's name tag to add them as a friend.** If they already sent you a request, you can accept it right there.

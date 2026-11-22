@@ -74,6 +74,7 @@ html, body { height: 100%; margin: 0; background: var(--night); color: var(--pap
 @keyframes zzz { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(-7px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .tag .zzz i { animation: none; } }
 .tag.addable { pointer-events: auto; cursor: pointer; }
+.tag .lvb { font: 400 11px var(--font-title); color: var(--amber); margin-right: 4px; }
 .tag.addable:hover { border-color: var(--mint); }
 #angryBtn:not(:disabled) { color: #ffb0a6; }
 #careBtn.alert b, #devBtn.alert b { color: #ff8f7a; }
@@ -100,6 +101,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 #roster.open { display: block; }
 #journey { right: calc(16px + var(--safe-r)); top: calc(64px + var(--safe-t)); width: 340px; max-height: calc(100% - 170px - var(--safe-t) - var(--safe-b)); overflow-y: auto; padding: 14px; display: none; }
 #journey.open { display: block; }
+.devOnline { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: rgba(124,199,179,.12); border: 1px solid rgba(124,199,179,.35); font: 400 15px var(--font-title); }
 #friends { right: calc(16px + var(--safe-r)); top: calc(64px + var(--safe-t)); width: 340px; max-height: calc(100% - 170px - var(--safe-t) - var(--safe-b)); overflow-y: auto; padding: 14px; display: none; }
 #friends.open { display: block; }
 #friends h3 { font-size: 15px; margin: 14px 0 8px; }
@@ -195,6 +197,22 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 2px sol
 
 #storeHud { left: 50%; transform: translateX(-50%); bottom: calc(14px + var(--safe-b)); padding: 10px 12px; border-radius: 18px; display: grid; gap: 8px; justify-items: center; max-width: calc(100% - 24px); }
 #storeHud[hidden] { display: none; }
+#storeStats { left: calc(16px + var(--safe-l, 0px)); top: calc(64px + var(--safe-t)); width: 330px; max-height: calc(100% - 190px - var(--safe-t) - var(--safe-b)); overflow-y: auto; padding: 14px; display: none; }
+#storeStats.open { display: block; }
+#storeStats h3 { margin: 4px 0 10px; font-size: 17px; }
+#storeStats table { width: 100%; border-collapse: collapse; font-size: 14px; }
+#storeStats td { padding: 7px 4px; border-top: 1px solid var(--line); vertical-align: middle; }
+#storeStats td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#storeStats .lvrow { display: grid; gap: 6px; margin-bottom: 10px; }
+#storeStats .lvbig { font-size: 22px; color: var(--amber); }
+#storeStats .bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; }
+#storeStats .bar i { display: block; height: 100%; background: var(--amber); border-radius: 99px; }
+#storeStats .abar { height: 5px; margin-top: 4px; }
+#storeStats .abar i { background: var(--mint); }
+#storeStats h4 { margin: 14px 0 4px; font-size: 14px; color: var(--muted); font-weight: 400; }
+#storeStats .note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+body.in-store, body.in-store * { font-family: var(--font-light) !important; }
+body.in-store .lvbig, body.in-store #storeStats b { font-weight: 400; }
 #storeHud .sh-title { font-size: 14px; }
 #storeHud .sh-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .bigbtn.store { background: #1d2a26; }
@@ -223,6 +241,10 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
 #napBack { border-color: var(--amber); color: var(--amber); font-weight: 600; }
 #doorExit { border-color: var(--pink); color: var(--pink); font-weight: 600; }
 
+#charDlg { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; background: rgba(8,10,12,.55); padding: 16px; }
+#charDlg.open { display: grid; }
+#charDlg .card { max-width: 520px; width: 100%; max-height: calc(100% - 8px); overflow-y: auto; }
+.glassTog { display: flex; gap: 8px; align-items: center; font-size: 15px; cursor: pointer; }
 #join { position: fixed; inset: 0; z-index: 10; display: none; align-items: center; justify-content: center; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: rgba(8, 10, 13, 0.55); }
 #join.open { display: flex; }
 #auth { position: fixed; inset: 0; z-index: 11; display: none; align-items: center; justify-content: center; padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); background: rgba(8, 10, 13, 0.72); }
@@ -374,7 +396,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
   <div class="acct">
     <p class="note" id="jRoom"></p>
     <div class="row" id="neonRow" hidden><input type="text" id="neonPublic" maxlength="16" autocomplete="off" aria-label="네온사인 문구"><button class="btn small" type="button" id="neonPublicBtn">네온 바꾸기</button></div>
-    <div class="row"><button class="btn small" type="button" id="helpBtn">❓ 사용법</button><button class="btn small" type="button" id="iosBtn">📱 아이폰 바로가기</button><button class="btn small" type="button" id="roomLeave">🚪 다른 연구실로</button><button class="btn small danger" type="button" id="roomQuit" hidden>연구실 탈퇴</button></div>
+    <div class="row"><button class="btn small" type="button" id="helpBtn">❓ 사용법</button><button class="btn small" type="button" id="roomLeave">🚪 다른 연구실로</button><button class="btn small danger" type="button" id="roomQuit" hidden>연구실 탈퇴</button></div>
   </div>
   <h3>언어 · Language</h3>
   <div class="acct"><div class="row"><button class="btn small" type="button" data-lang="ko">한국어</button><button class="btn small" type="button" data-lang="en">English</button></div></div>
@@ -401,6 +423,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
   <button class="btn small pclose" type="button" data-close>← 돌아가기</button>
   <section id="devTools">
     <h3 id="devTitle">🛠 개발자 도구</h3>
+    <p class="devOnline" id="devOnline">🟢 지금 접속 중: …</p>
     <p class="note" id="devCareNote">개발자는 세션 없이 언제든 돌볼 수 있어요.</p>
     <div hidden><div class="row"><label for="notice0">화이트보드 공지</label><input type="text" id="notice0" maxlength="24"><input type="text" id="notice1" maxlength="24" aria-label="공지 2"><input type="text" id="notice2" maxlength="24" aria-label="공지 3"></div>
     <div class="row"><label for="neonInput">네온사인 문구</label><input type="text" id="neonInput" maxlength="16"><button class="btn small" type="button" id="neonSave">네온 저장</button></div>
@@ -465,9 +488,16 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
 <button class="qc" id="qcFeed" type="button" hidden aria-label="동물에게 밥 주기">🫘</button>
 <div id="zoomBar"><button class="pill" id="boardBack" type="button" hidden>← 돌아가기</button><button class="pill" id="zoomAct" type="button" hidden></button><button class="pill" id="doorExit" type="button" hidden>🚪 복도로 나가기</button><button class="pill" id="napBack" type="button" hidden>🌅 현실로 돌아가기</button></div>
 
+<aside id="storeStats" class="panel" aria-label="나의 연구 여정 요약">
+  <button class="btn small pclose" type="button" data-close>← 닫기</button>
+  <h3>📊 나의 연구 여정 요약</h3>
+  <div id="ssBody"></div>
+</aside>
 <nav id="storeHud" class="hud panel" aria-label="시약 창고" hidden>
   <b class="sh-title">🧴 시약 창고</b>
   <div class="sh-row">
+    <button class="btn small" type="button" data-store="char">🎨 캐릭터 변경</button>
+    <button class="btn small" type="button" data-store="stats">📊 내 기록</button>
     <button class="btn small" type="button" data-store="friends">👥 친구 관리</button>
     <button class="btn small" type="button" data-store="account">👤 내 계정</button>
     <button class="btn small" type="button" data-store="guide">❓ 사용법</button>
@@ -554,15 +584,28 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
   </div>
 </div>
 
+<div id="charDlg" role="dialog" aria-modal="true" aria-labelledby="charTitle">
+  <form class="card" id="charForm">
+    <h2 id="charTitle">캐릭터 바꾸기</h2>
+    <p class="lede">여기서 고른 캐릭터와 색은 내 계정에 저장돼서, 어느 방에 들어가도 그대로예요.</p>
+    <div class="field"><span>캐릭터</span><div class="chips big" id="kindChips"></div></div>
+    <div class="field"><span>티셔츠 색</span><div class="swatches" id="colorSwatches"></div></div>
+    <div class="field"><label class="glassTog"><input type="checkbox" id="glassChk"> 👓 안경 쓰기</label></div>
+    <div class="actions">
+      <button class="btn" type="button" id="charTask" hidden>📝 오늘 할 일 · 전공</button>
+      <button class="btn" type="button" id="charCancel">닫기</button>
+      <button class="btn primary" type="submit">저장</button>
+    </div>
+  </form>
+</div>
 <div id="join" role="dialog" aria-modal="true" aria-labelledby="joinTitle">
   <form class="card" id="joinForm">
     <h2 id="joinTitle">연구실 입장</h2>
-    <p class="lede">벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.</p>
+    <p class="lede">벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다.</p>
     <p class="rule" id="joinWho"></p>
     <div class="field"><label for="joinCc"><span>지금 사는 나라</span></label><select id="joinCc" class="ccsel"></select></div>
     <div class="field"><label for="joinMj"><span>전공 · 집중할 때 이름표에 보여요</span></label><input type="text" id="joinMj" maxlength="20" autocomplete="off" placeholder="예: 식물생물학, 바이오메디컬, 바이오인포매틱스"></div>
-    <div class="field"><span>캐릭터</span><div class="chips big" id="kindChips"></div></div>
-    <div class="field"><span>티셔츠 색</span><div class="swatches" id="colorSwatches"></div></div>
+    <p class="rule">🧴 캐릭터와 색은 시약 창고나 방 안의 '캐릭터' 버튼에서 바꿀 수 있어요.</p>
     <div class="field"><span>오늘 할 일</span><div class="chips" id="taskChips"></div></div>
     <p class="rule">Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.</p>
     <div class="actions">
@@ -580,7 +623,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 /* ================= 언어 ================= */
 const LANG = (() => { try { const v = localStorage.getItem('jsdsr-lang'); return v === 'en' || v === 'ko' ? v : null; } catch { return null; } })();
 const isEN = LANG === 'en';
-const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Chicory", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "Please let me graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Head to head,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Apex Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Apex Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Head to head", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Head to head, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, head to head", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head, head to head. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "개발자가 승인한 독수리만 들어갈 수 있어요": "Only eagles approved by the developer", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add", "지금 사는 나라": "Country you live in", "전공": "Field of study", "예: 식물생물학, 바이오메디컬, 바이오인포매틱스": "e.g. Plant biology, Biomedical, Bioinformatics", "전공 · 집중할 때 이름표에 보여요": "Field of study · shown on your name tag while you focus", "연구실 탈퇴": "Leave this lab", "🚪 방 나가기": "🚪 Leave lab", "🚪 복도로 나가기": "🚪 Step into the hallway", "🚪 나가기": "🚪 Leave", "배경 소리": "Background sound", "🔇 끄기": "🔇 Off", "🌫️ 백색소음": "🌫️ White noise", "🌧️ 빗소리": "🌧️ Rain", "🎹 잔잔한 집중 음악": "🎹 Calm focus music", "볼륨": "Volume", "식물에 물 주기": "Water the plants", "동물에게 밥 주기": "Feed the animals", "입력": "Input", "네온 바꾸기": "Change neon", "📚 도서관 입장": "📚 Enter the library", "초대 코드 없이 바로 들어가요 · 최대 100명": "No invite code needed · up to 100 people", "화이트보드 공지는 화이트보드를 확대한 뒤 눌러서 바꿔요.": "To change the whiteboard notice, zoom in on the whiteboard and tap it.", "개발자 도구": "Developer tools", "❓ 사용법": "❓ How to use", "🌅 현실로 돌아가기": "🌅 Back to reality", "🌶️ 빨간 고추": "🌶️ Red chili", "🌱 대파": "🌱 Scallion", "🍆 가지": "🍆 Eggplant", "🍄 버섯": "🍄 Mushroom", "🌽 옥수수": "🌽 Corn", "👥 친구": "👥 Friends", "친구": "Friends", "별명으로 친구 찾기": "Find a friend by nickname", "친구 요청": "Add friend", "받은 요청": "Requests", "친구 목록": "Friends", "보낸 요청": "Sent", "연구실에서 만난 사람은 출석부 '지금' 탭의 [+ 친구]로도 요청할 수 있어요. 서로 허락하면 친구가 돼요. 친구가 일반 연구실이나 도서관에 있으면 번호 없이 바로 따라갈 수 있어요 (VIP 클럽 제외).": "You can also add people you meet with [+ Friend] in the Attendance 'Now' tab. You become friends once both agree. If a friend is in a regular lab or the library, you can join them without a code (except the VIP Club).", "📱 아이폰 바로가기": "📱 iPhone shortcut", "🧴 시약 창고 · 나의 연구 여정": "🧴 Reagent storage · My journey", "친구 · 내 계정 · 사용법 · 아이폰 바로가기": "Friends · Account · How to use · iPhone shortcut", "🧴 시약 창고": "🧴 Reagent storage", "👥 친구 관리": "👥 Friends", "👤 내 계정": "👤 My account", "🚪 로비로": "🚪 Back to lobby", "시약 창고": "Reagent storage", "Apex Eagle Club · 정수리 독수리 연구소": "Apex Eagle Lab"};
+const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Chicory", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "Please let me graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Head to head,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Apex Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Apex Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Head to head", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Head to head, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, head to head", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head, head to head. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "개발자가 승인한 독수리만 들어갈 수 있어요": "Only eagles approved by the developer", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add", "지금 사는 나라": "Country you live in", "전공": "Field of study", "예: 식물생물학, 바이오메디컬, 바이오인포매틱스": "e.g. Plant biology, Biomedical, Bioinformatics", "전공 · 집중할 때 이름표에 보여요": "Field of study · shown on your name tag while you focus", "연구실 탈퇴": "Leave this lab", "🚪 방 나가기": "🚪 Leave lab", "🚪 복도로 나가기": "🚪 Step into the hallway", "🚪 나가기": "🚪 Leave", "배경 소리": "Background sound", "🔇 끄기": "🔇 Off", "🌫️ 백색소음": "🌫️ White noise", "🌧️ 빗소리": "🌧️ Rain", "🎹 잔잔한 집중 음악": "🎹 Calm focus music", "볼륨": "Volume", "식물에 물 주기": "Water the plants", "동물에게 밥 주기": "Feed the animals", "입력": "Input", "네온 바꾸기": "Change neon", "📚 도서관 입장": "📚 Enter the library", "초대 코드 없이 바로 들어가요 · 최대 100명": "No invite code needed · up to 100 people", "화이트보드 공지는 화이트보드를 확대한 뒤 눌러서 바꿔요.": "To change the whiteboard notice, zoom in on the whiteboard and tap it.", "개발자 도구": "Developer tools", "❓ 사용법": "❓ How to use", "🌅 현실로 돌아가기": "🌅 Back to reality", "🌶️ 빨간 고추": "🌶️ Red chili", "🌱 대파": "🌱 Scallion", "🍆 가지": "🍆 Eggplant", "🍄 버섯": "🍄 Mushroom", "🌽 옥수수": "🌽 Corn", "👥 친구": "👥 Friends", "친구": "Friends", "별명으로 친구 찾기": "Find a friend by nickname", "친구 요청": "Add friend", "받은 요청": "Requests", "친구 목록": "Friends", "보낸 요청": "Sent", "연구실에서 만난 사람은 출석부 '지금' 탭의 [+ 친구]로도 요청할 수 있어요. 서로 허락하면 친구가 돼요. 친구가 일반 연구실이나 도서관에 있으면 번호 없이 바로 따라갈 수 있어요 (VIP 클럽 제외).": "You can also add people you meet with [+ Friend] in the Attendance 'Now' tab. You become friends once both agree. If a friend is in a regular lab or the library, you can join them without a code (except the VIP Club).", "📱 아이폰 바로가기": "📱 iPhone shortcut", "🧴 시약 창고 · 나의 연구 여정": "🧴 Reagent storage · My journey", "친구 · 내 계정 · 사용법 · 아이폰 바로가기": "Friends · Account · How to use · iPhone shortcut", "🧴 시약 창고": "🧴 Reagent storage", "👥 친구 관리": "👥 Friends", "👤 내 계정": "👤 My account", "🚪 로비로": "🚪 Back to lobby", "시약 창고": "Reagent storage", "Apex Eagle Club · 정수리 독수리 연구소": "Apex Eagle Lab", "노랑": "Yellow", "🧴 캐릭터와 색은 시약 창고나 방 안의 '캐릭터' 버튼에서 바꿀 수 있어요.": "🧴 Change your character and color in the reagent storage or with the 'Character' button in a room.", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다.": "Sit at the bench and everyone bows their heads, head to head.", "캐릭터 바꾸기": "Change character", "여기서 고른 캐릭터와 색은 내 계정에 저장돼서, 어느 방에 들어가도 그대로예요.": "Your character and color are saved to your account and follow you into every room.", "👓 안경 쓰기": "👓 Wear glasses", "📝 오늘 할 일 · 전공": "📝 Today's task · field", "🎨 캐릭터 변경": "🎨 Change character", "📊 내 기록": "📊 My records", "📊 나의 연구 여정 요약": "📊 My research journey", "← 닫기": "← Close"};
 const $t = s => isEN && Object.prototype.hasOwnProperty.call(EN, s) ? EN[s] : s;
 const $tt = (ko, en) => isEN ? en : ko;
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -616,8 +659,8 @@ function fillCountries(sel) {
 document.querySelectorAll('.ccsel').forEach(fillCountries);
 
 /* ================= 상수 ================= */
-const COLORS = ['#f3b23c', '#ff8fc8', '#7cc7b3', '#9da8ff', '#e0603a', '#5c7fd6', '#3f8f6b', '#b48ad8'];
-const COLOR_NAMES = [$t('호박'), $t('분홍'), $t('민트'), $t('라벤더'), $t('주황'), $t('파랑'), $t('초록'), $t('보라')];
+const COLORS = ['#f5c62f', '#ff8fc8', '#7cc7b3', '#9da8ff', '#e0603a', '#5c7fd6', '#3f8f6b', '#b48ad8'];
+const COLOR_NAMES = [$t('노랑'), $t('분홍'), $t('민트'), $t('라벤더'), $t('주황'), $t('파랑'), $t('초록'), $t('보라')];
 const KINDS = {
   eagle: $t('🦅 독수리'), potato: $t('🥔 감자'), carrot: $t('🥕 당근'), sweetpotato: $t('🍠 고구마'), cabbage: $t('🥬 배추'),
   radish: $t('무'), tomato: $t('🍅 토마토'), celery: $t('🌿 셀러리'), endive: $t('앤다이브'), pepper: $t('🫑 피망'), broccoli: $t('🥦 브로콜리'), onion: $t('🧅 양파'),
@@ -702,11 +745,11 @@ const cyl = (rt, rb, h, s = 16) => new THREE.CylinderGeometry(rt, rb, h, s);
 const sph = (r, ws = 14, hs = 10) => new THREE.SphereGeometry(r, ws, hs);
 function shadowAll(o, cast = true) { o.traverse(m => { if (m.isMesh) { m.castShadow = cast; m.receiveShadow = true; } }); }
 const HAND = '"Seunghoon", "Gaegu", sans-serif';
-function signTex(text, { w = 512, h = 128, bg = '#f6f4ec', fg = '#2b2f33', font = `54px ${HAND}`, sub } = {}) {
+function signTex(text, { w = 512, h = 128, bg = '#f6f4ec', fg = '#2b2f33', font = `54px ${HAND}`, sub, subFont = '"A2Z SemiBold", "IBM Plex Sans KR", sans-serif' } = {}) {
   return canvasTex(w, h, (g) => {
     g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.font = font; g.fillText(text, w / 2, sub ? h * 0.4 : h / 2);
-    if (sub) { g.font = `${Math.round(h * 0.2)}px "A2Z SemiBold", "IBM Plex Sans KR", sans-serif`; g.globalAlpha = .7; g.fillText(sub, w / 2, h * 0.76); g.globalAlpha = 1; }
+    if (sub) { g.font = `${Math.round(h * 0.2)}px ${subFont}`; g.globalAlpha = .7; g.fillText(sub, w / 2, h * 0.76); g.globalAlpha = 1; }
   }, { text: true });
 }
 function sign(text, wM, hM, opts, parent, x, y, z, ry = 0) {
@@ -1008,12 +1051,15 @@ const codonTex = canvasTex(1024, 760, (g, w, h) => {
 mesh(new THREE.PlaneGeometry(1.08, 0.8), new THREE.MeshStandardMaterial({ map: codonTex, roughness: 0.9 }), 3.55, 2.12, 0.02, left);
 [[-0.5, 0.36], [0.5, 0.36], [-0.5, -0.36], [0.5, -0.36]].forEach(([x, y]) => mesh(box(0.06, 0.02, 0.006), std('#e9e1b0'), 3.55 + x, 2.12 + y, 0.025, left));
 
-let neonText = $t('졸업하고 싶다');
+let neonText = '졸업하고 싶다';
+// 네온 문구는 저장된 그대로 두고, 보여줄 때 언어에 맞게 바꿔요 (아는 문구만)
+const NEON_KO = { 'Please let me graduate': '졸업하고 싶다' };
+const neonShown = () => { if (isEN) return $t(neonText); if (NEON_KO[neonText]) return NEON_KO[neonText]; for (const [k, v] of Object.entries(EN)) if (v === neonText && /[가-힣]/.test(k) && k.length <= 16) return k; return neonText; };
 const neonTex = canvasTex(1024, 256, (g, w, h) => {
   g.clearRect(0, 0, w, h); g.textAlign = 'center'; g.textBaseline = 'middle';
-  let fs = 150; g.font = `${fs}px ${HAND}`; while (g.measureText(neonText).width > w - 150 && fs > 50) { fs -= 6; g.font = `${fs}px ${HAND}`; }
-  g.shadowColor = '#ff4fa8'; g.shadowBlur = 40; g.fillStyle = '#ffd3ec'; g.fillText(neonText, w / 2, h / 2);
-  g.shadowBlur = 12; g.fillText(neonText, w / 2, h / 2);
+  const nt = neonShown(); let fs = 150; g.font = `${fs}px ${HAND}`; while (g.measureText(nt).width > w - 150 && fs > 40) { fs -= 6; g.font = `${fs}px ${HAND}`; }
+  g.shadowColor = '#ff4fa8'; g.shadowBlur = 40; g.fillStyle = '#ffd3ec'; g.fillText(nt, w / 2, h / 2);
+  g.shadowBlur = 12; g.fillText(nt, w / 2, h / 2);
   g.font = '70px \"A2Z SemiBold\", sans-serif'; g.fillStyle = '#ffd3ec'; g.fillText('♡', w - 70, 70);
 }, { text: true });
 const neon = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshBasicMaterial({ map: neonTex, transparent: true, depthWrite: false }));
@@ -1822,6 +1868,7 @@ function happyParts(skull, eyes, z, y, sp, mouth) {
   skull.userData.face = { eyes, happy, smile };
 }
 function face(skull, z, y = 0, sp = 0.09) {
+  skull.userData.eyePos = { z, y, sp };
   const eyes = [];
   for (const s of [1, -1]) {
     eyes.push(mesh(geo.eye, EYE, s * sp, y, z, skull));
@@ -1862,7 +1909,7 @@ function buildHead(kind, skull) {
     for (const sx of [1, -1]) mesh(sph(0.009, 6, 4), std('#6a4a12'), sx * 0.032, 0.0, 0.335, skull);
     const eagleEyes = [];
     for (const sx of [1, -1]) { const e = mesh(geo.eye, EYE, sx * 0.1, 0.065, 0.22, skull); e.scale.setScalar(1.15); eagleEyes.push(e, mesh(geo.shine, glow('#ffffff'), sx * 0.1 + 0.008, 0.077, 0.245, skull)); }
-    happyParts(skull, eagleEyes, 0.215, 0.07, 0.1, false);
+    happyParts(skull, eagleEyes, 0.215, 0.07, 0.1, false); skull.userData.eyePos = { z: 0.235, y: 0.065, sp: 0.1 };
     } else if (kind === 'potato') {
     const p = mesh(sph(0.25, 24, 16), std('#cfa868', { roughness: 1 }), 0, 0, 0, skull); p.scale.set(1.12, 0.92, 1);
     for (let i = 0; i < 7; i++) { const a = i * 1.7, b = 0.4 + (i % 3) * 0.5; mesh(sph(0.014, 6, 4), std('#8a6a3a'), Math.sin(a) * Math.sin(b) * 0.27, Math.cos(b) * 0.22, Math.cos(a) * Math.sin(b) * 0.24 - 0.02, skull); }
@@ -2067,6 +2114,13 @@ class Student {
     const shirtDark = std('#' + new THREE.Color(accent).multiplyScalar(0.72).getHexString(), { roughness: 0.9 });
     const brown = std('#4a2f1d', { roughness: 1 }), yellow = std('#f6b51e', { roughness: 0.9 });
     for (const sx of [1, -1]) {
+      if (this.standing) {
+        mesh(geo.thigh, eagle ? brown : PANTS, sx * 0.09, 0.6, 0.0, R);
+        mesh(geo.shin, eagle ? brown : PANTS, sx * 0.09, 0.3, 0.0, R);
+        if (eagle) { mesh(sph(0.08, 14, 10), yellow, sx * 0.1, 0.04, 0.06, R).scale.set(1.05, 0.55, 1.45); for (let k = -1; k <= 1; k++) mesh(sph(0.032, 8, 6), yellow, sx * 0.1 + k * 0.045, 0.03, 0.16, R); }
+        else mesh(sph(0.07, 12, 8), std('#2b2f33'), sx * 0.09, 0.04, 0.05, R).scale.set(1, 0.6, 1.5);
+        continue;
+      }
       const th = mesh(geo.thigh, eagle ? brown : PANTS, sx * 0.09, 0.76, 0.17, R); th.rotation.x = Math.PI / 2;
       mesh(geo.shin, eagle ? brown : PANTS, sx * 0.09, 0.5, 0.33, R);
       if (eagle) {
@@ -2104,7 +2158,17 @@ class Student {
     this.head = new THREE.Group(); this.head.position.set(0, 0.70, 0); this.torso.add(this.head);
     const skull = new THREE.Group(); skull.position.y = 0.22; this.head.add(skull);
     this.vSigns = this.vSigns ? this.vSigns.slice(-2) : [];
-    this.crown = buildHead(s.kind, skull);
+    this.crown = buildHead(s.kind, skull); this.skull = skull; this.cap = null;
+    if (s.gl && skull.userData.eyePos) {
+      const { z, y, sp } = skull.userData.eyePos, fr = std('#262a2f', { roughness: 0.35, metalness: 0.4 }), r = Math.max(0.052, sp * 0.62);
+      const lens = new THREE.MeshStandardMaterial({ color: '#dff1ff', transparent: true, opacity: 0.18, roughness: 0.05, depthWrite: false });
+      for (const sx of [1, -1]) {
+        mesh(new THREE.TorusGeometry(r, 0.009, 8, 28), fr, sx * sp, y, z + 0.035, skull);
+        mesh(new THREE.CircleGeometry(r, 24), lens, sx * sp, y, z + 0.034, skull);
+        const tm = mesh(box(0.012, 0.012, 0.2), fr, sx * (sp + r + 0.005), y + 0.01, z - 0.07, skull); tm.rotation.y = sx * 0.12;
+      }
+      const br = mesh(cyl(0.007, 0.007, Math.max(0.02, sp * 2 - r * 2 + 0.01), 8), fr, 0, y + 0.012, z + 0.04, skull); br.rotation.z = Math.PI / 2;
+    }
     this.faceParts = skull.userData.face || null; this._posed = false;
     this.angryT = -1;
     this.fumes = [];
@@ -2123,8 +2187,22 @@ class Student {
     this.steam = [];
     for (let i = 0; i < 3; i++) { const p = mesh(sph(0.018, 8, 6), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0 }), 0, 0.12, 0, this.mug); p.castShadow = false; this.steam.push(p); }
   }
+  setCap(on) {
+    if (on && (!this.cap || !this.cap.parent) && this.skull) {
+      const c = new THREE.Group(), cp = this.crown ? this.crown.position : new THREE.Vector3(0, 0.25, 0);
+      c.position.set(cp.x, cp.y + 0.005, cp.z); c.rotation.x = -0.12; this.skull.add(c);
+      const blk = std('#1c1f24', { roughness: 0.7 }), gold = std('#e7b52c', { roughness: 0.45, metalness: 0.3 });
+      mesh(cyl(0.13, 0.14, 0.08, 24), blk, 0, 0.0, 0, c);
+      const bd = mesh(box(0.38, 0.022, 0.38), blk, 0, 0.05, 0, c); bd.rotation.y = Math.PI / 4;
+      mesh(sph(0.018, 10, 8), gold, 0, 0.066, 0, c);
+      const cord = mesh(box(0.2, 0.008, 0.01), gold, 0.1, 0.064, 0, c); cord.rotation.y = -0.05;
+      mesh(cyl(0.006, 0.006, 0.13, 6), gold, 0.205, 0.0, 0, c);
+      mesh(cyl(0.012, 0.022, 0.05, 8), gold, 0.205, -0.08, 0, c);
+      shadowAll(c); this.cap = c;
+    } else if (!on && this.cap) { this.cap.parent?.remove(this.cap); this.cap = null; }
+  }
   sync(s, isMe, dev) {
-    const sig = [s.color, s.kind, s.task].join('|');
+    const sig = [s.color, s.kind, s.task, s.gl ? 1 : 0].join('|');
     if (sig !== this.sig) { this.sig = sig; this.build(s); }
     if (s.seat !== this.seat) { this.seat = s.seat; const st = SEATS[s.seat]; this.root.position.set(st.x, 0, st.z); this.root.rotation.y = st.ry; this.stagger = Math.abs(st.z) > 0.1 && Math.round(st.x + 2.5) % 2 ? 0.32 : 0; }
     if (this.lastNod !== null && s.nod !== this.lastNod) { this.nodT = 0; this.label.classList.add('nodding'); clearTimeout(this.nodTimer); this.nodTimer = setTimeout(() => this.label.classList.remove('nodding'), 1600); }
@@ -2237,23 +2315,40 @@ const saved = lsGet('jsdsr-profile') || {};
 const migrateTask = t => t === 'bench' || t === 'micro' ? 'notes' : t;
 const me = {
   name: typeof saved.name === 'string' ? clean(saved.name) : '',
-  color: Number.isInteger(saved.color) && saved.color >= 0 && saved.color < COLORS.length ? saved.color : Math.floor(Math.random() * COLORS.length),
+  color: Number.isInteger(saved.color) && saved.color >= 0 && saved.color < COLORS.length ? saved.color : 0,
+  gl: saved.gl === true,
   kind: own(KINDS, saved.kind) ? saved.kind : 'eagle',
   task: own(TASKS, migrateTask(saved.task)) ? migrateTask(saved.task) : 'thesis',
   seat: null, mode: 'break', since: Date.now(), nod: 0, angry: 0, joinedAt: 0, joined: false, wantSeat: null, streakDone: 0, napT: null, fire: 0,
   todayMs: 0, segStart: null, dayKey: dayKey(), say: null,
   cc: ccOk(saved.cc) ? saved.cc : '', major: typeof saved.major === 'string' ? clean(saved.major, 20) : '',
 };
+let myStats = null, statsDirty = false, statsTimer = null, myLv = 0, attLoaded = false;
 // 내 출석 기록 (db가 없으면 이 브라우저에만)
 let myAtt = lsGet(ATT_LS) || { days: {} };
 if (!myAtt.days || typeof myAtt.days !== 'object') myAtt.days = {};
 me.todayMs = Number(myAtt.days[me.dayKey]?.focusMs) || 0;
-function saveProfile() { lsSet('jsdsr-profile', { name: me.name, color: me.color, kind: me.kind, task: me.task, cc: me.cc, major: me.major }); }
+function saveProfile() { lsSet('jsdsr-profile', { name: me.name, color: me.color, kind: me.kind, gl: !!me.gl, task: me.task, cc: me.cc, major: me.major }); }
+function saveLook() { saveProfile(); if (db && myUid && auth.ok) db.doc('profiles/' + myUid).set({ kind: me.kind, color: me.color, gl: !!me.gl }, { merge: true }).catch(() => {}); publishName(); persist(); publish(); }
 
 let room = null, myPeer = null, roomLive = false, db = null, myUid = null, dbWritable = true;
 let FB = null, OWNER_UID = '', pendingSignup = null;
 const students = new Map();
 const attDocs = new Map(); // uid -> {name,color,kind,days}
+// 같은 방 사람들의 출석 기록: 실시간으로 계속 받지 않고, 들어올 때와 출석부·연구 여정을 열 때만 읽어요 (읽기 횟수 절약)
+// 지금 앉아 있는 사람들의 오늘 시간은 접속 정보로 실시간 반영돼요
+let attLoadedAt = 0;
+function onAttDocs(qs) {
+    attDocs.clear();
+    for (const d of qs.docs) { const v = d.data() || {}; attDocs.set(d.id, { name: (typeof v.name === 'string' && clean(v.name)) || $t('익명 독수리'), color: Number.isInteger(v.color) ? v.color : 0, kind: own(KINDS, v.kind) ? v.kind : 'eagle', cc: ccOk(v.cc) ? v.cc : '', days: v.days && typeof v.days === 'object' ? v.days : {} }); }
+    renderRoster(); updateBoard(seatedList());
+}
+function loadAttDocs(force) {
+  if (!db || !roomReady || !RP && ROOM?.key !== 'vip') return;
+  if (!force && Date.now() - attLoadedAt < 3 * 60000) return;
+  attLoadedAt = Date.now();
+  db.collection(RP + 'att').get().then(onAttDocs).catch(() => { attLoadedAt = 0; });
+}
 const chatMsgs = new Map(); // id -> {id,t,text,name,color}
 
 function liveTotal(s) { return Math.min(86400000, (s.todayMs || 0) + (s.mode === 'focus' && s.segStart ? Math.max(0, Date.now() - s.segStart) : 0)); }
@@ -2282,11 +2377,13 @@ function sanitize(o) {
     mj: typeof o.mj === 'string' ? clean(o.mj, 20) : '',
     napT: Number.isFinite(o.napT) ? o.napT : null,
     fire: Number.isFinite(o.fire) ? o.fire : 0,
+    gl: o.gl === true,
+    lv: Number.isInteger(o.lv) && o.lv > 0 && o.lv < 1000 ? o.lv : 1,
   };
 }
 function myPresence() {
   return me.joined && me.seat !== null
-    ? { v: 1, name: me.name, color: me.color, kind: me.kind, task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major, napT: me.mode === 'break' ? me.napT : null, fire: me.fire || 0 }
+    ? { v: 1, gl: !!me.gl, lv: myLv || 1, name: me.name, color: me.color, kind: me.kind, task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major, napT: me.mode === 'break' ? me.napT : null, fire: me.fire || 0 }
     : { v: 0, seat: null };
 }
 function publish() { if (room && roomLive) room.presence(myPresence()).catch(() => {}); refresh(); }
@@ -2294,6 +2391,7 @@ function others() {
   const out = [];
   if (room && roomLive) for (const p of room.peers()) {
     if (p.sameTab || p.kind !== 'viewer') continue;
+    if (myUid && p.by === myUid) continue; // 앱이 꺼지기 전에 남은 내 예전 접속(유령)은 무시
     out.push({ peer: p.peer, by: p.by, s: sanitize(p.presence) });
   }
   return out;
@@ -2323,11 +2421,54 @@ function resolveConflicts() {
 let attWriting = false, attPending = false, attDone = Promise.resolve();
 function checkpoint() {
   const now = Date.now(), k = dayKey();
-  if (me.segStart) { me.todayMs += now - me.segStart; me.segStart = now; }
+  if (me.segStart) { const dlt = now - me.segStart; me.todayMs += dlt; me.segStart = now; if (dlt > 0 && dlt < 6 * 3600000) statsAdd(dlt, 0); }
   persist();
   if (k !== me.dayKey) { me.dayKey = k; me.todayMs = Number(myAtt.days[k]?.focusMs) || 0; if (me.segStart) me.segStart = now; persist(); }
 }
+const LIVE_LS = 'jsdsr-live', AWAY_ASK_MS = 20 * 60000;
+function saveLive() {
+  if (!me.joined || !ROOM || !myUid) return;
+  lsSet(LIVE_LS, { room: ROOM.key, uid: myUid, seat: me.seat, mode: me.mode, since: me.since, streakDone: me.streakDone || 0, task: me.task, fire: me.fire || 0, t: Date.now() });
+}
+// 비운 시간(gap)을 일단 빼 두고, '계속 집중했어요'를 누르면 다시 넣어요
+function excludeGap(gap) { me.segStart = Date.now(); me.since += gap; persist(); publish(); }
+function includeGap(gap) {
+  me.since -= gap; me.todayMs += gap; statsAdd(gap, 0); persist(); publish(); tickTimer();
+}
+async function askAway(gap) {
+  const m = Math.round(gap / 60000);
+  return await popup({ title: $tt('다시 왔네요! 👋', 'Welcome back! 👋'),
+    text: $tt(`화면이 꺼져 있던 ${m}분 동안에도 계속 집중했나요?\n'네'를 누르면 이 시간도 집중 시간과 세션에 넣어요.`, `Were you still focusing during the ${m} minutes the app was closed?\nChoose 'Yes' to count that time and its sessions.`),
+    yes: $tt('네, 계속 집중했어요', 'Yes, I kept focusing'), no: $tt('아니요, 빼 주세요', 'No, leave it out') }) === true;
+}
+let hiddenAt = 0;
+addEventListener('visibilitychange', async () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  const gap = hiddenAt ? Date.now() - hiddenAt : 0; hiddenAt = 0;
+  if (!me.joined || me.mode !== 'focus' || gap < AWAY_ASK_MS || !me.segStart) return;
+  excludeGap(gap);
+  if (await askAway(gap)) { includeGap(gap); toast($tt('그 시간도 넣었어요. 계속 화이팅! 🔥', 'Counted. Keep going! 🔥')); }
+  else toast($tt('비운 시간은 빼고 이어서 집중해요.', "Left that time out. Let's keep going."));
+});
+// 휴대폰이 앱을 아예 닫았다가 다시 열면: 같은 방이면 자리와 집중을 이어서
+async function tryResume() {
+  const lv = lsGet(LIVE_LS);
+  if (!lv || lv.uid !== myUid || !ROOM || lv.room !== ROOM.key || !Number.isFinite(lv.t) || Date.now() - lv.t > 3 * 3600000) return false;
+  if (!ccOk(me.cc) || !me.major) return false;
+  const gap = Math.max(0, Date.now() - lv.t), focus = lv.mode === 'focus' && Number.isFinite(lv.since);
+  me.task = own(TASKS, lv.task) ? lv.task : me.task;
+  me.joined = true; me.joinedAt = Date.now(); me.napT = null; me.freeCare = true; me.say = null;
+  me.seat = chooseSeat(Number.isInteger(lv.seat) ? lv.seat : null);
+  if (focus) { me.mode = 'focus'; me.since = lv.since; me.streakDone = lv.streakDone || 0; me.fire = lv.fire || 0; me.segStart = Date.now(); me.since += gap; }
+  else { me.mode = 'break'; me.since = Date.now(); me.segStart = null; me.streakDone = 0; }
+  persist(); publish(); tickTimer();
+  if (focus && gap >= AWAY_ASK_MS) { if (await askAway(gap)) includeGap(gap); }
+  else if (focus && gap > 0) includeGap(gap);
+  toast(focus ? $tt('자리로 돌아왔어요. 집중을 이어서 해요! 📖', 'Back at your seat. Your focus continues! 📖') : $tt('자리로 돌아왔어요. ☕', 'Back at your seat. ☕'));
+  return true;
+}
 function persist() {
+  saveLive();
   const d = myAtt.days[me.dayKey] || {};
   myAtt.days[me.dayKey] = { ...d, focusMs: Math.round(me.todayMs), firstIn: d.firstIn || me.joinedAt || Date.now(), lastSeen: Date.now() };
   const keys = Object.keys(myAtt.days).sort(); while (keys.length > 120) delete myAtt.days[keys.shift()];
@@ -2339,7 +2480,9 @@ function writeAtt() {
   if (!db || !myUid || !dbWritable || !auth.ok || !roomReady) return;
   if (attWriting) { attPending = true; return; }
   attWriting = true;
-  attDone = db.doc(RP + 'att/' + myUid).set({ name: me.name, color: me.color, kind: me.kind, cc: me.cc || '', days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 })
+  const mine = { name: me.name, color: me.color, kind: me.kind, cc: me.cc || '', days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 };
+  attDocs.set(myUid, { ...mine, days: { ...myAtt.days } });
+  attDone = db.doc(RP + 'att/' + myUid).set(mine)
     .catch(e => { if (e && e.code === 'invalid_argument') { dbWritable = false; renderRoster(); } })
     .finally(() => { attWriting = false; if (attPending) { attPending = false; writeAtt(); } });
   attDone = attDone.catch(() => {});
@@ -2367,8 +2510,13 @@ function refresh() {
     let st = students.get(it.key);
     if (!st) { st = new Student(it.key); students.set(it.key, st); if (!it.isMe && toastReady && !known.has(it.key)) toast($tt(`${it.s.name} 님이 벤치에 앉았어요.`, `${it.s.name} sat down at the bench.`)); }
     st.sync(it.s, it.isMe, it.isMe ? auth.isDev : !!(devId && it.by && it.by === devId)); st.nap = it.key === napKey; st.by = it.by;
-    st.label.classList.toggle('addable', !it.isMe && !!it.by && !!myUid && it.by !== myUid);
-    st.label.title = !it.isMe && it.by && myUid && it.by !== myUid ? $tt('눌러서 친구 추가', 'Tap to add as a friend') : '';
+    const byU = it.isMe ? myUid : it.by; st.by = byU;
+    st.setCap(!!(ROOM && ROOM.owner && ROOM.key !== 'vip' && !isLibKey(ROOM.key) && byU && byU === ROOM.owner));
+    const lvN = it.isMe ? (myLv || 1) : (auth.names.get(byU)?.lv || it.s.lv || 1);
+    if (!st.lvb) { st.lvb = el('span', 'lvb'); st.label.querySelector('.nm').before(st.lvb); }
+    const lvT = `Lv.${lvN}${lvN >= 30 ? ' 🥇' : lvN >= 20 ? ' 🥈' : lvN >= 10 ? ' 🥉' : ''}`; if (st.lvb.textContent !== lvT) { st.lvb.textContent = lvT; st._w = 0; }
+    st.label.classList.toggle('addable', !!byU && !!myUid);
+    st.label.title = byU ? $tt('눌러서 프로필 보기', 'Tap to see profile') : '';
     if (it.s.say && !chatMsgs.has(it.s.say.id) && it.s.say.t >= chatClearedAt && Date.now() - it.s.say.t < CHAT_TTL) { chatMsgs.set(it.s.say.id, { ...it.s.say, name: it.s.name, color: it.s.color }); chatDirty = true; }
   }
   for (const [k, st] of students) if (!keep.has(k)) { st.dispose(); students.delete(k); }
@@ -2765,7 +2913,7 @@ function tickTimer() {
     const done = Math.floor((Date.now() - me.since) / SESSION_MS), prev = me.streakDone || 0;
     if (done > prev) {
       const d = myAtt.days[me.dayKey] || (myAtt.days[me.dayKey] = {});
-      d.sess = (Number(d.sess) || 0) + (done - prev); me.streakDone = done; checkpoint(); renderCare();
+      d.sess = (Number(d.sess) || 0) + (done - prev); me.streakDone = done; checkpoint(); statsAdd(0, done - prev); renderCare();
       toast($t('🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.'));
       if (Math.floor(done / 2) > Math.floor(prev / 2)) {
         me.fire = Date.now() + 60000; publish();
@@ -2873,7 +3021,8 @@ function setView(v) {
 viewBtn.addEventListener('click', () => setView(nextView(view)));
 const rosterBtn = document.getElementById('rosterBtn');
 function setPanel(name) {
-  [['roster', 'rosterBtn'], ['care', 'careBtn'], ['journey', 'journeyBtn'], ['devPanel', 'devBtn'], ['friends', 'friendsBtn']].forEach(([id, b]) => { const on = id === name; document.getElementById(id).classList.toggle('open', on); document.getElementById(b).setAttribute('aria-expanded', String(on)); });
+  [['roster', 'rosterBtn'], ['care', 'careBtn'], ['journey', 'journeyBtn'], ['devPanel', 'devBtn'], ['friends', 'friendsBtn'], ['storeStats', 'lbStore']].forEach(([id, b]) => { const on = id === name; document.getElementById(id).classList.toggle('open', on); document.getElementById(b).setAttribute('aria-expanded', String(on)); });
+  if (name === 'roster' || name === 'journey') loadAttDocs();
   if (name === 'friends') renderFriends(); if (name === 'roster') renderRoster(); if (name === 'care') renderCare(); if (name === 'journey' || name === 'devPanel') renderJourney(true);
   requestAnimationFrame(updateViewOffset);
 }
@@ -3079,17 +3228,14 @@ soundMenu.querySelectorAll('[data-snd]').forEach(b => b.classList.toggle('on', b
 
 /* ---- 입장 폼 ---- */
 const joinEl = document.getElementById('join'), form = document.getElementById('joinForm');
-COLORS.forEach((c, i) => { const l = el('label'); l.style.background = c; l.title = COLOR_NAMES[i]; const inp = el('input'); inp.type = 'radio'; inp.name = 'color'; inp.value = i; inp.id = 'color' + i; inp.setAttribute('aria-label', COLOR_NAMES[i]); l.appendChild(inp); document.getElementById('colorSwatches').appendChild(l); });
 const chips = (box2, name, obj, fmt) => Object.keys(obj).forEach(k => { const l = el('label'); const inp = el('input'); inp.type = 'radio'; inp.name = name; inp.value = k; inp.id = name + '-' + k; l.append(inp, document.createTextNode(fmt(obj[k]))); box2.appendChild(l); });
-chips(document.getElementById('kindChips'), 'kind', KINDS, v => v);
+
 chips(document.getElementById('taskChips'), 'task', TASKS, v => `${v.icon} ${v.label}`);
 function openJoin() {
   if (!auth.ok) { showAuth('login'); return; }
   if (!roomReady) { showLobby(); return; }
   document.getElementById('joinWho').textContent = $tt(`별명: ${me.name}${auth.isDev ? ' 🛠 개발자' : ''} · 별명은 '나의 연구 여정'에서 바꿀 수 있어요.`, `Nickname: ${me.name}${auth.isDev ? ' 🛠 Developer' : ''} · Change it in 'My research journey'.`);
   document.getElementById('joinCc').value = me.cc || ''; document.getElementById('joinMj').value = me.major || '';
-  form.querySelector(`input[name=color][value="${me.color}"]`).checked = true;
-  form.querySelector(`input[name=kind][value="${me.kind}"]`).checked = true;
   form.querySelector(`input[name=task][value="${me.task}"]`).checked = true;
   document.getElementById('joinTitle').textContent = me.joined ? $t('내 캐릭터') : $t('연구소 입장');
   document.getElementById('joinBtn').textContent = me.joined ? $t('저장') : $t('벤치에 앉기');
@@ -3105,10 +3251,8 @@ form.addEventListener('submit', e => {
   if (!ccOk(cc) || !major) { toast($tt('지금 사는 나라와 전공을 적어 주세요.', 'Please add your country and field of study.')); (ccOk(cc) ? document.getElementById('joinMj') : document.getElementById('joinCc')).focus(); return; }
   if (cc !== me.cc || major !== me.major) {
     me.cc = cc; me.major = major;
-    if (db && myUid && auth.acct) db.doc('profiles/' + myUid).set({ nick: me.name, createdAt: auth.acct.createdAt, cc, major }).catch(() => {});
+    if (db && myUid && auth.acct) db.doc('profiles/' + myUid).set({ nick: me.name, createdAt: auth.acct.createdAt, cc, major }, { merge: true }).catch(() => {});
   }
-  me.color = Number(fd.get('color')); if (!(me.color >= 0 && me.color < COLORS.length)) me.color = 0;
-  me.kind = own(KINDS, String(fd.get('kind'))) ? String(fd.get('kind')) : 'eagle';
   const newTask = own(TASKS, String(fd.get('task'))) ? String(fd.get('task')) : 'thesis';
   me.task = newTask;
   saveProfile();
@@ -3122,9 +3266,30 @@ form.addEventListener('submit', e => {
   if (IS_LIB) goView(view);
 });
 document.getElementById('cancelBtn').addEventListener('click', closeJoin);
-function leaveSeat() { if (me.joined) checkpoint(); me.segStart = null; me.joined = false; me.seat = null; me.say = null; publish(); }
+function leaveSeat() { if (me.joined) checkpoint(); lsSet(LIVE_LS, null); me.segStart = null; me.joined = false; me.seat = null; me.say = null; publish(); }
 document.getElementById('leaveBtn').addEventListener('click', () => { closeJoin(); exitLab($tt('연구실에서 나왔어요. 오늘 기록은 저장됐어요.', "You left the lab. Today's record is saved.")); });
-document.getElementById('editBtn').addEventListener('click', openJoin);
+document.getElementById('editBtn').addEventListener('click', () => openChar());
+const charEl = document.getElementById('charDlg'), charForm = document.getElementById('charForm');
+COLORS.forEach((c, i) => { const l = el('label'); l.style.background = c; l.title = COLOR_NAMES[i]; const inp = el('input'); inp.type = 'radio'; inp.name = 'color'; inp.value = i; inp.id = 'color' + i; inp.setAttribute('aria-label', COLOR_NAMES[i]); l.appendChild(inp); document.getElementById('colorSwatches').appendChild(l); });
+chips(document.getElementById('kindChips'), 'kind', KINDS, v => v);
+function openChar() {
+  charForm.querySelector(`input[name=color][value="${me.color}"]`).checked = true;
+  charForm.querySelector(`input[name=kind][value="${me.kind}"]`).checked = true;
+  document.getElementById('glassChk').checked = !!me.gl;
+  document.getElementById('charTask').hidden = !me.joined;
+  charEl.classList.add('open');
+}
+function closeChar() { charEl.classList.remove('open'); }
+// 고르는 동안 시약 창고의 내 캐릭터가 바로 바뀌어요
+charForm.addEventListener('change', () => { if (typeof storePreview === 'function') storePreview(lookFromForm()); });
+function lookFromForm() { const fd = new FormData(charForm), c = Number(fd.get('color')); return { kind: own(KINDS, String(fd.get('kind'))) ? String(fd.get('kind')) : 'eagle', color: c >= 0 && c < COLORS.length ? c : 0, gl: document.getElementById('glassChk').checked }; }
+charForm.addEventListener('submit', e => {
+  e.preventDefault(); const lk = lookFromForm(); me.kind = lk.kind; me.color = lk.color; me.gl = lk.gl;
+  saveLook(); closeChar(); if (typeof storePreview === 'function') storePreview(); toast($tt('캐릭터를 저장했어요. 어느 방에서든 이 모습이에요! ✨', 'Character saved. You\'ll look like this in every room! ✨'));
+});
+document.getElementById('charCancel').addEventListener('click', () => { closeChar(); if (typeof storePreview === 'function') storePreview(); });
+document.getElementById('charTask').addEventListener('click', () => { closeChar(); openJoin(); });
+charEl.addEventListener('keydown', e => { if (e.key === 'Escape') { closeChar(); if (typeof storePreview === 'function') storePreview(); } });
 
 
 /* ---- 계정 (공개 사이트): Firebase 인증 + 별명·숫자 4자리 비밀번호 ---- */
@@ -3136,7 +3301,7 @@ const PIN_PAD = '#jsdsr-lab'; // Firebase 비밀번호는 6자 이상이라 4자
 const pw = pin => pin + PIN_PAD;
 function nickTaken(nick) { const n = normNick(nick); for (const [uid, v] of auth.names) if (uid !== myUid && normNick(v.nick) === n) return true; return false; }
 function autoNick() { let n = auth.names.size + 1; while (nickTaken($tt(`독수리 ${n}호`, `Eagle ${n}`))) n++; return $tt(`독수리 ${n}호`, `Eagle ${n}`); }
-function publishName() { if (db && myUid && auth.ok) db.doc('names/' + myUid).set({ nick: me.name, color: me.color, kind: me.kind, cc: me.cc || '', since: auth.acct?.createdAt || Date.now() }).catch(() => {}); }
+function publishName() { if (db && myUid && auth.ok) db.doc('names/' + myUid).set({ nick: me.name, color: me.color, kind: me.kind, gl: !!me.gl, lv: myLv || 1, cc: me.cc || '', since: auth.acct?.createdAt || Date.now() }).catch(() => {}); }
 function showAuth(mode, msg = '') {
   auth.mode = mode; authEl.classList.add('open'); closeJoin();
   authForm.hidden = mode === 'loading';
@@ -3221,9 +3386,10 @@ async function handleUser(user, isNew) {
   auth.acct = { nick: clean(prof.nick) || $t('익명 독수리'), createdAt: prof.createdAt || Date.now(), email: user.email };
   auth.ok = true; me.name = auth.acct.nick;
   if (ccOk(prof.cc)) me.cc = prof.cc; if (typeof prof.major === 'string') me.major = clean(prof.major, 20);
+  if (own(KINDS, prof.kind)) me.kind = prof.kind; if (Number.isInteger(prof.color) && prof.color >= 0 && prof.color < COLORS.length) me.color = prof.color; if (typeof prof.gl === 'boolean') me.gl = prof.gl;
   saveProfile();
   loadFeedback();
-  publishName(); closeAuth(); startFriends();
+  publishName(); closeAuth(); startFriends(); loadStats();
   toast(isNew || pendingSignup ? $tt(`환영해요, ${me.name} 님! 계정을 만들었어요.`, `Welcome, ${me.name}! Your account is ready.`) : $tt(`${me.name} 님, 어서 오세요.`, `Welcome back, ${me.name}.`));
   if (isNew || pendingSignup) lsSet('jsdsr-onboard', myUid);
   pendingSignup = null;
@@ -3244,6 +3410,7 @@ async function loadMyRecords() {
       me.todayMs = Math.max(me.todayMs, Number(myAtt.days[me.dayKey]?.focusMs) || 0);
     }
   } catch {}
+  attLoaded = true; maybeSeed();
   try { const sn = await db.doc(RP + 'chat/' + myUid).get(); if (sn.exists && Array.isArray(sn.data().msgs)) { const all = sn.data().msgs.filter(m => m && Number.isFinite(m.t)); myChat.msgs = all.filter(m => Date.now() - m.t < CHAT_TTL).slice(-30); if (myChat.msgs.length !== all.length) queueChatWrite(); } } catch {}
 }
 /* ---- 친구: 별명으로 찾기, 서로 허락, 접속 중인지, 같은 방으로 따라가기 ---- */
@@ -3264,7 +3431,16 @@ function startFriends() {
   }, () => {});
   goOnline();
 }
+let onlineWatch = false;
+function watchOnline() {
+  if (onlineWatch || !RTDB || !auth.isDev) return; onlineWatch = true;
+  RTDB.rt.onValue(RTDB.rt.ref(RTDB.rdb, 'online'), sn => {
+    const v = sn.val() || {}; const n = Object.values(v).filter(c => c && typeof c === 'object' && Object.keys(c).length).length;
+    document.getElementById('devOnline').textContent = $tt(`🟢 지금 접속 중: ${n}명`, `🟢 Online now: ${n}`);
+  }, () => {});
+}
 function goOnline() {
+  watchOnline();
   if (!RTDB || !myUid || onlineRef) return;
   const { rt, rdb } = RTDB; onlineRef = rt.push(rt.ref(rdb, 'online/' + myUid));
   rt.onValue(rt.ref(rdb, '.info/connected'), sn => { if (sn.val()) { rt.onDisconnect(onlineRef).remove(); rt.set(onlineRef, { t: Date.now() }).catch(() => {}); } });
@@ -3292,7 +3468,67 @@ function friendPlace(uid) {
   if (isLibKey(room)) { const ln = clean(String(st.roomName || LIB_NAME), 20); return { on: true, room, join: true, text: $tt(`🟢 📚 ${ln}에서 공부 중`, `🟢 Studying in the 📚 ${ln}`) }; }
   return { on: true, room, join: true, text: $tt(`🟢 🔑 ${clean(String(st.roomName || room), 20)}에서 공부 중`, `🟢 Studying in 🔑 ${clean(String(st.roomName || room), 20)}`) };
 }
+/* ---- 레벨: 세션 10개마다 1레벨, Lv.10·20·30에 표창 ---- */
+const LV_SESS = 10;
+const AWARDS = [[10, $tt('🥉 성실한 독수리 표창', '🥉 Diligent Eagle Award')], [20, $tt('🥈 끈기의 독수리 표창', '🥈 Persistent Eagle Award')], [30, $tt('🥇 전설의 독수리 표창', '🥇 Legendary Eagle Award')]];
+const lvOf = sess => 1 + Math.floor((Number(sess) || 0) / LV_SESS);
+const awardsOf = lv => AWARDS.filter(([n]) => lv >= n).map(([, t]) => t);
+
+function normStats(o) {
+  o = o && typeof o === 'object' ? o : {};
+  const num = v => Number.isFinite(v) && v > 0 ? v : 0;
+  const act = {}; if (o.act && typeof o.act === 'object') for (const k of Object.keys(TASKS)) if (num(o.act[k])) act[k] = num(o.act[k]);
+  const d = {}; if (o.d && typeof o.d === 'object') for (const k of Object.keys(o.d)) if (/^\d{4}-\d{2}-\d{2}$/.test(k)) d[k] = 1;
+  const seeded = {}; if (o.seeded && typeof o.seeded === 'object') for (const k of Object.keys(o.seeded)) seeded[k] = true;
+  return { sess: Math.floor(num(o.sess)), ms: num(o.ms), act, d, seeded };
+}
+async function loadStats() {
+  if (!db || !myUid) return;
+  let raw = null; try { const sn = await db.doc('stats/' + myUid).get(); raw = sn.exists ? sn.data() : null; } catch {}
+  myStats = normStats(raw); updateLevel(false); maybeSeed(); renderStoreStats();
+}
+// 이 기능 전에 쌓인 기록도 방마다 한 번씩 더해요
+function maybeSeed() {
+  if (!myStats || !roomReady || !attLoaded || !ROOM) return;
+  const rk = ROOM.key; if (myStats.seeded[rk]) return; myStats.seeded[rk] = true;
+  for (const [k, v] of Object.entries(myAtt.days || {})) {
+    const ms = Number(v?.focusMs) || 0; if (ms <= 0) continue;
+    myStats.ms += ms; myStats.d[k] = 1; myStats.sess += Number.isFinite(v.sess) ? v.sess : Math.floor(ms / SESSION_MS);
+  }
+  saveStatsSoon(); updateLevel(false);
+}
+function statsAdd(ms, sess) {
+  if (!myStats) return;
+  if (ms > 0) { myStats.ms += ms; myStats.act[me.task] = (myStats.act[me.task] || 0) + ms; myStats.d[dayKey()] = 1; }
+  if (sess > 0) myStats.sess += sess;
+  saveStatsSoon(); updateLevel(true);
+}
+function saveStatsSoon() { statsDirty = true; clearTimeout(statsTimer); statsTimer = setTimeout(saveStats, 4000); }
+function saveStats() { if (!statsDirty || !myStats || !db || !myUid) return; statsDirty = false; db.doc('stats/' + myUid).set(myStats).catch(() => { statsDirty = true; }); }
+addEventListener('pagehide', saveStats);
+function updateLevel(celebrate) {
+  const lv = lvOf(myStats?.sess); if (lv === myLv) return;
+  const prev = myLv; myLv = lv; publishName(); publish(); renderStoreStats();
+  if (celebrate && prev && lv > prev) {
+    const aw = AWARDS.find(([n]) => n === lv);
+    popup({ title: aw ? $tt('🏅 표창을 받았어요!', '🏅 You earned an award!') : $tt(`⭐ 레벨 업! Lv.${lv}`, `⭐ Level up! Lv.${lv}`),
+      text: aw ? $tt(`Lv.${lv} 달성! ${aw[1]}\n다른 독수리들이 내 이름표를 누르면 볼 수 있어요.`, `You reached Lv.${lv}! ${aw[1]}\nOthers can see it by tapping your name tag.`) : $tt(`세션 ${LV_SESS}개를 더 마쳐서 Lv.${lv}이 됐어요. 다음 레벨까지 세션 ${LV_SESS}개!`, `You finished ${LV_SESS} more sessions and reached Lv.${lv}. ${LV_SESS} more to the next level!`) });
+  }
+}
 async function tagClick(st) {
+  if (!st || !st.by) return;
+  const uid = st.by, isSelf = uid === myUid, lv = isSelf ? (myLv || 1) : (auth.names.get(uid)?.lv || st.s?.lv || 1);
+  const name = st.s?.name || nickOf(uid), fl = flag(st.s?.cc), aw = awardsOf(lv);
+  const card = [`⭐ Lv.${lv}`, ...(st.s?.mj ? [`🎓 ${st.s.mj}`] : []), ...(ROOM && ROOM.owner === uid && ROOM.key !== 'vip' && !isLibKey(ROOM.key) ? [$tt('🎓 이 연구실 방장', '🎓 Host of this lab')] : []), '',
+    aw.length ? $tt('🏅 받은 표창', '🏅 Awards') : $tt('🏅 아직 표창이 없어요 · Lv.10부터 받아요', '🏅 No awards yet · they start at Lv.10'), ...aw].join('\n');
+  if (isSelf || !myUid || !db) { popup({ title: `${fl ? fl + ' ' : ''}${name}`, text: card, list: true, yes: $tt('닫기', 'Close') }); return; }
+  const id = pairId(myUid, uid), f = fships.get(id), incoming = f && !f.accepted && f.from !== myUid;
+  const yes = f && f.accepted ? $tt('👥 친구예요', '👥 Friends') : f && f.from === myUid ? $tt('요청 보냄 · 기다리는 중', 'Request sent') : incoming ? $tt('🤝 친구 요청 수락', '🤝 Accept friend request') : $tt('🤝 친구 요청 보내기', '🤝 Send friend request');
+  const ok = await popup({ title: `${fl ? fl + ' ' : ''}${name}`, text: card, list: true, yes, no: $tt('닫기', 'Close') });
+  if (ok !== true || (f && (f.accepted || f.from === myUid))) return;
+  incoming ? acceptFriend(id) : addFriend(uid, name);
+}
+async function tagClickOld(st) {
   if (!st || st.isMe || !st.by || !myUid || st.by === myUid || !db) return;
   const id = pairId(myUid, st.by), f = fships.get(id), name = st.s?.name || nickOf(st.by);
   if (f && f.accepted) { toast($tt(`${name} 님은 이미 친구예요. 👥`, `${name} is already your friend. 👥`)); return; }
@@ -3491,16 +3727,12 @@ async function enterRoom(info) {
   subscribeRoom();
   await loadMyRecords();
   lobbyEl.classList.remove('open'); closeAuth();
-  if (!me.joined) openJoin();
+  if (!me.joined && !(await tryResume())) openJoin();
   renderJourney(true); renderCare(); refresh();
   if (lsGet('jsdsr-onboard') === myUid) { lsSet('jsdsr-onboard', null); showGuide(); }
 }
 function subscribeRoom() {
-  db.collection(RP + 'att').onSnapshot(qs => {
-    attDocs.clear();
-    for (const d of qs.docs) { const v = d.data() || {}; attDocs.set(d.id, { name: (typeof v.name === 'string' && clean(v.name)) || $t('익명 독수리'), color: Number.isInteger(v.color) ? v.color : 0, kind: own(KINDS, v.kind) ? v.kind : 'eagle', cc: ccOk(v.cc) ? v.cc : '', days: v.days && typeof v.days === 'object' ? v.days : {} }); }
-    renderRoster(); updateBoard(seatedList());
-  }, () => {});
+  loadAttDocs(true);
   db.collection(RP + 'care').onSnapshot(onCareSnap, () => {});
   db.collection(RP + 'board').onSnapshot(onBoardSnap, () => {});
   db.collection(RP + 'chat').onSnapshot(qs => {
@@ -3835,7 +4067,7 @@ For Siri or automatic opening, use the Shortcuts app.
   if (r === true) copyText(SITE_URL, $tt('링크를 복사했어요. 단축어 앱에 붙여 넣어 주세요! 📋', 'Link copied. Paste it into the Shortcuts app! 📋'));
   else if (r === false) window.open('sources/apple-touch-icon.png', '_blank', 'noopener');
 }
-document.getElementById('iosBtn').addEventListener('click', showIosShortcut);
+
 async function editNotice() {
   const v = await popup({ title: $tt('화이트보드 공지 (개발자)', 'Whiteboard notice (developer)'), text: $tt('한 줄에 하나씩, 세 줄까지 적어 주세요.', 'One per line, up to three lines.'), area: noticeLines.join('\n'), yes: $tt('저장', 'Save'), no: $tt('취소', 'Cancel') });
   if (typeof v !== 'string') return;
@@ -3936,6 +4168,14 @@ async function sendFeedback(text) {
 // 쓰레기통을 누르면 확대 → 쪽지 쓰기 → 종이가 공처럼 구겨져 통 속으로
 let ball = null;
 const ballMat = new THREE.MeshStandardMaterial({ color: '#fbfaf3', roughness: 1, flatShading: true });
+async function storeBinNote() {
+  binLid && (binLid.userData.open = 1);
+  const v = await popup({ title: $tt('🗑 개발자에게 쪽지 쓰기', '🗑 A note for the developer'), text: $tt('하고 싶은 말, 버그, 바라는 점을 적어 주세요. 개발자만 읽어요.', 'Ideas, bugs, wishes. Only the developer reads these.'), area: '', placeholder: $tt('예: 시약 창고에 원심분리기도 있으면 좋겠어요!', 'e.g. A centrifuge in the storage would be nice!'), yes: $tt('구겨서 버리기', 'Crumple & toss'), no: $tt('취소', 'Cancel') });
+  binLid && (binLid.userData.open = 0);
+  if (typeof v !== 'string') return;
+  const r = await sendFeedback(v);
+  toast(r === true ? $tt('쪽지를 버렸어요. 개발자에게 전달됐어요! 🗑', 'Tossed! Your note went to the developer. 🗑') : r);
+}
 async function openBinNote(i) {
   const b = BINS[i]; if (!b) return;
   const wp = b.g.getWorldPosition(new THREE.Vector3());
@@ -3990,7 +4230,7 @@ function onBoardSnap(qs) {
   for (const d of qs.docs) {
     const v = d.data() || {};
     if (d.id === 'meta') { devId = typeof v.devId === 'string' ? v.devId : null; chatClearedAt = Number.isFinite(v.chatClearedAt) ? v.chatClearedAt : 0; }
-    if (d.id === 'neon' && typeof v.text === 'string') { const nt = clean(v.text, 16) || $t('졸업하고 싶다'); if (nt !== neonText) { neonText = nt; redraw(neonTex); } }
+    if (d.id === 'neon' && typeof v.text === 'string') { const nt = clean(v.text, 24) || '졸업하고 싶다'; if (nt !== neonText) { neonText = nt; redraw(neonTex); } }
     if (d.id === 'notice' && Array.isArray(v.lines)) noticeLines = v.lines.slice(0, 3).map(x => clean(String(x), 24)).filter(Boolean);
   }
   if (auth.isDev && myUid && roomReady && devId !== myUid) db.doc(RP + 'board/meta').set({ devId: myUid, chatClearedAt }).catch(() => {});
@@ -4164,32 +4404,31 @@ if (IS_LIB) {
   document.getElementById('careBtn').hidden = true;
 }
 
-/* ================= 시약 창고: 방에 들어가기 전 설정 공간 ================= */
-let storeG = null, storeHidden = [], inStore = false, storeCtl = null;
-const storeHits = [];
+/* ================= 시약 창고: 방에 들어가기 전 나만의 공간 ================= */
+let storeG = null, storeHidden = [], inStore = false, storeCtl = null, storeMe = null, autoclave = null, binLid = null;
+const storeHits = [], steamPuffs = [];
+const STORE_FONT = '"A2Z ExtraLight", "IBM Plex Sans KR", sans-serif';
 function buildStore() {
   const G = new THREE.Group(); scene.add(G);
-  const W = 2.5, D = 7.2, H = 2.75, hw = W / 2;
-  G.add(new THREE.HemisphereLight('#eef3ff', '#5b544a', 0.9));
-  for (const z of [1.6, -1.2]) { const pl = new THREE.PointLight('#f4fbff', 6, 7, 1.6); pl.position.set(0, H - 0.25, z); G.add(pl); mesh(box(0.12, 0.04, 1.3), glow('#f7fbff'), 0, H - 0.03, z, G); }
-  const tile = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#c9ccc6'; g.fillRect(0, 0, w, h); g.strokeStyle = 'rgba(70,80,76,.35)'; g.lineWidth = 3; g.strokeRect(0, 0, w, h); for (let k = 0; k < 500; k++) { g.fillStyle = `rgba(${k % 2 ? '60,66,62' : '255,255,255'},${(k * 7 % 13) / 110})`; g.fillRect((k * 53) % w, (k * 97) % h, 2, 2); } }, { repeat: [3, 8] });
+  const W = 4.4, D = 7.4, H = 2.85, hw = W / 2, hd = D / 2;
+  G.add(new THREE.HemisphereLight('#eef3ff', '#5b544a', 0.95));
+  for (const [x, z] of [[-1, 1.8], [1, 1.8], [-1, -1.4], [1, -1.4]]) { const pl = new THREE.PointLight('#f4fbff', 4.2, 7, 1.6); pl.position.set(x, H - 0.25, z); G.add(pl); mesh(box(0.12, 0.04, 1.3), glow('#f7fbff'), x, H - 0.03, z, G); }
+  const tile = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#c9ccc6'; g.fillRect(0, 0, w, h); g.strokeStyle = 'rgba(70,80,76,.35)'; g.lineWidth = 3; g.strokeRect(0, 0, w, h); for (let k = 0; k < 500; k++) { g.fillStyle = `rgba(${k % 2 ? '60,66,62' : '255,255,255'},${(k * 7 % 13) / 110})`; g.fillRect((k * 53) % w, (k * 97) % h, 2, 2); } }, { repeat: [5, 8] });
   const fl = mesh(new THREE.PlaneGeometry(W, D), std('#ffffff', { map: tile, roughness: 0.95 }), 0, 0, 0, G); fl.rotation.x = -Math.PI / 2;
   const ce = mesh(new THREE.PlaneGeometry(W, D), std('#e6e6e0', { roughness: 1 }), 0, H, 0, G); ce.rotation.x = Math.PI / 2;
   const wall = std('#dcdfd8', { roughness: 0.95 });
-  mesh(box(W, H, 0.05), wall, 0, H / 2, -D / 2, G); mesh(box(W, H, 0.05), wall, 0, H / 2, D / 2, G);
+  mesh(box(W, H, 0.05), wall, 0, H / 2, -hd, G); mesh(box(W, H, 0.05), wall, 0, H / 2, hd, G);
   for (const sx of [-1, 1]) mesh(box(0.05, H, D), wall, sx * hw, H / 2, 0, G);
-  // 양쪽 벽을 꽉 채운 시약 선반
+  // 양쪽 벽: 시약이 빽빽한 선반
   const shelfM = std('#9aa3a8', { metalness: 0.5, roughness: 0.45 }), postM = std('#6d767c', { metalness: 0.6, roughness: 0.4 });
-  const z0 = -2.35, z1 = 3.3, SD = 0.46, LV = [0.12, 0.52, 0.92, 1.32, 1.72, 2.12, 2.48];
-  const bottle = new THREE.CylinderGeometry(1, 1, 1, 10), cap = new THREE.CylinderGeometry(1, 1, 1, 8), cube = new THREE.BoxGeometry(1, 1, 1);
-  const N = 900;
-  const bI = new THREE.InstancedMesh(bottle, std('#ffffff', { roughness: 0.35 }), N), cI = new THREE.InstancedMesh(cap, std('#ffffff', { roughness: 0.6 }), N), xI = new THREE.InstancedMesh(cube, std('#ffffff', { roughness: 0.8 }), 420);
+  const z0 = -1.25, z1 = 3.4, SD = 0.46, LV = [0.12, 0.52, 0.92, 1.32, 1.72, 2.12, 2.5];
+  const N = 1000, bI = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 10), std('#ffffff', { roughness: 0.35 }), N), cI = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 8), std('#ffffff', { roughness: 0.6 }), N), xI = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), std('#ffffff', { roughness: 0.8 }), 460);
   const BC = ['#8a4b1c', '#a65f22', '#e9eef0', '#d8e6ee', '#3c6fa8', '#f1efe6', '#3f8a5a', '#c9b48a', '#6b3d2b'].map(c => new THREE.Color(c));
   const CC = ['#c0392b', '#f4f4f0', '#2f5d8c', '#1f2226', '#e1b12c', '#3f8f6b'].map(c => new THREE.Color(c));
   const XC = ['#c8a776', '#b89262', '#f2f0e8', '#d9534f', '#5b8fc9', '#efe6c8'].map(c => new THREE.Color(c));
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), pv = new THREE.Vector3(), sv = new THREE.Vector3();
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), pv = new THREE.Vector3(), sv = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
   let nb = 0, nx = 0;
-  const put = (I, i, x, y, z, sx, sy, sz, col, ry = 0) => { q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry); m4.compose(pv.set(x, y, z), q, sv.set(sx, sy, sz)); I.setMatrixAt(i, m4); I.setColorAt(i, col); };
+  const put = (I, i, x, y, z, sx, sy, sz, col, ry = 0) => { q.setFromAxisAngle(up, ry); m4.compose(pv.set(x, y, z), q, sv.set(sx, sy, sz)); I.setMatrixAt(i, m4); I.setColorAt(i, col); };
   for (const sx of [-1, 1]) {
     const cx = sx * (hw - SD / 2 - 0.04);
     for (const y of LV) mesh(box(SD, 0.025, z1 - z0), shelfM, cx, y, (z0 + z1) / 2, G);
@@ -4197,85 +4436,185 @@ function buildStore() {
     for (let li = 0; li < LV.length - 1; li++) {
       const y = LV[li] + 0.013, room = LV[li + 1] - LV[li] - 0.04;
       for (let z = z0 + 0.06; z < z1 - 0.06;) {
-        if (rnd() < 0.18 && nx < 410) { // 상자 무더기
-          const bw = 0.16 + rnd() * 0.18, bh = Math.min(room, 0.12 + rnd() * 0.22), bd = SD * (0.6 + rnd() * 0.3);
-          put(xI, nx++, cx, y + bh / 2, z + bw / 2, bd, bh, bw, XC[Math.floor(rnd() * XC.length)], (rnd() - 0.5) * 0.12); z += bw + 0.02; continue;
-        }
+        if (rnd() < 0.18 && nx < 440) { const bw = 0.16 + rnd() * 0.18, bh = Math.min(room, 0.12 + rnd() * 0.22), bd = SD * (0.6 + rnd() * 0.3); put(xI, nx++, cx, y + bh / 2, z + bw / 2, bd, bh, bw, XC[Math.floor(rnd() * XC.length)], (rnd() - 0.5) * 0.12); z += bw + 0.02; continue; }
         for (const row of [-0.11, 0.1]) {
           if (nb >= N) break;
           const r = 0.028 + rnd() * 0.035, h = Math.min(room - 0.05, 0.1 + rnd() * 0.2), bx = cx + row + (rnd() - 0.5) * 0.04, bz = z + r;
           put(bI, nb, bx, y + h / 2, bz, r, h, r, BC[Math.floor(rnd() * BC.length)]);
           put(cI, nb, bx, y + h + 0.018, bz, r * 0.7, 0.036, r * 0.7, CC[Math.floor(rnd() * CC.length)]); nb++;
-          z += 0;
         }
         z += 0.075 + rnd() * 0.04;
       }
     }
   }
-  // 바닥에도 쌓인 박스들
-  for (let k = 0; k < 14 && nx < 420; k++) {
-    const sx = rnd() < 0.5 ? -1 : 1, bw = 0.3 + rnd() * 0.2, bh = 0.2 + rnd() * 0.18, z = -1.9 + rnd() * 2.4, x = sx * (hw - SD - 0.16), stack = 1 + Math.floor(rnd() * 3);
-    for (let t = 0; t < stack && nx < 420; t++) put(xI, nx++, x + (rnd() - 0.5) * 0.04, 0.0 + bh * (t + 0.5), z, bw, bh, bw * 0.9, XC[Math.floor(rnd() * 3)], (rnd() - 0.5) * 0.3);
+  for (let k = 0; k < 12 && nx < 460; k++) {
+    const sx = rnd() < 0.5 ? -1 : 1, bw = 0.3 + rnd() * 0.2, bh = 0.2 + rnd() * 0.18, z = -0.6 + rnd() * 2.6, x = sx * (hw - SD - 0.2), stack = 1 + Math.floor(rnd() * 3);
+    for (let t = 0; t < stack && nx < 460; t++) put(xI, nx++, x + (rnd() - 0.5) * 0.04, bh * (t + 0.5), z, bw, bh, bw * 0.9, XC[Math.floor(rnd() * 3)], (rnd() - 0.5) * 0.3);
   }
   bI.count = cI.count = nb; xI.count = nx;
   for (const I of [bI, cI, xI]) { I.instanceMatrix.needsUpdate = true; if (I.instanceColor) I.instanceColor.needsUpdate = true; G.add(I); }
-  // 안쪽 끝: 작은 작업대와 네 가지 코너
-  const tz = -D / 2 + 0.42;
-  mesh(box(W - 0.1, 0.05, 0.62), std('#e8e6df', { roughness: 0.5 }), 0, 0.9, tz, G);
-  mesh(box(W - 0.14, 0.86, 0.56), std('#8f969b', { roughness: 0.6, metalness: 0.3 }), 0, 0.44, tz, G);
-  sign(isEN ? 'REAGENT STORAGE · 시약 창고' : '시약 창고 · REAGENT STORAGE', 1.6, 0.2, { w: 1000, h: 125, bg: '#1d2126', fg: '#f3f1e8', font: `64px "A2Z SemiBold", "IBM Plex Sans KR", sans-serif` }, G, 0, 2.45, -D / 2 + 0.03);
+
+  // 안쪽: 작업대와 코너 표지판
+  const tz = -hd + 0.42;
+  mesh(box(2.3, 0.05, 0.62), std('#e8e6df', { roughness: 0.5 }), 0, 0.9, tz, G);
+  mesh(box(2.26, 0.86, 0.56), std('#8f969b', { roughness: 0.6, metalness: 0.3 }), 0, 0.44, tz, G);
+  sign(isEN ? 'MY REAGENT STORAGE' : '나의 시약 창고', 1.8, 0.24, { w: 1000, h: 133, bg: '#1d2126', fg: '#f3f1e8', font: `80px ${STORE_FONT}` }, G, 0, 2.6, -hd + 0.03);
   const corners = [
-    ['friends', isEN ? 'Friends' : '친구', isEN ? 'requests' : '요청 · 접속', '#f6e7c8', -0.54],
-    ['account', isEN ? 'Account' : '내 계정', isEN ? 'name · PIN' : '별명 · 비번', '#dfe9f5', -0.18],
-    ['guide', isEN ? 'Guide' : '사용법', isEN ? 'manual' : '매뉴얼', '#e3f1e3', 0.18],
-    ['ios', isEN ? 'iPhone' : '아이폰', isEN ? 'shortcut' : '바로가기', '#f4dde6', 0.54],
+    ['char', isEN ? 'Character' : '캐릭터', isEN ? 'look · glasses' : '모습 · 안경', '#fff1c2'],
+    ['stats', isEN ? 'Records' : '내 기록', isEN ? 'level · hours' : '레벨 · 시간', '#e7f0d8'],
+    ['friends', isEN ? 'Friends' : '친구', isEN ? 'requests' : '요청 · 접속', '#f6e7c8'],
+    ['account', isEN ? 'Account' : '내 계정', isEN ? 'name · PIN' : '별명 · 비번', '#dfe9f5'],
+    ['guide', isEN ? 'Guide' : '사용법', isEN ? 'manual' : '매뉴얼', '#e3f1e3'],
+    ['ios', isEN ? 'iPhone' : '아이폰', isEN ? 'shortcut' : '바로가기', '#f4dde6'],
   ];
-  for (const [key, title, sub, bg, x] of corners) {
-    const sg = sign(title, 0.32, 0.3, { w: 400, h: 375, bg, fg: '#22272b', font: `110px ${HAND}`, sub }, G, x, 1.5, -D / 2 + 0.045);
+  corners.forEach(([key, title, sub, bg], k) => {
+    const x = -0.95 + k * 0.38;
+    const sg = sign(title, 0.33, 0.3, { w: 400, h: 364, bg, fg: '#22272b', font: `104px ${STORE_FONT}`, sub, subFont: STORE_FONT }, G, x, 2.13, -hd + 0.045);
     sg.userData.store = key; storeHits.push(sg);
-    const frame = mesh(box(0.35, 0.33, 0.02), std('#3b4148'), x, 1.5, -D / 2 + 0.03, G);
-    frame.userData.store = key; storeHits.push(frame);
-  }
-  // 작업대 위 소품: 코르크 보드 사진, 출입증, 매뉴얼 바인더, 휴대폰
-  const prop = (key, o) => { o.userData.store = key; storeHits.push(o); G.add(o); return o; };
-  { const g = new THREE.Group(); g.position.set(-0.54, 0.925, tz + 0.05); for (let k = 0; k < 3; k++) { const ph = mesh(box(0.09, 0.004, 0.11), std(['#fdfdfb', '#fff6e0', '#eef6ff'][k]), -0.08 + k * 0.08, k * 0.005, (k - 1) * 0.02, g); ph.rotation.y = (k - 1) * 0.3; ph.userData.store = 'friends'; storeHits.push(ph); } G.add(g); }
-  { const card = mesh(box(0.1, 0.004, 0.15), std('#dfe9f5'), -0.18, 0.93, tz + 0.06); card.rotation.y = 0.2; prop('account', card); const strap = mesh(box(0.02, 0.003, 0.22), std('#2f5d8c'), -0.15, 0.929, tz - 0.08); strap.rotation.y = 0.2; prop('account', strap); }
-  { const b = mesh(box(0.08, 0.3, 0.24), std('#3f7a4a', { roughness: 0.6 }), 0.14, 1.08, tz - 0.05); prop('guide', b); const b2 = mesh(box(0.07, 0.28, 0.22), std('#e1b12c', { roughness: 0.6 }), 0.23, 1.07, tz - 0.05); b2.rotation.z = -0.12; prop('guide', b2); }
-  { const st = mesh(box(0.1, 0.02, 0.08), std('#2b2f33'), 0.54, 0.935, tz + 0.02); prop('ios', st); const ph = mesh(box(0.08, 0.16, 0.01), std('#111418', { roughness: 0.3 }), 0.54, 1.02, tz + 0.0); ph.rotation.x = -0.25; prop('ios', ph); const sc = mesh(new THREE.PlaneGeometry(0.07, 0.145), glow('#9fd3ff'), 0.54, 1.021, tz + 0.007); sc.rotation.x = -0.25; prop('ios', sc); }
+    const fr = mesh(box(0.36, 0.33, 0.02), std('#3b4148'), x, 2.13, -hd + 0.03, G); fr.userData.store = key; storeHits.push(fr);
+  });
+  // 작업대 위 소품
+  const prop = (key, o) => { o.userData.store = key; storeHits.push(o); return o; };
+  { const b = mesh(box(0.08, 0.3, 0.24), std('#3f7a4a', { roughness: 0.6 }), 0.45, 1.08, tz - 0.05, G); prop('guide', b); const b2 = mesh(box(0.07, 0.28, 0.22), std('#e1b12c', { roughness: 0.6 }), 0.54, 1.07, tz - 0.05, G); b2.rotation.z = -0.12; prop('guide', b2); }
+  { const st = mesh(box(0.1, 0.02, 0.08), std('#2b2f33'), 0.9, 0.935, tz + 0.02, G); prop('ios', st); const ph = mesh(box(0.08, 0.16, 0.01), std('#111418', { roughness: 0.3 }), 0.9, 1.02, tz, G); ph.rotation.x = -0.25; prop('ios', ph); const sc = mesh(new THREE.PlaneGeometry(0.07, 0.145), glow('#9fd3ff'), 0.9, 1.021, tz + 0.007, G); sc.rotation.x = -0.25; prop('ios', sc); }
+  { const cb = mesh(box(0.26, 0.012, 0.34), std('#b98a52'), -0.6, 0.93, tz + 0.04, G); cb.rotation.y = 0.15; prop('stats', cb); const pp = mesh(box(0.22, 0.004, 0.28), std('#fbfaf3'), -0.6, 0.938, tz + 0.05, G); pp.rotation.y = 0.15; prop('stats', pp); }
+
+  // 냉장고 (왼쪽 안)
+  const fx = -hw + 0.55, fz = -hd + 0.5;
+  const fridge = new THREE.Group(); fridge.position.set(fx, 0, fz); G.add(fridge);
+  const fw = std('#f2f4f3', { roughness: 0.35, metalness: 0.15 });
+  mesh(box(0.85, 1.95, 0.72), fw, 0, 0.975, 0, fridge);
+  mesh(box(0.83, 0.012, 0.012), std('#c3c8c9'), 0, 1.3, 0.362, fridge);
+  for (const y of [1.65, 0.85]) mesh(box(0.035, 0.32, 0.04), std('#b9bfc2', { metalness: 0.7, roughness: 0.3 }), 0.34, y, 0.38, fridge);
+  sign('4°C', 0.2, 0.08, { w: 256, h: 102, bg: '#10261d', fg: '#7dffb0', font: `70px ${STORE_FONT}` }, fridge, -0.2, 1.7, 0.362);
+  sign(isEN ? 'SAMPLES · NO FOOD' : '시료 전용 · 음식 금지', 0.5, 0.1, { w: 640, h: 128, bg: '#fff6d6', fg: '#a33a2a', font: `56px ${STORE_FONT}` }, fridge, 0, 1.05, 0.362);
+  // 오토클레이브 (오른쪽 안): 흔들리며 김을 뿜어요
+  const ax = hw - 0.6, az = -hd + 0.55;
+  mesh(box(0.95, 0.62, 0.8), std('#6d767c', { metalness: 0.5, roughness: 0.5 }), ax, 0.31, az, G);
+  autoclave = new THREE.Group(); autoclave.position.set(ax, 0.62, az); G.add(autoclave);
+  const steel = std('#c9d0d4', { metalness: 0.75, roughness: 0.28 });
+  mesh(box(0.9, 0.82, 0.78), steel, 0, 0.41, 0, autoclave);
+  const door = mesh(cyl(0.3, 0.3, 0.06, 32), std('#aeb6ba', { metalness: 0.8, roughness: 0.25 }), -0.05, 0.42, 0.41, autoclave); door.rotation.x = Math.PI / 2;
+  const wheel = new THREE.Group(); wheel.position.set(-0.05, 0.42, 0.46); autoclave.add(wheel);
+  mesh(new THREE.TorusGeometry(0.12, 0.014, 8, 24), std('#2b2f33'), 0, 0, 0, wheel);
+  for (let k = 0; k < 3; k++) { const sp = mesh(box(0.24, 0.016, 0.016), std('#2b2f33'), 0, 0, 0, wheel); sp.rotation.z = k * Math.PI / 3; }
+  autoclave.userData.wheel = wheel;
+  mesh(box(0.16, 0.24, 0.02), std('#1e2328'), 0.33, 0.55, 0.4, autoclave);
+  const gauge = mesh(cyl(0.055, 0.055, 0.02, 20), std('#f4f4ef'), 0.33, 0.62, 0.415, autoclave); gauge.rotation.x = Math.PI / 2;
+  autoclave.userData.lamp = mesh(sph(0.018, 8, 6), glow('#ff5a4a'), 0.33, 0.49, 0.415, autoclave);
+  mesh(cyl(0.03, 0.03, 0.12, 10), steel, 0.2, 0.88, -0.15, autoclave);
+  sign('121°C', 0.2, 0.08, { w: 256, h: 102, bg: '#1b1f24', fg: '#ffb347', font: `66px ${STORE_FONT}` }, autoclave, 0.33, 0.73, 0.412);
+  sign(isEN ? 'AUTOCLAVE' : '오토클레이브', 0.5, 0.1, { w: 640, h: 128, bg: '#f3f1e8', fg: '#22272b', font: `60px ${STORE_FONT}` }, autoclave, -0.05, 0.76, 0.392);
+  const puffM = () => new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, depthWrite: false });
+  for (let k = 0; k < 9; k++) { const p = mesh(sph(0.07, 10, 8), puffM(), 0.2, 0.95, -0.15, autoclave); p.userData.ph = k / 9; steamPuffs.push(p); }
+  // 바이오해저드 쓰레기통: 누르면 개발자에게 쪽지
+  const bx = 1.25, bz = -hd + 1.0;
+  const bin = new THREE.Group(); bin.position.set(bx, 0, bz); G.add(bin);
+  const binM = std('#e8742a', { roughness: 0.55 });
+  prop('bin', mesh(cyl(0.2, 0.17, 0.55, 24), binM, 0, 0.275, 0, bin));
+  binLid = new THREE.Group(); binLid.position.set(0, 0.56, -0.2); bin.add(binLid);
+  prop('bin', mesh(cyl(0.215, 0.215, 0.04, 24), std('#d65f1e', { roughness: 0.5 }), 0, 0, 0.2, binLid));
+  prop('bin', sign('☣ BIOHAZARD', 0.3, 0.1, { w: 512, h: 170, bg: '#f2c94c', fg: '#1d2126', font: `66px ${STORE_FONT}` }, bin, 0, 0.32, 0.196));
+  prop('bin', sign(isEN ? 'notes to the dev' : '개발자에게 쪽지', 0.3, 0.08, { w: 512, h: 136, bg: '#fff8ea', fg: '#9a3c14', font: `58px ${STORE_FONT}` }, bin, 0, 0.18, 0.187));
   shadowAll(G, false);
   return G;
 }
-function storeCam() {
-  camera.position.set(0, 1.5, 1.9); controls.target.set(0, 1.4, -3.2); camera.lookAt(controls.target); controls.update();
+// 시약 창고의 시선은 항상 같은 곳 (패널을 열고 닫아도 그대로)
+function storeCam() { camera.position.set(0, 1.62, 2.75); controls.target.set(0, 1.32, -3.2); camera.lookAt(controls.target); }
+function storePreview(look) {
+  if (!inStore || !storeG) return;
+  const lk = look || { kind: me.kind, color: me.color, gl: !!me.gl };
+  if (!storeMe) { storeMe = new Student('store-me'); storeMe.label.style.display = 'none'; storeMe.standing = true; }
+  storeMe.sync(sanitize({ v: 1, seat: 0, color: lk.color, kind: lk.kind, gl: lk.gl, task: me.task, name: me.name, mode: 'break', cc: me.cc }), true, false);
+  storeMe.root.position.set(-0.55, 0, -1.35); storeMe.root.rotation.set(0, 0.25, 0);
+  storeMe.items.visible = storeMe.mug.visible = false;
+  if (!storeMe._smile) { storeMe.setSmile?.(true); storeMe._smile = true; }
 }
-function enterStore() {
+function animateStore(dt, t) {
+  if (!inStore) return;
+  storeCam();
+  if (camera.view && camera.view.offsetY) { camera.setViewOffset(innerWidth, innerHeight, camera.view.offsetX, 0, innerWidth, innerHeight); }
+  if (storeMe && storeMe.torso) {
+    const [aR, aL] = storeMe.arms;
+    if (aR) { aR.rotation.set(0, 0, 2.55 + Math.sin(t * 7) * 0.38); }
+    if (aL) aL.rotation.set(0, 0, -0.12);
+    storeMe.torso.rotation.set(0, 0, Math.sin(t * 3.5) * 0.04);
+    storeMe.head.rotation.set(0.05, 0, Math.sin(t * 3.5 + 0.6) * 0.08);
+  }
+  if (autoclave && !reduceMotion) {
+    const k = Math.sin(t * 31) * 0.5 + Math.sin(t * 47) * 0.5;
+    autoclave.position.x = (autoclave.userData.x0 ??= autoclave.position.x) + k * 0.008;
+    autoclave.rotation.z = Math.sin(t * 23) * 0.012; autoclave.position.y = 0.62 + Math.abs(Math.sin(t * 19)) * 0.006;
+    autoclave.userData.wheel.rotation.z = Math.sin(t * 2) * 0.2;
+    autoclave.userData.lamp.material.color.set(Math.sin(t * 6) > 0 ? '#ff5a4a' : '#5a1a14');
+    for (const p of steamPuffs) {
+      const u = (t * 0.45 + p.userData.ph) % 1;
+      p.position.set(0.2 + Math.sin(u * 9 + p.userData.ph * 20) * 0.06 * u, 0.95 + u * 1.0, -0.15 + Math.cos(u * 7) * 0.05 * u);
+      p.scale.setScalar(0.6 + u * 2.4); p.material.opacity = 0.5 * Math.sin(u * Math.PI) * (1 - u * 0.4);
+    }
+  }
+  if (binLid) binLid.rotation.x += ((binLid.userData.open ? -0.9 : 0) - binLid.rotation.x) * Math.min(1, dt * 8);
+}
+function renderStoreStats() {
+  const box2 = document.getElementById('ssBody'); if (!box2) return;
+  box2.textContent = '';
+  if (!myStats) { box2.appendChild(el('p', 'note', $tt('기록을 불러오는 중이에요…', 'Loading your records…'))); return; }
+  const lv = lvOf(myStats.sess), into = myStats.sess % LV_SESS, aw = awardsOf(lv);
+  const top = el('div', 'lvrow');
+  top.append(el('b', 'lvbig', `⭐ Lv.${lv}`), el('span', '', $tt(`다음 레벨까지 세션 ${LV_SESS - into}개`, `${LV_SESS - into} more sessions to Lv.${lv + 1}`)));
+  const bar = el('div', 'bar'); const bi = el('i'); bi.style.width = `${into / LV_SESS * 100}%`; bar.appendChild(bi); top.appendChild(bar);
+  top.appendChild(el('span', '', aw.length ? aw.join(' · ') : $tt('🏅 표창은 Lv.10, 20, 30에 받아요', '🏅 Awards at Lv.10, 20 and 30')));
+  box2.appendChild(top);
+  const hm = ms => { const m = Math.round(ms / 60000); return $tt(`${Math.floor(m / 60)}시간 ${m % 60}분`, `${Math.floor(m / 60)}h ${m % 60}m`); };
+  const tb = el('table'), row = (a, b) => { const tr = el('tr'); tr.append(el('td', '', a), el('td', '', b)); tb.appendChild(tr); return tr; };
+  row($tt('📅 출석한 날', '📅 Days attended'), $tt(`${Object.keys(myStats.d).length}일`, `${Object.keys(myStats.d).length} days`));
+  row($tt('⏱ 총 집중 시간', '⏱ Total focus'), hm(myStats.ms));
+  row($tt('✅ 완료한 세션', '✅ Sessions done'), $tt(`${myStats.sess}개`, `${myStats.sess}`));
+  box2.appendChild(tb);
+  box2.appendChild(el('h4', '', $tt('활동별 누적 시간', 'Time by activity')));
+  const t2 = el('table'), maxA = Math.max(1, ...Object.values(myStats.act));
+  for (const [k, v] of Object.entries(TASKS)) {
+    const ms = myStats.act[k] || 0, tr = el('tr'), td = el('td', '', `${v.icon} ${v.label}`);
+    const ab = el('div', 'bar abar'); const ai = el('i'); ai.style.width = `${ms / maxA * 100}%`; ab.appendChild(ai); td.appendChild(ab);
+    tr.append(td, el('td', '', hm(ms))); t2.appendChild(tr);
+  }
+  box2.appendChild(t2);
+  box2.appendChild(el('p', 'note', $tt('세션 10개를 마칠 때마다 레벨이 올라요. 활동별 시간은 이번 업데이트부터 쌓여요.', 'You level up every 10 sessions. Time by activity counts from this update on.')));
+}
+async function enterStore() {
   if (inStore) return;
+  try { await document.fonts.load(`80px ${STORE_FONT}`, '나의 시약 창고 캐릭터 내 기록 친구 계정 사용법 아이폰'); } catch {}
   if (!storeG) storeG = buildStore();
   inStore = true; storeHidden = [];
   for (const c of scene.children) if (c !== storeG && !PRE_ROOM.has(c) && c.visible) { c.visible = false; storeHidden.push(c); }
   for (const c of [lamp, neonLight, windowLight]) if (c.visible) { c.visible = false; storeHidden.push(c); }
   storeG.visible = true;
-  storeCtl = { min: controls.minDistance, max: controls.maxDistance, minP: controls.minPolarAngle, maxP: controls.maxPolarAngle, minA: controls.minAzimuthAngle, maxA: controls.maxAzimuthAngle, bg: scene.background, fog: scene.fog };
-  controls.minDistance = 1.2; controls.maxDistance = 6; controls.minPolarAngle = 1.2; controls.maxPolarAngle = 1.72; controls.minAzimuthAngle = -0.2; controls.maxAzimuthAngle = 0.2;
-  scene.background = new THREE.Color('#2a2e31'); scene.fog = null;
-  tween = null; controls.enabled = true; storeCam();
+  storeCtl = { en: controls.enabled, bg: scene.background, fog: scene.fog };
+  controls.enabled = false; scene.background = new THREE.Color('#2a2e31'); scene.fog = null;
+  tween = null; storeCam(); storePreview();
   lobbyEl.classList.remove('open'); document.body.classList.add('in-store');
   document.getElementById('storeHud').hidden = false;
-  toast($tt('🧴 시약 창고에 들어왔어요. 안쪽 코너나 아래 버튼을 눌러 보세요.', '🧴 Welcome to the reagent storage. Tap a corner at the back or a button below.'));
+  renderStoreStats(); if (innerWidth > 900) setPanel('storeStats');
+  toast($tt('🧴 나의 시약 창고예요. 안쪽 표지판이나 아래 버튼을 눌러 보세요.', '🧴 Your reagent storage. Tap a sign at the back or a button below.'));
 }
 function exitStore() {
   if (!inStore) return;
-  inStore = false; setPanel(null);
+  inStore = false; setPanel(null); closeChar();
+  if (storeMe) { scene.remove(storeMe.root); storeMe.label.remove(); storeMe = null; }
   storeG.visible = false; storeHidden.forEach(c => { c.visible = true; }); storeHidden = [];
-  if (storeCtl) { controls.minDistance = storeCtl.min; controls.maxDistance = storeCtl.max; controls.minPolarAngle = storeCtl.minP; controls.maxPolarAngle = storeCtl.maxP; controls.minAzimuthAngle = storeCtl.minA; controls.maxAzimuthAngle = storeCtl.maxA; scene.background = storeCtl.bg; scene.fog = storeCtl.fog; }
+  if (storeCtl) { controls.enabled = storeCtl.en !== false; scene.background = storeCtl.bg; scene.fog = storeCtl.fog; }
+  controls.enabled = true;
   document.body.classList.remove('in-store'); document.getElementById('storeHud').hidden = true;
   goView(view, true); showLobby();
 }
 function openStoreItem(key) {
   if (key === 'friends') return setPanel('friends');
   if (key === 'account') { setPanel('journey'); setTimeout(() => document.getElementById('renameInput')?.closest('.acct')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); return; }
+  if (key === 'stats') { renderStoreStats(); return setPanel(document.getElementById('storeStats').classList.contains('open') ? null : 'storeStats'); }
+  if (key === 'char') { setPanel(null); return openChar(); }
   if (key === 'guide') { setPanel(null); return showGuide(); }
   if (key === 'ios') return showIosShortcut();
+  if (key === 'bin') return storeBinNote();
   if (key === 'out') return exitStore();
 }
 document.getElementById('lbStore').addEventListener('click', enterStore);
@@ -4295,8 +4634,9 @@ function frame() {
     if (tween.t >= 1) { tween = null; controls.enabled = true; }
   }
   if (napLock && !tween) controls.enabled = false;
-  if (!tween) controls.update();
+  if (!tween && !inStore) controls.update();
   for (const st of students.values()) st.update(dt, t);
+  animateStore(dt, t);
   animateCare(dt, t);
   animateDoor(dt);
   updateQuickCare();
@@ -4400,7 +4740,7 @@ function makeRoom(rt, rdb, getUid, path) {
     deleteUser: () => authM.deleteUser(fauth.currentUser),
   };
   // 별명 목록은 공개 (로그인 전 중복 확인용). 연구실 데이터는 입장한 뒤에 구독
-  db.collection('names').onSnapshot(qs => { auth.names.clear(); for (const d of qs.docs) { const v = d.data() || {}; if (typeof v.nick === 'string') auth.names.set(d.id, { nick: clean(v.nick), cc: ccOk(v.cc) ? v.cc : '', since: Number.isFinite(v.since) ? v.since : 0 }); } renderJourney(false); renderFriends(); if (lobbyEl.classList.contains('open')) document.getElementById('lbVipSub').textContent = $tt('개발자가 승인한 독수리만 들어갈 수 있어요', 'Only eagles approved by the developer'); }, () => {});
+  db.collection('names').onSnapshot(qs => { auth.names.clear(); for (const d of qs.docs) { const v = d.data() || {}; if (typeof v.nick === 'string') auth.names.set(d.id, { lv: Number.isInteger(v.lv) && v.lv > 0 ? v.lv : 1, nick: clean(v.nick), cc: ccOk(v.cc) ? v.cc : '', since: Number.isFinite(v.since) ? v.since : 0 }); } renderJourney(false); renderFriends(); if (lobbyEl.classList.contains('open')) document.getElementById('lbVipSub').textContent = $tt('개발자가 승인한 독수리만 들어갈 수 있어요', 'Only eagles approved by the developer'); }, () => {});
   RTDB = { rt: rtM, rdb: rtM.getDatabase(app) };
   setTimeout(() => { toastReady = true; }, 2500);
   // 로그인 상태
