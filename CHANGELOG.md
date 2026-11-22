@@ -5,6 +5,25 @@ Newest first.
 
 ---
 
+## v2.3 · Gloves on, one seat per eagle
+- **One account, one place**: opening the same account in another browser or tab disconnects the older one, with a button to switch back.
+- **Easier seating**: entering a room asks you to click the chair you want. The seating window now shows your nickname, country and field from sign-up and only asks for today's task, then **Sit at the bench**. The dock button is always **Character**.
+- **Language follows your account**: the language you chose is saved to your account and used again on any device.
+- 🧤 Every character now wears **light-blue lab gloves**.
+- 🧴 **Reagent storage**:
+  - Titles use A2Z ExtraLight and everything else A2Z SemiBold.
+  - Your character is smaller, so the signs behind stay visible.
+  - **My records** fits between the title and the buttons on any screen size, and time by activity opens with a tap.
+  - New **portrait of Eagle No.1** (the developer) above the autoclave. Tap it to read the story of the lab.
+  - The bin has a proper **biohazard symbol**.
+  - Tap the **fridge** to open it. There may be beer cans rolling around. 🍺
+
+## v2.2 · Ready to grow
+- Nicknames are now loaded only for the people you actually see: your lab mates, friends and the developer. The app no longer downloads every member's name on each visit, so the cost of opening the app stays flat as more people sign up.
+- Finding a friend by nickname looks up that one nickname directly.
+- New default nicknames ("Eagle N") use a single member count instead of the full member list.
+- Switching rooms remembers your profile, records and recently seen names for a while, so it doesn't fetch them again.
+
 ## v2.1 · Phone-friendly focus & lighter data use
 - **Pick up where you left off**: if your phone closes the app mid-session, reopening the same room puts you back in your seat and continues your focus session (within 3 hours).
 - **Away-time check**: if the screen was off for 20+ minutes during focus, you're asked whether you kept studying. Choose "No" and that time is left out of your focus time, sessions and level.

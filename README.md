@@ -10,10 +10,7 @@ No install, no email. It works in your browser on a laptop or a phone, in landsc
 
 ---
 
-## 🆕 What's new (v1.6)
-- 👥 Friends: add by nickname, see who's online
-- 🛏 Rest options: nap in the bed or zone out at your seat
-- Updated on November 21st, 2026
+## 🆕 Current version (v2.3)
 
 [See all updates →](CHANGELOG.md)
 

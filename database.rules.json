@@ -8,6 +8,20 @@
           ".validate": "newData.child('uid').val() === auth.uid"
         }
       }
+    },
+    "online": {
+      ".read": "auth != null",
+      "$uid": {
+        "$conn": {
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    },
+    "session": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
     }
   }
 }
