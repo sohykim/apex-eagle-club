@@ -5,12 +5,41 @@ Newest first.
 
 ---
 
+## v2.9 · New view from the window
+- 🏰 **New 3D Ghent skyline**: the window (and the library's glass walls) now shows an original 3D scene built for this app: three towers, a sea of tiled roofs and stepped gables. Day with clouds, a pink-orange sunset, and a starry night with floodlit towers and lit windows. The scene's source is in `sources/window-view.html`.
+- 🧹 **Smoother long sessions**: characters and the trophy portrait now free their 3D memory when they're rebuilt or someone leaves, so the lab doesn't slow down after hours open. The trophy portrait only redraws its hours, not the whole character, every few minutes.
+- 🎞 **Smoother battery saver**: when you haven't touched the screen for 8 seconds, the lab now draws 30 times a second instead of 4, so flames and animals stay smooth. Touching or moving the camera brings back full speed right away.
+- ⚡ **Lighter buttons**: removed the frosted-glass blur behind buttons and panels (it was redrawn every frame over the 3D view). Panels are slightly more opaque instead.
+
+## v2.8 · Phone-friendly lab
+- ⚡ **Faster lab entry**: from the lobby, creating or entering a lab (or the VIP Club) no longer reloads the page. Rooms checked just before a reload aren't checked twice, and your records and chat load in parallel.
+- 🏷 **Shorter name tags**: just flag, name and what they're doing (📝 Writing, ☕ On a break, 💤 Napping). Tap a tag to see level, field, today's time, awards and the friend button.
+- 📱 **Screen stays on while you focus** (on browsers that support it), so the phone doesn't lock mid-session.
+- 🔋 **Battery saver**: when you're not touching the screen, the 3D view redraws less often (4 times a second while focusing).
+- ☰ **Menu button on phones**: the top buttons fold into one menu, with a red badge for friend requests.
+- Compact room chip, shorter status line and smaller title on phones.
+- 🪑 Chairs are easier to tap, and the seat prompt has **Take a free seat**.
+- Reagent storage fits portrait screens; the chat box moves above the phone keyboard; zooming into the whiteboard on a phone shows a tip to drag or rotate.
+
+## v2.7 · English that fits
+- Signs, posters and labels in the 3D lab now shrink their text to fit, so longer English words no longer run off the edge (e.g. the confocal sign and the reagent storage signs).
+- 📱 New eagle icon for iPhone Shortcuts (`sources/shortcut-icon.png`). The **Icon image** button in the iPhone shortcut guide opens it.
+
+## v2.6 · Shorter chat, self-cleaning labs
+- 💬 Chat messages now disappear after **12 hours** (was 24).
+- 💥 Labs that have been empty for 24 hours are now blown up automatically, even if nobody tries to enter them again. Whenever someone logs in, the app quietly checks for abandoned labs and removes them along with their records and chat.
+
+## v2.5 · Calves join the lab
+- 🐄 New characters: **Spotted calf** and **Brown calf** 🐮.
+- The eagle no longer has the toy loop on top of its head.
+- 🧴 Reagent storage: the biohazard bin moved forward and its lid opens sideways, so it no longer hits the autoclave. Eagle No.1's portrait is updated.
+
 ## v2.4 · Pick your task at every session
 - **Today's task is chosen when you press Start focus**, every session. Clicking a chair now seats you right away.
 - 🇧🇪 "Dutch homework" is now **🌎 Language study**. The textbook is a yellow language book; members living in Belgium keep the Dutch (Nederlands) textbook.
 - **Fewer database writes**: your records are saved when you enter, take a break, or leave, not every 5 minutes. While the screen is off, time is kept on your device and saved at the next save point.
 - The class motto frame no longer has the red sticker, and yellow buttons use the same font as the others.
-- 🧴 Reagent storage: same fonts as the lab, character back to 80% size, biohazard logo printed directly on the orange bin, and the fridge door opens the other way.
+- 🧴 Reagent storage: same fonts as the lab (signs and labels in IBM Plex Sans KR), character back to 80% size, biohazard logo printed directly on the orange bin, and the fridge door opens the other way.
 
 ## v2.3 · Gloves on, one seat per eagle
 - **One account, one place**: opening the same account in another browser or tab disconnects the older one, with a button to switch back.
