@@ -1,8 +1,8 @@
 # 🦅 Apex Eagle Lab
 
-**A quiet 3D lab bench where grad students study together, head to head!**
+**A virtual 3D lab bench where grad students study together, head to head!**
 
-👉 **Open the lab: [sohykim.github.io/apex-eagle-club](https://sohykim.github.io/apex-eagle-club/)**
+👉 **Join the lab: [sohykim.github.io/apex-eagle-club](https://sohykim.github.io/apex-eagle-club/)**
 
 No install, no email. It works in your browser on a laptop or a phone, in landscape or portrait. The site is available in English and Korean (한국어).
 
