@@ -865,8 +865,8 @@ const WIN_X = 3.4;
 // 창밖 겐트: 낮(6~18시) · 노을(18~20시) · 밤(20~6시, 조명 켜진 건물과 별)
 const WIN_IMG = { day: 'sources/ghent.jpg', sunset: 'sources/ghent-sunset.jpg', night: 'sources/ghent-night.jpg' };
 const winPhase = () => { const h = new Date().getHours(); return h >= 20 || h < 6 ? 'night' : h >= 18 ? 'sunset' : 'day'; };
-// 도서관 통유리는 그림이 여러 번 이어 붙어서, 밤에는 달 없는 그림을 써요 (달은 하늘에 하나만)
-WIN_IMG['night-lib'] = 'sources/ghent-night-lib.jpg';
+// 도서관 통유리: 더 멀리서 본 풍경 (달은 하늘에 하나만 있게 그림에서는 빼요)
+Object.assign(WIN_IMG, { 'day-lib': 'sources/ghent-lib.jpg', 'sunset-lib': 'sources/ghent-lib-sunset.jpg', 'night-lib': 'sources/ghent-lib-night.jpg' });
 const WIN_TEX = [], winImgs = {}, winPhaseCbs = []; let winCur = null;
 function setWindowPhase(force) {
   const ph = winPhase(); if (ph === winCur && !force) return; winCur = ph;
@@ -875,7 +875,10 @@ function setWindowPhase(force) {
   for (const k of keys) {
     const apply = img => { for (const t of WIN_TEX) if ((t.userData.lib && WIN_IMG[ph + '-lib'] ? ph + '-lib' : ph) === k) { t.image = img; t.needsUpdate = true; } };
     if (winImgs[k]) { apply(winImgs[k]); continue; }
-    const img = new Image(); img.onload = () => { winImgs[k] = img; if (winCur === ph) apply(img); }; img.src = WIN_IMG[k];
+    const img = new Image(); img.onload = () => { winImgs[k] = img; if (winCur === ph) apply(img); };
+    // 도서관용 그림을 못 찾으면 연구실 창밖 그림으로 대신해요 (검은 창 방지)
+    img.onerror = () => { if (k !== ph) { const b = new Image(); b.onload = () => { winImgs[k] = b; if (winCur === ph) apply(b); }; b.src = WIN_IMG[ph]; } };
+    img.src = WIN_IMG[k];
   }
 }
 const ghentTex = new THREE.Texture(); ghentTex.colorSpace = THREE.SRGBColorSpace; WIN_TEX.push(ghentTex);
@@ -4595,7 +4598,7 @@ if (IS_LIB) {
   const dark = std('#3d4246', { roughness: 0.85 }), darker = std('#2c3034', { roughness: 0.9 });
   // 통유리 너머 겐트 (세 면), 앞쪽은 책장 벽
   const winWall = (len, px, pz, ry, off) => {
-    const t = ghentTex.clone(); t.userData = { lib: true }; WIN_TEX.push(t); t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = len / 3.1 / 2.13; t.offset.x = off; t.needsUpdate = true;
+    const t = ghentTex.clone(); t.userData = { lib: true }; WIN_TEX.push(t); t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = (len + 4) / 3.1 / 2.13; t.offset.x = off; t.needsUpdate = true;
     const g = new THREE.Group(); g.position.set(px, 0, pz); g.rotation.y = ry; L.add(g);
     mesh(new THREE.PlaneGeometry(len + 4, 3.1), new THREE.MeshBasicMaterial({ map: t }), 0, 1.88, -0.9, g);
     mesh(box(len, 0.35, 0.3), darker, 0, 0.175, 0, g);

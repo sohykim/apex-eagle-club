@@ -6,7 +6,8 @@ Newest first.
 ---
 
 ## v3.0 · Look around the storage
-- 🌇 **Library sky follows the time**: the library's open sky and lighting now match the window view. Blue by day, purple-pink at sunset (6–8 pm), and a starry night with one moon after 8 pm. The glass walls use a moonless night view so the moon doesn't repeat.
+- 🌇 **Library sky follows the time**: the library's open sky and lighting now match the window view. Blue by day, purple-pink at sunset (6–8 pm), and a starry night with one moon after 8 pm.
+- 🏙 **Wider view from the library**: the glass walls show the city from farther away, so the towers look distant. If a library picture is missing, the lab's window view is used instead of a black window.
 - 👀 **Look around the reagent storage**: drag left or right to turn and see the shelves on each side.
 - 🍺 **Fridge closes again**: tap anywhere on the open fridge to close it.
 - 👥 **Friends' online status only in the Friends panel**: the lobby no longer lists who's online. Status is only checked while the panel is open, which also saves reads.
