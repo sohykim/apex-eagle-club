@@ -6,7 +6,7 @@
 
 No install, no email. It works in your browser on a laptop or a phone, in landscape or portrait. The site is available in English and Korean (한국어).
 
-![Lab view](sources/example-1.png)
+![Lab view](sources/og-image.png)
 
 ---
 
@@ -19,6 +19,8 @@ No install, no email. It works in your browser on a laptop or a phone, in landsc
 ## What is this?
 
 Writing a thesis alone at 2 a.m. is lonely. Here you join a virtual lab as a little character: an eagle by default, or a vegetable if you prefer. You sit at a shared bench with your friends. When you focus, everyone bows their head until your crowns touch, and you work in silence together.
+
+![Lab view](sources/example-1.png)
 
 It's a body-doubling space for researchers, with some lab chaos: messy reagent shelves, a whiteboard full of half-finished calculations, plants that wilt if nobody waters them, and a neon sign that says *I want to graduate*.
 
