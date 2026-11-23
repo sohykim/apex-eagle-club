@@ -5,12 +5,17 @@ Newest first.
 
 ---
 
+## v2.5 · Calves join the lab
+- 🐄 New characters: **Spotted calf** and **Brown calf** 🐮.
+- The eagle no longer has the toy loop on top of its head.
+- 🧴 Reagent storage: the biohazard bin moved forward and its lid opens sideways, so it no longer hits the autoclave. Eagle No.1's portrait is updated.
+
 ## v2.4 · Pick your task at every session
 - **Today's task is chosen when you press Start focus**, every session. Clicking a chair now seats you right away.
 - 🇧🇪 "Dutch homework" is now **🌎 Language study**. The textbook is a yellow language book; members living in Belgium keep the Dutch (Nederlands) textbook.
 - **Fewer database writes**: your records are saved when you enter, take a break, or leave, not every 5 minutes. While the screen is off, time is kept on your device and saved at the next save point.
 - The class motto frame no longer has the red sticker, and yellow buttons use the same font as the others.
-- 🧴 Reagent storage: same fonts as the lab, character back to 80% size, biohazard logo printed directly on the orange bin, and the fridge door opens the other way.
+- 🧴 Reagent storage: same fonts as the lab (signs and labels in IBM Plex Sans KR), character back to 80% size, biohazard logo printed directly on the orange bin, and the fridge door opens the other way.
 
 ## v2.3 · Gloves on, one seat per eagle
 - **One account, one place**: opening the same account in another browser or tab disconnects the older one, with a button to switch back.
