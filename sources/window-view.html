@@ -1,10 +1,10 @@
-<!doctype html><html><!-- Renders the lab window view (sources/ghent*.jpg). Open sources/window-view.html?ph=day|sunset|night and save the canvas. Original 3D scene made for this app. --><body style="margin:0;background:#000">
+<!doctype html><html><!-- Renders the window views (sources/ghent*.jpg). Open sources/window-view.html?ph=day|sunset|night (add &lib=1 for the wider, moonless library view) and save the canvas. Original 3D scene made for this app. --><body style="margin:0;background:#000">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 const W = 2300, H = 1080;
-const PH = new URLSearchParams(location.search).get('ph') || 'day';
+const Q = new URLSearchParams(location.search), PH = Q.get('ph') || 'day', LIB = Q.get('lib') === '1';
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1);
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -23,13 +23,13 @@ renderer.toneMappingExposure = P.exp;
 { const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const g = c.getContext('2d');
   const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, P.sky[0]); gr.addColorStop(0.62, P.sky[1]); gr.addColorStop(1, P.sky[2]); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
   if (PH === 'night') { for (let i = 0; i < 380; i++) { const y = rnd2() * 330; g.fillStyle = `rgba(255,255,240,${0.25 + rnd2() * 0.75})`; const r = rnd2() < 0.9 ? 0.7 : 1.4; g.beginPath(); g.arc(rnd2() * 1024, y, r, 0, 7); g.fill(); }
-    g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(860, 80, 26, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(872, 72, 24, 0, 7); g.fill(); }
+    if (Q.get('moon') !== '0' && !LIB) { g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(860, 80, 26, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(872, 72, 24, 0, 7); g.fill(); } }
   if (PH === 'day') g.filter = 'blur(5px)';
   if (PH === 'day') for (const [cx, cy, s] of [[170, 90, 1.2], [640, 60, 0.9], [900, 150, 0.7]]) for (let k = 0; k < 14; k++) { g.fillStyle = 'rgba(255,255,255,0.32)'; g.beginPath(); g.ellipse(cx + (rnd2() - 0.5) * 120 * s, cy + (rnd2() - 0.5) * 22 * s, (30 + rnd2() * 40) * s, (12 + rnd2() * 12) * s, 0, 0, 7); g.fill(); }
   g.filter = 'none';
   if (PH === 'sunset') { const rg = g.createRadialGradient(170, 470, 5, 170, 470, 260); rg.addColorStop(0, 'rgba(255,236,170,0.95)'); rg.addColorStop(0.15, 'rgba(255,190,110,0.6)'); rg.addColorStop(1, 'rgba(255,150,90,0)'); g.fillStyle = rg; g.fillRect(0, 0, 1024, 512); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t; }
-scene.fog = new THREE.Fog(P.fog, P.fogN, P.fogF);
+scene.fog = new THREE.Fog(P.fog, P.fogN, LIB ? P.fogF * 1.1 : P.fogF);
 const hemi = new THREE.HemisphereLight(P.hemi[0], P.hemi[1], P.hemi[2]); scene.add(hemi);
 const sun = new THREE.DirectionalLight(P.sunC, P.sunI); sun.position.set(...P.sunP); sun.target.position.set(0, 0, -70); scene.add(sun, sun.target);
 sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); const sc = sun.shadow.camera; sc.left = -220; sc.right = 220; sc.top = 220; sc.bottom = -220; sc.near = 1; sc.far = 800; sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.4;
@@ -51,7 +51,7 @@ function stepGable(w, h, steps) { const s = new THREE.Shape(); const sw = w / (2
 const lit = () => PH === 'day' ? false : rnd2() < (PH === 'night' ? 0.55 : 0.22);
 
 // ground
-add(new THREE.PlaneGeometry(1200, 1200).rotateX(-Math.PI / 2), mat('#6f665c'), 0, 0, -200, scene, false);
+add(new THREE.PlaneGeometry(4000, 4000).rotateX(-Math.PI / 2), mat('#6f665c'), 0, 0, -200, scene, false);
 
 // rooftop sea
 const tileCols = ['#9a5a40', '#a8674a', '#7d4a3a', '#8e6b5a', '#5d5a60', '#6c6670', '#b27a58'];
@@ -76,7 +76,7 @@ function house(x, z, ry, w, d, h, front) {
 }
 const keepOut = [[-62, -78, 40, 34], [-12, -60, 46, 40], [36, -84, 34, 30], [80, -84, 90, 40]];
 const free = (x, z) => !keepOut.some(([kx, kz, kw, kd]) => Math.abs(x - kx) < kw / 2 && Math.abs(z - kz) < kd / 2);
-for (let z = 60; z > -330; z -= 9 + rnd() * 4) for (let x = -260; x < 260; x += 8 + rnd() * 5) {
+for (let z = 60; z > -330; z -= 9 + rnd() * 4) for (let x = LIB ? -460 : -260; x < (LIB ? 460 : 260); x += 8 + rnd() * 5) {
   if (!free(x, z) || rnd() < 0.08) continue;
   const front = z > 40;
   house(x, z + (rnd() - 0.5) * 3, front ? 0 : (rnd() < 0.5 ? 0 : Math.PI / 2), 6.5 + rnd() * 4, 8 + rnd() * 5, (front ? 11 : 8) + rnd() * 9, front);
@@ -127,8 +127,8 @@ const nightOn = PH === 'night';
 }
 if (nightOn) for (const [x, z] of [[-62, -62], [-12, -50], [36, -70]]) { const l = new THREE.SpotLight('#ffc27a', 9000, 160, 0.5, 0.6, 2); l.position.set(x, 2, z + 26); l.target.position.set(x, 50, z - 10); scene.add(l, l.target); }
 
-const cam = new THREE.PerspectiveCamera(30, W / H, 1, 1500);
-cam.position.set(8, 46, 150); cam.lookAt(8, 36, -80);
+const cam = new THREE.PerspectiveCamera(LIB ? 48 : 30, W / H, 1, 1500);
+if (LIB) { cam.position.set(8, 58, 150); cam.lookAt(8, 30, -80); } else { cam.position.set(8, 46, 150); cam.lookAt(8, 36, -80); }
 renderer.render(scene, cam);
 window.__done = renderer.domElement.toDataURL('image/png');
 </script></body></html>
