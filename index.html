@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Apex Eagle Club · 정수리 독수리 연구소">
 <meta property="og:title" content="Apex Eagle Club · 정수리 독수리 연구소">
-<meta property="og:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 스터디 연구실">
+<meta property="og:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 연구실">
 <meta property="og:url" content="https://sohykim.github.io/apex-eagle-club/">
 <meta property="og:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -16,7 +16,7 @@
 <meta property="og:image:alt" content="An eagle and vegetable friends in lab coats waving peace signs at a lab bench">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Apex Eagle Club · 정수리 독수리 연구소">
-<meta name="twitter:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 스터디 연구실">
+<meta name="twitter:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 연구실">
 <meta name="twitter:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <link rel="apple-touch-icon" href="sources/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="정수리 독수리">
@@ -865,12 +865,18 @@ const WIN_X = 3.4;
 // 창밖 겐트: 낮(6~18시) · 노을(18~20시) · 밤(20~6시, 조명 켜진 건물과 별)
 const WIN_IMG = { day: 'sources/ghent.jpg', sunset: 'sources/ghent-sunset.jpg', night: 'sources/ghent-night.jpg' };
 const winPhase = () => { const h = new Date().getHours(); return h >= 20 || h < 6 ? 'night' : h >= 18 ? 'sunset' : 'day'; };
-const WIN_TEX = [], winImgs = {}; let winCur = null;
+// 도서관 통유리는 그림이 여러 번 이어 붙어서, 밤에는 달 없는 그림을 써요 (달은 하늘에 하나만)
+WIN_IMG['night-lib'] = 'sources/ghent-night-lib.jpg';
+const WIN_TEX = [], winImgs = {}, winPhaseCbs = []; let winCur = null;
 function setWindowPhase(force) {
   const ph = winPhase(); if (ph === winCur && !force) return; winCur = ph;
-  const apply = img => { for (const t of WIN_TEX) { t.image = img; t.needsUpdate = true; } };
-  if (winImgs[ph]) return apply(winImgs[ph]);
-  const img = new Image(); img.onload = () => { winImgs[ph] = img; if (winCur === ph) apply(img); }; img.src = WIN_IMG[ph];
+  winPhaseCbs.forEach(f => f(ph));
+  const keys = new Set(WIN_TEX.map(t => t.userData.lib && WIN_IMG[ph + '-lib'] ? ph + '-lib' : ph));
+  for (const k of keys) {
+    const apply = img => { for (const t of WIN_TEX) if ((t.userData.lib && WIN_IMG[ph + '-lib'] ? ph + '-lib' : ph) === k) { t.image = img; t.needsUpdate = true; } };
+    if (winImgs[k]) { apply(winImgs[k]); continue; }
+    const img = new Image(); img.onload = () => { winImgs[k] = img; if (winCur === ph) apply(img); }; img.src = WIN_IMG[k];
+  }
 }
 const ghentTex = new THREE.Texture(); ghentTex.colorSpace = THREE.SRGBColorSpace; WIN_TEX.push(ghentTex);
 setWindowPhase(true);
@@ -3670,7 +3676,7 @@ function syncFriendWatches() {
   }
 }
 function friendPlace(uid) {
-  if (!fOnline.get(uid)) return { on: false, text: $tt('🔴 오프라인', '🔴 Offline') };
+  if (!fOnline.get(uid)) return { on: false, text: $tt('⚪ 오프라인', '⚪ Offline') };
   const st = fStatus.get(uid), room = st && typeof st.room === 'string' ? st.room : null;
   if (!room) return { on: true, text: $tt('🟢 접속 중 · 로비', '🟢 Online · in the lobby') };
   if (room === 'vip') return { on: true, room, text: $tt('🟢 👑 VIP 클럽에서 공부 중', '🟢 Studying in the 👑 VIP Club') };
@@ -4561,18 +4567,35 @@ let resizeT; addEventListener('resize', () => { clearTimeout(resizeT); resizeT =
 if (IS_LIB) {
   for (const c of scene.children.slice()) if (!PRE_ROOM.has(c)) c.visible = false;
   lamp.visible = neonLight.visible = windowLight.visible = false;
-  scene.background = new THREE.Color('#a9bccd'); if (scene.fog) scene.fog = null;
+  if (scene.fog) scene.fog = null;
   stools.length = 0;
   const L = new THREE.Group(); scene.add(L);
-  L.add(new THREE.HemisphereLight('#f4f6ff', '#8f8676', 1.25));
+  const libHemi = new THREE.HemisphereLight('#f4f6ff', '#8f8676', 1.25); L.add(libHemi);
   const sun = new THREE.DirectionalLight('#fff3dd', 1.3); sun.position.set(-6, 12, -14); L.add(sun);
+  // 창밖과 같은 하늘: 낮 · 노을(18~20시) · 밤(20~6시, 별과 달 하나)
+  const LIB_SKY = {
+    day: { sky: ['#5f97d4', '#a9cdee'], hemi: ['#f4f6ff', '#8f8676', 1.25], sun: ['#fff3dd', 1.3] },
+    sunset: { sky: ['#2f3f7c', '#c46f8c'], hemi: ['#ffe2cc', '#7a5a52', 1.05], sun: ['#ffae6a', 0.9] },
+    night: { sky: ['#070c24', '#1c2654'], hemi: ['#e6e9ff', '#5a5266', 0.9], sun: ['#9fb2ff', 0.25] },
+  };
+  const libSkyTex = canvasTex(512, 256, (g, w, h) => {
+    const P = LIB_SKY[winCur || winPhase()], gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, P.sky[0]); gr.addColorStop(1, P.sky[1]); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    if ((winCur || winPhase()) === 'night') {
+      const r = mulberry(7);
+      for (let i = 0; i < 140; i++) { g.fillStyle = `rgba(255,255,240,${0.3 + r() * 0.7})`; const z = r() < 0.12 ? 1.6 : 0.9; g.fillRect(r() * w, r() * h * 0.85, z, z); }
+      g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(w * 0.78, h * 0.2, 9, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(w * 0.78 + 4, h * 0.2 - 3, 8.5, 0, 7); g.fill();
+    }
+  });
+  scene.background = libSkyTex;
+  const libPhase = ph => { const P = LIB_SKY[ph]; libHemi.color.set(P.hemi[0]); libHemi.groundColor.set(P.hemi[1]); libHemi.intensity = P.hemi[2]; sun.color.set(P.sun[0]); sun.intensity = P.sun[1]; redraw(libSkyTex); };
+  winPhaseCbs.push(libPhase); libPhase(winPhase());
   const W = 15, D = 17, H = 3.4;
   const carpet = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#b9b09c'; g.fillRect(0, 0, w, h); for (let k = 0; k < 2600; k++) { g.fillStyle = `rgba(${k % 2 ? '90,82,66' : '255,250,235'},${(k * 7 % 11) / 120})`; g.fillRect((k * 53) % w, (k * 97) % h, 2, 2); } }, { repeat: [10, 12] });
   const fl = mesh(new THREE.PlaneGeometry(W, D), std('#ffffff', { map: carpet, roughness: 1 }), 0, 0, 0, L); fl.rotation.x = -Math.PI / 2;
   const dark = std('#3d4246', { roughness: 0.85 }), darker = std('#2c3034', { roughness: 0.9 });
   // 통유리 너머 겐트 (세 면), 앞쪽은 책장 벽
   const winWall = (len, px, pz, ry, off) => {
-    const t = ghentTex.clone(); WIN_TEX.push(t); t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = len / 3.1 / 2.13; t.offset.x = off; t.needsUpdate = true;
+    const t = ghentTex.clone(); t.userData = { lib: true }; WIN_TEX.push(t); t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = len / 3.1 / 2.13; t.offset.x = off; t.needsUpdate = true;
     const g = new THREE.Group(); g.position.set(px, 0, pz); g.rotation.y = ry; L.add(g);
     mesh(new THREE.PlaneGeometry(len + 4, 3.1), new THREE.MeshBasicMaterial({ map: t }), 0, 1.88, -0.9, g);
     mesh(box(len, 0.35, 0.3), darker, 0, 0.175, 0, g);
@@ -4584,6 +4607,7 @@ if (IS_LIB) {
   winWall(W, 0, -D / 2, 0, 0.1);
   winWall(D, -W / 2, 0, Math.PI / 2, 0.35);
   winWall(D, W / 2, 0, -Math.PI / 2, 0.6);
+  setWindowPhase(true);
   // 앞쪽 벽: 책장, 정숙 안내, 비상구
   const front2 = new THREE.Group(); front2.position.z = D / 2; front2.rotation.y = Math.PI; L.add(front2);
   mesh(new THREE.PlaneGeometry(W, H), std('#d8d6cf', { roughness: 0.9 }), 0, H / 2, 0.01, front2);
@@ -4925,8 +4949,8 @@ function openStoreItem(key) {
   if (key === 'bin') return storeBinNote();
   if (key === 'fridge') { const u = storeFridge.userData; u.open = u.open ? 0 : 1; if (u.open) toast($tt('🍺 시료 냉장고에… 캔맥주가 굴러다녀요. 못 본 걸로 해요. 쉿!', "🍺 Beer cans rolling around in the sample fridge… You didn't see that. Shh!")); return; }
   if (key === 'dev') return popup({ title: $tt('🦅 독수리 1호 · 개발자', '🦅 Eagle No.1 · Developer'), text: $tt(
-`김소형. 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이지. 친구들이 다른 나라로 떠나는 등 모종의 이유로 만남이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
-`Hi! I'm So Hyung Kim, the developer of the Apex Eagle Lab and a PhD student in Plant Biotechnology in Belgium. The lab started as an evening study group of PhD friends who met to read papers closely together, eagles reading papers head to head. Over time it got harder to meet: people got busy, some moved to other countries. So I wished for a place where we could gather online even when we're far apart, and this lab was born. Welcome to the Apex Eagle Lab! Let's focus together and soar high like eagles!`), yes: $tt('반가워요! 🦅', 'Nice to meet you! 🦅') });
+`김 소형. 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이였지. 하지만 다들 점점 모이기가 어려워지고, 다른 나라로 떠나는 등 모종의 이유로 모임이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
+`So Hyung Kim (Korean: 김소형). I'm the developer of the Apex Eagle Lab and a PhD student in agricultural biotechnology in Belgium. The lab started as an evening study group of PhD friends who met to read papers closely together, eagles reading papers head to head. Over time it got harder to meet: people got busy, some moved to other countries. So I wished for a place where we could gather online even when we're far apart, and this lab was born. Welcome to the Apex Eagle Lab! Let's focus together and soar high like eagles!`), yes: $tt('반가워요! 🦅', 'Nice to meet you! 🦅') });
   if (key === 'out') return exitStore();
 }
 document.getElementById('lbStore').addEventListener('click', enterStore);

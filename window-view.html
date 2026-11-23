@@ -1,4 +1,4 @@
-<!doctype html><html><!-- Renders the lab window view (sources/ghent*.jpg). Open tools/window-view.html?ph=day|sunset|night and save the canvas. Original 3D scene made for this app. --><body style="margin:0;background:#000">
+<!doctype html><html><!-- Renders the lab window view (sources/ghent*.jpg). Open sources/window-view.html?ph=day|sunset|night (add &moon=0 for the library night view) and save the canvas. Original 3D scene made for this app. --><body style="margin:0;background:#000">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -23,7 +23,7 @@ renderer.toneMappingExposure = P.exp;
 { const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const g = c.getContext('2d');
   const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, P.sky[0]); gr.addColorStop(0.62, P.sky[1]); gr.addColorStop(1, P.sky[2]); g.fillStyle = gr; g.fillRect(0, 0, 1024, 512);
   if (PH === 'night') { for (let i = 0; i < 380; i++) { const y = rnd2() * 330; g.fillStyle = `rgba(255,255,240,${0.25 + rnd2() * 0.75})`; const r = rnd2() < 0.9 ? 0.7 : 1.4; g.beginPath(); g.arc(rnd2() * 1024, y, r, 0, 7); g.fill(); }
-    g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(860, 80, 26, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(872, 72, 24, 0, 7); g.fill(); }
+    if (new URLSearchParams(location.search).get('moon') !== '0') { g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(860, 80, 26, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(872, 72, 24, 0, 7); g.fill(); } }
   if (PH === 'day') g.filter = 'blur(5px)';
   if (PH === 'day') for (const [cx, cy, s] of [[170, 90, 1.2], [640, 60, 0.9], [900, 150, 0.7]]) for (let k = 0; k < 14; k++) { g.fillStyle = 'rgba(255,255,255,0.32)'; g.beginPath(); g.ellipse(cx + (rnd2() - 0.5) * 120 * s, cy + (rnd2() - 0.5) * 22 * s, (30 + rnd2() * 40) * s, (12 + rnd2() * 12) * s, 0, 0, 7); g.fill(); }
   g.filter = 'none';
