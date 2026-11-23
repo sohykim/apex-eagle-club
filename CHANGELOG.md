@@ -5,6 +5,24 @@ Newest first.
 
 ---
 
+## v2.8 · Phone-friendly lab
+- ⚡ **Faster lab entry**: from the lobby, creating or entering a lab (or the VIP Club) no longer reloads the page. Rooms checked just before a reload aren't checked twice, and your records and chat load in parallel.
+- 🏷 **Shorter name tags**: just flag, name and what they're doing (📝 Writing, ☕ On a break, 💤 Napping). Tap a tag to see level, field, today's time, awards and the friend button.
+- 📱 **Screen stays on while you focus** (on browsers that support it), so the phone doesn't lock mid-session.
+- 🔋 **Battery saver**: when you're not touching the screen, the 3D view redraws less often (4 times a second while focusing).
+- ☰ **Menu button on phones**: the top buttons fold into one menu, with a red badge for friend requests.
+- Compact room chip, shorter status line and smaller title on phones.
+- 🪑 Chairs are easier to tap, and the seat prompt has **Take a free seat**.
+- Reagent storage fits portrait screens; the chat box moves above the phone keyboard; zooming into the whiteboard on a phone shows a tip to drag or rotate.
+
+## v2.7 · English that fits
+- Signs, posters and labels in the 3D lab now shrink their text to fit, so longer English words no longer run off the edge (e.g. the confocal sign and the reagent storage signs).
+- 📱 New eagle icon for iPhone Shortcuts (`sources/shortcut-icon.png`). The **Icon image** button in the iPhone shortcut guide opens it.
+
+## v2.6 · Shorter chat, self-cleaning labs
+- 💬 Chat messages now disappear after **12 hours** (was 24).
+- 💥 Labs that have been empty for 24 hours are now blown up automatically, even if nobody tries to enter them again. Whenever someone logs in, the app quietly checks for abandoned labs and removes them along with their records and chat.
+
 ## v2.5 · Calves join the lab
 - 🐄 New characters: **Spotted calf** and **Brown calf** 🐮.
 - The eagle no longer has the toy loop on top of its head.
