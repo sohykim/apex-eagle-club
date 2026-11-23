@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Apex Eagle Club · 정수리 독수리 연구소">
 <meta property="og:title" content="Apex Eagle Club · 정수리 독수리 연구소">
-<meta property="og:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 연구실">
+<meta property="og:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 스터디 연구실">
 <meta property="og:url" content="https://sohykim.github.io/apex-eagle-club/">
 <meta property="og:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -16,7 +16,7 @@
 <meta property="og:image:alt" content="An eagle and vegetable friends in lab coats waving peace signs at a lab bench">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Apex Eagle Club · 정수리 독수리 연구소">
-<meta name="twitter:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 연구실">
+<meta name="twitter:description" content="Virtual Lab for Graduate Students · 대학원생을 위한 가상 스터디 연구실">
 <meta name="twitter:image" content="https://sohykim.github.io/apex-eagle-club/sources/og-image.png">
 <link rel="apple-touch-icon" href="sources/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="정수리 독수리">
@@ -528,7 +528,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
   <div class="sh-row">
     <button class="btn small" type="button" data-store="char">🎨 캐릭터 변경</button>
     <button class="btn small" type="button" data-store="stats">📊 내 기록</button>
-    <button class="btn small" type="button" data-store="friends">👥 친구 관리</button>
+    <button class="btn small" type="button" data-store="friends">👥 친구 관리 <b class="rdot" id="fBadgeStore" hidden></b></button>
     <button class="btn small" type="button" data-store="account">👤 내 계정</button>
     <button class="btn small" type="button" data-store="guide">❓ 사용법</button>
     <button class="btn small" type="button" data-store="ios">📱 아이폰 바로가기</button>
@@ -3159,7 +3159,7 @@ function setPanel(name) {
   [['roster', 'rosterBtn'], ['care', 'careBtn'], ['journey', 'journeyBtn'], ['devPanel', 'devBtn'], ['friends', 'friendsBtn'], ['storeStats', 'lbStore']].forEach(([id, b]) => { const on = id === name; document.getElementById(id).classList.toggle('open', on); document.getElementById(b).setAttribute('aria-expanded', String(on)); });
   if (name === 'roster' || name === 'journey') loadAttDocs();
   if (name === 'devPanel') loadAllNames();
-  if (name === 'friends') renderFriends(); if (name === 'roster') renderRoster(); if (name === 'care') renderCare(); if (name === 'journey' || name === 'devPanel') renderJourney(true);
+  syncFriendWatches?.(); if (name === 'friends') renderFriends(); if (name === 'roster') renderRoster(); if (name === 'care') renderCare(); if (name === 'journey' || name === 'devPanel') renderJourney(true);
   requestAnimationFrame(updateViewOffset);
 }
 function setRoster(open) { setPanel(open ? 'roster' : null); }
@@ -3659,7 +3659,8 @@ function setStatus(room) {
 }
 const friendUids = () => [...fships.values()].filter(f => f.accepted).map(otherOf).filter(Boolean);
 function syncFriendWatches() {
-  const want = new Set(friendUids());
+  // 접속 여부는 친구 창을 열었을 때만 살펴봐요 (닫으면 구독도 끊어서 읽기 비용도 줄어요)
+  const want = new Set(friendsEl.classList.contains('open') ? friendUids() : []);
   for (const [uid, uns] of fWatch) if (!want.has(uid)) { uns.forEach(f => { try { f && f(); } catch {} }); fWatch.delete(uid); fOnline.delete(uid); fStatus.delete(uid); }
   for (const uid of want) if (!fWatch.has(uid)) {
     const uns = [];
@@ -3669,7 +3670,7 @@ function syncFriendWatches() {
   }
 }
 function friendPlace(uid) {
-  if (!fOnline.get(uid)) return { on: false, text: $tt('⚪ 오프라인', '⚪ Offline') };
+  if (!fOnline.get(uid)) return { on: false, text: $tt('🔴 오프라인', '🔴 Offline') };
   const st = fStatus.get(uid), room = st && typeof st.room === 'string' ? st.room : null;
   if (!room) return { on: true, text: $tt('🟢 접속 중 · 로비', '🟢 Online · in the lobby') };
   if (room === 'vip') return { on: true, room, text: $tt('🟢 👑 VIP 클럽에서 공부 중', '🟢 Studying in the 👑 VIP Club') };
@@ -3802,19 +3803,13 @@ function renderFriends() {
   const all = [...fships.entries()];
   const incoming = all.filter(([, f]) => !f.accepted && f.from !== myUid), outgoing = all.filter(([, f]) => !f.accepted && f.from === myUid), friends = all.filter(([, f]) => f.accepted);
   document.getElementById('fBadge').textContent = incoming.length ? String(incoming.length) : '';
+  { const sb = document.getElementById('fBadgeStore'); if (sb) { sb.textContent = String(incoming.length); sb.hidden = !incoming.length; } }
   friendsBtn.classList.toggle('alert', incoming.length > 0);
   // 로비: 접속 중인 친구와 따라가기
   const lb = document.getElementById('lbFriends');
   if (lb && lobbyEl.classList.contains('open')) {
     lb.textContent = '';
-    const on = friends.map(([, f]) => otherOf(f)).filter(u => fOnline.get(u));
-    if (on.length || incoming.length) {
-      lb.appendChild(el('h4', '', $tt(`👥 친구 (접속 ${on.length}명)`, `👥 Friends (${on.length} online)`)));
-      for (const u of on) {
-        const pl = friendPlace(u), li = friendRow(u, pl);
-        if (pl.join) { const b = el('button', 'btn small primary', $tt('같이 가기', 'Join')); b.type = 'button'; b.addEventListener('click', () => joinFriend(u)); li.appendChild(b); }
-        li.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:13px;list-style:none'; lb.appendChild(li);
-      }
+    if (incoming.length) {
       if (incoming.length) { const h = el('h4', ''); h.append(el('span', 'rdot', String(incoming.length)), ' ', $tt('받은 친구 요청 · 🧴 시약 창고나 연구실의 👥 메뉴에서 확인해요', 'friend request(s) · open 👥 in the reagent storage or a room')); lb.appendChild(h); }
     }
   }
@@ -4282,8 +4277,7 @@ Siri나 자동 실행까지 쓰고 싶다면 단축어(Shortcuts) 앱으로 만�
 2️⃣ 단축어 앱을 열고 오른쪽 위 ＋ 를 눌러요.
 3️⃣ '동작 추가'에서 'URL 열기'를 검색해 추가하고, 복사한 링크를 붙여 넣어요.
 4️⃣ 맨 위 이름을 '정수리 독수리'로 바꿔요. 그러면 "시리야, 정수리 독수리"로 열 수 있어요.
-5️⃣ 공유(⬆︎) → '홈 화면에 추가'에서 아이콘을 누르고 '사진 선택'으로 독수리 아이콘을 고른 뒤 '추가'를 눌러요.
-🖼 독수리 아이콘은 '아이콘 이미지' 버튼으로 열어서 길게 눌러 사진에 저장해요.
+5️⃣ 공유(⬆︎) → '홈 화면에 추가'를 누르면 홈 화면에서 바로 열 수 있어요.
 
 ⏰ 보너스: '자동화' 탭에서 시간이나 집중 모드를 고르고 같은 'URL 열기'를 넣으면, 공부 시간마다 저절로 열려요.`,
 `🦅 Easiest way: open this site in Safari and tap Share (⬆︎) → 'Add to Home Screen'. The eagle icon appears on your home screen.
@@ -4293,15 +4287,13 @@ For Siri or automatic opening, use the Shortcuts app.
 2️⃣ Open the Shortcuts app and tap ＋ in the top right.
 3️⃣ Tap 'Add Action', search for 'Open URLs', add it and paste the link.
 4️⃣ Rename it at the top to 'Apex Eagle'. Now you can say "Hey Siri, Apex Eagle".
-5️⃣ Share (⬆︎) → 'Add to Home Screen', tap the icon, choose 'Choose Photo', pick the eagle icon and tap 'Add'.
-🖼 Open the eagle icon with the 'Icon image' button, then press and hold to save it to Photos.
+5️⃣ Share (⬆︎) → 'Add to Home Screen' to open it straight from your home screen.
 
 ⏰ Bonus: in the 'Automation' tab, pick a time or a Focus mode and add the same 'Open URLs' action to open the lab automatically at study time.`),
     yes: $tt('🔗 링크 복사', '🔗 Copy link'),
-    no: $tt('🖼 아이콘 이미지', '🖼 Icon image'),
+    no: $tt('닫기', 'Close'),
   });
   if (r === true) copyText(SITE_URL, $tt('링크를 복사했어요. 단축어 앱에 붙여 넣어 주세요! 📋', 'Link copied. Paste it into the Shortcuts app! 📋'));
-  else if (r === false) window.open('sources/shortcut-icon.png', '_blank', 'noopener');
 }
 
 async function editNotice() {
@@ -4757,6 +4749,7 @@ function buildStore() {
   sign('4°C', 0.2, 0.08, { w: 256, h: 102, bg: '#10261d', fg: '#7dffb0', font: `500 70px ${STORE_FONT_B}` }, dp, -0.2, 1.7, 0.027);
   sign(isEN ? 'SAMPLES · NO FOOD' : '시료 전용 · 음식 금지', 0.5, 0.1, { w: 640, h: 128, bg: '#fff6d6', fg: '#a33a2a', font: `500 56px ${STORE_FONT_B}` }, dp, 0, 1.05, 0.027);
   dp.traverse(o => { if (o.isMesh) { o.userData.store = 'fridge'; storeHits.push(o); } });
+  fridge.traverse(o => { if (o.isMesh && o.userData.store !== 'fridge') { o.userData.store = 'fridge'; storeHits.push(o); } });
   fridge.userData = { door: fdoor, light: fl2, open: 0 }; storeFridge = fridge;
   // 오토클레이브 (오른쪽 안): 흔들리며 김을 뿜어요
   const ax = hw - 0.6, az = -hd + 0.55;
@@ -4803,7 +4796,20 @@ function buildStore() {
   return G;
 }
 // 시약 창고의 시선은 항상 같은 곳 (패널을 열고 닫아도 그대로)
-function storeCam() { const tall = innerWidth / innerHeight < 0.8; camera.position.set(0, tall ? 1.5 : 1.62, tall ? 3.55 : 2.75); controls.target.set(0, tall ? 1.55 : 1.32, -3.2); camera.lookAt(controls.target); }
+// 좌우로 밀면 고개를 돌려 양옆을 둘러봐요
+let storeYaw = 0, storeDrag = null;
+function storeCam() {
+  const tall = innerWidth / innerHeight < 0.8, cz = tall ? 3.55 : 2.75, ty = tall ? 1.55 : 1.32, L = cz + 3.2;
+  camera.position.set(0, tall ? 1.5 : 1.62, cz);
+  controls.target.set(Math.sin(storeYaw) * L, ty, cz - Math.cos(storeYaw) * L); camera.lookAt(controls.target);
+}
+renderer.domElement.addEventListener('pointerdown', e => { if (inStore) storeDrag = { x: e.clientX, yaw: storeYaw }; });
+addEventListener('pointermove', e => {
+  if (!inStore || !storeDrag || !(e.buttons || e.pointerType === 'touch')) return;
+  const max = innerWidth / innerHeight < 0.8 ? 0.95 : 0.7;
+  storeYaw = Math.max(-max, Math.min(max, storeDrag.yaw - (e.clientX - storeDrag.x) / innerWidth * 2.2));
+});
+addEventListener('pointerup', () => { storeDrag = null; }); addEventListener('pointercancel', () => { storeDrag = null; });
 function storePreview(look) {
   if (!inStore || !storeG) return;
   const lk = look || { kind: me.kind, color: me.color, gl: !!me.gl };
@@ -4885,11 +4891,11 @@ async function enterStore() {
   storeG.visible = true;
   storeCtl = { en: controls.enabled, bg: scene.background, fog: scene.fog };
   controls.enabled = false; scene.background = new THREE.Color('#2a2e31'); scene.fog = null;
-  tween = null; storeCam(); storePreview();
+  tween = null; storeYaw = 0; storeCam(); storePreview();
   lobbyEl.classList.remove('open'); document.body.classList.add('in-store');
   document.getElementById('storeHud').hidden = false;
   renderStoreStats(); placeStoreStats(); if (innerWidth > 900) setPanel('storeStats');
-  toast($tt('🧴 나의 시약 창고예요. 안쪽 표지판이나 아래 버튼을 눌러 보세요.', '🧴 Your reagent storage. Tap a sign at the back or a button below.'));
+  toast($tt('🧴 나의 시약 창고예요. 옆으로 밀면 둘러볼 수 있고, 표지판이나 아래 버튼을 눌러 보세요.', '🧴 Your reagent storage. Drag sideways to look around, and tap a sign or a button below.'));
 }
 function exitStoreQuiet() {
   if (!inStore) return;
@@ -4919,8 +4925,8 @@ function openStoreItem(key) {
   if (key === 'bin') return storeBinNote();
   if (key === 'fridge') { const u = storeFridge.userData; u.open = u.open ? 0 : 1; if (u.open) toast($tt('🍺 시료 냉장고에… 캔맥주가 굴러다녀요. 못 본 걸로 해요. 쉿!', "🍺 Beer cans rolling around in the sample fridge… You didn't see that. Shh!")); return; }
   if (key === 'dev') return popup({ title: $tt('🦅 독수리 1호 · 개발자', '🦅 Eagle No.1 · Developer'), text: $tt(
-`김 소형. 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이였지. 하지만 다들 점점 모이기가 어려워지고, 다른 나라로 떠나는 등 모종의 이유로 모임이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
-`So Hyung Kim (Korean: 김소형). I'm the developer of the Apex Eagle Lab and a PhD student in agricultural biotechnology in Belgium. The lab started as an evening study group of PhD friends who met to read papers closely together, eagles reading papers head to head. Over time it got harder to meet: people got busy, some moved to other countries. So I wished for a place where we could gather online even when we're far apart, and this lab was born. Welcome to the Apex Eagle Lab! Let's focus together and soar high like eagles!`), yes: $tt('반가워요! 🦅', 'Nice to meet you! 🦅') });
+`김소형. 정수리 독수리 연구소의 개발자이자, 현재 벨기에에서 농업생명공학 박사과정을 밟고 있어. 정수리 독수리 연구소는 박사과정생 친구들과 저녁에 모여 논문을 정독하는 스터디모임으로 시작했어. "정"수리를 맞대고 논문을 "정독"하는 "독"수리들의 모임이지. 친구들이 다른 나라로 떠나는 등 모종의 이유로 만남이 어려워지고, 서로 다른 곳에 있어도 온라인으로 모일 수 있는 곳이 있으면 좋겠다는 생각에서 이 연구소가 탄생했어. 정수리 연구소의 독수리가 된 것을 환영해. 함께 집중해서 우리 다같이 독수리처럼 높이 날아올라보자!`,
+`Hi! I'm So Hyung Kim, the developer of the Apex Eagle Lab and a PhD student in Plant Biotechnology in Belgium. The lab started as an evening study group of PhD friends who met to read papers closely together, eagles reading papers head to head. Over time it got harder to meet: people got busy, some moved to other countries. So I wished for a place where we could gather online even when we're far apart, and this lab was born. Welcome to the Apex Eagle Lab! Let's focus together and soar high like eagles!`), yes: $tt('반가워요! 🦅', 'Nice to meet you! 🦅') });
   if (key === 'out') return exitStore();
 }
 document.getElementById('lbStore').addEventListener('click', enterStore);

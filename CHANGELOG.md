@@ -5,6 +5,13 @@ Newest first.
 
 ---
 
+## v3.0 · Look around the storage
+- 👀 **Look around the reagent storage**: drag left or right to turn and see the shelves on each side.
+- 🍺 **Fridge closes again**: tap anywhere on the open fridge to close it.
+- 👥 **Friends' online status only in the Friends panel**: the lobby no longer lists who's online. Status is only checked while the panel is open, which also saves reads.
+- 🔴 **Friend request count on every Friends button**: the red number now also shows on '👥 Friends' in the reagent storage, counting every request you haven't answered yet.
+- 📱 **Simpler iPhone shortcut guide**: removed the icon image download.
+
 ## v2.9 · New view from the window
 - 🏰 **New 3D Ghent skyline**: the window (and the library's glass walls) now shows an original 3D scene built for this app: three towers, a sea of tiled roofs and stepped gables. Day with clouds, a pink-orange sunset, and a starry night with floodlit towers and lit windows. The scene's source is in `sources/window-view.html`.
 - 🧹 **Smoother long sessions**: characters and the trophy portrait now free their 3D memory when they're rebuilt or someone leaves, so the lab doesn't slow down after hours open. The trophy portrait only redraws its hours, not the whole character, every few minutes.
