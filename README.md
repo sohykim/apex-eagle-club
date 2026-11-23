@@ -10,7 +10,7 @@ No install, no email. It works in your browser on a laptop or a phone, in landsc
 
 ---
 
-## 🆕 Current version (v2.3)
+## 🆕 Current version (v2.9)
 
 [See all updates →](CHANGELOG.md)
 
