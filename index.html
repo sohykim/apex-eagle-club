@@ -242,6 +242,8 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
 #flash.on { opacity: .85; transition: none; }
 #zoomBar { position: fixed; z-index: 7; left: 50%; transform: translateX(-50%); top: calc(122px + var(--safe-t)); display: flex; gap: 8px; pointer-events: none; }
 #zoomBar .pill { pointer-events: auto; }
+#vegBar { display: flex; flex-wrap: wrap; gap: 6px; max-width: min(92vw, 640px); justify-content: center; }
+#vegBar[hidden] { display: none; }
 #boardBack { border-color: var(--amber); }
 #zoomAct { border-color: var(--mint); color: var(--mint); font-weight: 600; }
 #napBack { border-color: var(--amber); color: var(--amber); font-weight: 600; }
@@ -289,6 +291,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
 .bigbtn b { font-family: var(--font-title); font-weight: 400; font-size: 19px; }
 .bigbtn small { color: var(--muted); font-size: 13px; }
 .bigbtn:hover, .bigbtn:focus-visible { background: rgba(255,255,255,.1); border-color: var(--amber); }
+.bigbtn.farm { border-color: rgba(246,214,72,.55); background: linear-gradient(135deg, rgba(246,214,72,.16), rgba(120,190,90,.08)); }
 .bigbtn.lib { border-color: rgba(127,208,255,.5); background: linear-gradient(135deg, rgba(127,208,255,.14), rgba(255,255,255,.04)); }
 .bigbtn.vip { border-color: rgba(243,178,60,.55); background: linear-gradient(135deg, rgba(243,178,60,.16), rgba(255,143,200,.08)); }
 .lbrecent { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -516,7 +519,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
 </div>
 <button class="qc" id="qcWater" type="button" hidden aria-label="식물에 물 주기">💦</button>
 <button class="qc" id="qcFeed" type="button" hidden aria-label="동물에게 밥 주기">🫘</button>
-<div id="zoomBar"><button class="pill" id="boardBack" type="button" hidden>← 돌아가기</button><button class="pill" id="zoomAct" type="button" hidden></button><button class="pill" id="doorExit" type="button" hidden>🚪 복도로 나가기</button><button class="pill" id="napBack" type="button" hidden>🌅 현실로 돌아가기</button></div>
+<div id="zoomBar"><button class="pill" id="boardBack" type="button" hidden>← 돌아가기</button><button class="pill" id="zoomAct" type="button" hidden></button><span id="vegBar" hidden></span><button class="pill" id="doorExit" type="button" hidden>🚪 복도로 나가기</button><button class="pill" id="napBack" type="button" hidden>🌅 현실로 돌아가기</button></div>
 
 <aside id="storeStats" class="panel" aria-label="나의 연구 여정 요약">
   <button class="btn small pclose" type="button" data-close>← 닫기</button>
@@ -569,6 +572,7 @@ body.in-store #jStats, body.in-store #jMonth, body.in-store #jCal, body.in-store
       <button class="bigbtn" type="button" id="lbCreate"><b>🧪 새로운 연구실 만들기</b><small>이름을 짓고 번호를 받아 친구들을 불러요</small></button>
       <button class="bigbtn" type="button" id="lbEnter"><b>🔑 연구실 입장하기</b><small>받은 번호로 들어가요</small></button>
       <button class="bigbtn lib" type="button" id="lbLib"><b>📚 도서관 입장</b><small>초대 코드 없이 바로 들어가요 · 최대 100명</small></button>
+      <button class="bigbtn farm" type="button" id="lbFarm"><b>🌼 독수리 농장 입장</b><small>옥수수밭·텃밭·유채꽃밭에서 가축이 되어 풀 뜯기 · 최대 48명</small></button>
       <div id="lbFriends" class="lbfriends"></div>
       <button class="bigbtn store" type="button" id="lbStore"><b>🧴 시약 창고 · 나의 연구 여정</b><small>친구 · 내 계정 · 사용법 · 아이폰 바로가기</small></button>
       <button class="bigbtn vip" type="button" id="lbVip"><b>👑 독수리 VIP 클럽 입장하기</b><small id="lbVipSub">개발자가 승인한 독수리만 들어갈 수 있어요</small></button>
@@ -658,6 +662,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const LANG = (() => { try { const v = localStorage.getItem('jsdsr-lang'); return v === 'en' || v === 'ko' ? v : null; } catch { return null; } })();
 const isEN = LANG === 'en';
 const EN = {"호박": "Amber", "분홍": "Pink", "민트": "Mint", "라벤더": "Lavender", "주황": "Orange", "파랑": "Blue", "초록": "Green", "보라": "Purple", "🦅 독수리": "🦅 Eagle", "🥔 감자": "🥔 Potato", "🥕 당근": "🥕 Carrot", "🍠 고구마": "🍠 Sweet potato", "🥬 배추": "🥬 Napa cabbage", "무": "Radish", "🍅 토마토": "🍅 Tomato", "🌿 셀러리": "🌿 Celery", "앤다이브": "Chicory", "🫑 피망": "🫑 Pepper", "🥦 브로콜리": "🥦 Broccoli", "🧅 양파": "🧅 Onion", "논문 쓰기": "Writing", "코딩": "Coding", "논문 읽기": "Reading papers", "실험 노트 정리": "Lab notebook", "데이터 분석": "Data analysis", "더치 숙제": "Dutch homework", "나를 위한 시간": "Me time", "-80 문 열어두지 말 것!!": "DON'T leave the -80 open!!", "오토클레이브 16:00": "Autoclave 16:00", "바이오 폐기물은 주황 통에": "Biowaste → orange bin", "13000 rpm?? 아니 15000": "13000 rpm?? no, 15000", "웨스턴 실패:": "Western:", "졸업 D-???": "Grad: D-???", "왜 안 됨?? 어제는 됐잖아": "why?? it worked yesterday", "집중 모드로 앉아 있던 시간": "time spent in focus mode", "(아직 기록 없음)": "(no records yet)", "공지": "Notice", "떠든 사람": "Too loud:", "벌칙: 피펫 팁 채우기": "Penalty: refill pipette tips", "(아직 없음... 조용)": "(nobody yet... quiet)", "사용 후 꼭 끄기!!": "TURN OFF after use!!", "문 꼭 닫아주세요": "Keep the door shut", "내 샘플": "my samples", "건들지마": "DON'T touch", "졸업하고 싶다": "Please let me graduate", "새벽 2시 공초점 예약": "confocal booked 2am", "왜 안 돼": "why won't it work", "교수님 미팅 10시": "PI meeting 10am", "다시 하자...": "again...", "밴드 안 뜸 ㅠ": "no band ㅠ", "엄마한테 전화": "call mom", "나는 할 수 있다(?)": "I can do this(?)", "리뷰어 2 왜그래": "Reviewer 2, why", "밥 먹기!!": "EAT!!", "n=3 채우기": "get n=3", "잠은 졸업하고": "sleep after defense", "괜찮아 괜찮아": "it's fine it's fine", "실험실 B-214": "Lab B-214", "관계자 외 출입금지": "Authorized personnel only", "문을 밀어서 열었어요. 복도가 보여요.": "You slid the door open. There's the hallway.", "문을 닫았어요.": "Door closed.", "정수리를 맞대고": "Head to head,", "독수리처럼 날아오르자!": "soar like eagles!", "급훈": "MOTTO", "🏆 이달의 공부왕": "🏆 Study Champion", "아직 주인공이 없어요": "No champion yet", "J. Eagle, B. Crown, H. Summit & the 정수리 독수리 연구소": "J. Eagle, B. Crown, H. Summit & the Apex Eagle Lab", "남은 시간 03:12:44 ㅠ": "time left 03:12:44 ㅠ", "제발 안 꺼지게 해주세요": "please don't crash", "CONFOCAL LSM · 예약 필수": "CONFOCAL LSM · BOOKING REQUIRED", "정숙": "QUIET", "떠들면 화이트보드행": "talk = name on the board", "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"개발자\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">끄덕</span><span class=\"mad\">💢 화남!</span>": "<span class=\"bubble\"></span><span class=\"dot\"></span><span class=\"devb\" title=\"Developer\">🛠</span><span class=\"nm\"></span><span class=\"meta\"></span><span class=\"nod\">nod</span><span class=\"mad\">💢 Angry!</span>", "익명 독수리": "Anonymous Eagle", "빈자리가 생겨서 앉았어요.": "A seat opened up, so you sat down.", "자리가 다 찼어요. 서서 구경하는 중이에요.": "The bench is full. You're standing and watching.", "같은 자리에 먼저 온 사람이 있어서 옆으로 옮겼어요.": "Someone took that seat first, so you moved over.", "익명": "Anonymous", "나": "Me", " (나)": " (me)", "☕ 쉬는 중": "☕ On a break", "오늘 누적": "today", "아직 아무도 앉지 않았어요.": "Nobody is sitting yet.", "실시간 연결이 없어 혼자 보는 중이에요.": "No live connection. You're watching alone.", "빈 의자를 누르면 자리를 옮길 수 있어요.": "Tap an empty chair to move there.", "지금 벤치에 있음": "On the bench now", "오늘 왔다 감": "Came by today", "집중": "Focus", "오늘 출석한 사람이 아직 없어요.": "Nobody has checked in today.", "집중 시간은 집중 모드로 앉아 있던 시간만 세요. 5분마다, 그리고 쉬거나 나갈 때 저장돼요.": "Only time in focus mode counts. It's saved every 5 minutes and when you take a break or leave.", "기록을 공유할 수 없어서 내 기록만 이 브라우저에 저장돼요.": "Records can't be shared, so yours are saved in this browser only.", "이번 주 출석": "days this week", "7일 누적 집중": "focus, 7 days", "연속 출석": "day streak", "이름": "Name", "일": "Sun", "월": "Mon", "화": "Tue", "수": "Wed", "목": "Thu", "금": "Fri", "토": "Sat", "오늘": "Today", "칸 안 숫자는 그날 집중한 시간이에요. 진할수록 오래 앉아 있었어요.": "Each cell shows focus time that day. Darker means longer.", " 지금은 내 기록만 보여요.": " Only your records are shown.", " 이 링크 권한으로는 기록을 저장할 수 없어서 내 기록은 이 브라우저에만 남아요.": " Records can't be saved with this link, so yours stay in this browser.", "Enter로 채팅 · 떠들면 화이트보드행": "Enter to chat · talkers → board", "벤치에 앉으면 채팅할 수 있어요": "Sit at the bench to chat", "조용하네요. 아직 아무도 떠들지 않았어요.": "So quiet. Nobody has talked yet.", "<img alt=\"캡처한 사진\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">사진을 길게 눌러도 저장할 수 있어요.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">닫기</button><button class=\"btn primary\" type=\"button\">사진에 저장</button></div>": "<img alt=\"Captured photo\" style=\"max-width:100%;max-height:68vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)\"><p style=\"margin:0;color:#a9b3ad;font-size:13px;text-align:center\">You can also long-press the photo to save it.</p><div style=\"display:flex;gap:8px\"><button class=\"btn\" type=\"button\">Close</button><button class=\"btn primary\" type=\"button\">Save to Photos</button></div>", "이 화면에서는 캡처를 저장할 수 없어요.": "Captures can't be saved here.", "하나, 둘… 브이! ✌️": "One, two… peace! ✌️", "정수리 독수리 연구소": "Apex Eagle Lab", "찰칵! 📸": "Click! 📸", "캡처하지 못했어요.": "Couldn't capture.", "저장했어요. 사진이나 파일 앱에서 확인하세요.": "Saved. Check your Photos or Files app.", "저장했어요. 다운로드 폴더를 확인하세요.": "Saved. Check your Downloads folder.", "저장을 취소했어요.": "Save cancelled.", "잠시 뒤에 다시 눌러 주세요.": "Try again in a moment.", "저장하지 못했어요.": "Couldn't save.", "쉬기": "Break", "입장 전": "Not seated", "서서 구경 중": "Standing", "쉬는 중": "On a break", "캐릭터": "Character", "입장": "Enter", "🎉 30분 세션 완료! 식물이나 동물을 1회 돌볼 수 있어요.": "🎉 30-minute session done! You can care for the plants or animals once.", "정수리": "Head to head", "벤치 뷰": "Bench view", "얼굴 뷰": "Face view", "돌봄 버튼으로 물과 밥을 줄 수 있어요.": "Use the Care button to water and feed.", "방금": "just now", "목말라요, 시들고 있어요": "Thirsty and wilting", "목말라요": "Thirsty", "배고파서 기운이 없어요": "Hungry and sluggish", "배고파요": "Hungry", "🛠 개발자: 세션 없이 무제한 돌봄": "🛠 Developer: unlimited care", "아직 아무도 물을 안 줬어요": "Nobody has watered yet", "아직 아무도 밥을 안 줬어요": "Nobody has fed them yet", "벤치에 앉은 사람만 돌볼 수 있어요.": "Only people at the bench can do care.", "식물에 물을 줬어요. 🌱": "You watered the plants. 🌱", "동물들에게 밥을 줬어요. 🐭🐰🐟": "You fed the animals. 🐭🐰🐟", "이 브라우저에서는 소리를 낼 수 없어요.": "This browser can't play sound.", "내 캐릭터": "My character", "연구소 입장": "Enter the lab", "저장": "Save", "벤치에 앉기": "Sit at the bench", "앉았어요. 정수리를 맞대고 시작해요.": "Seated. Head to head, let's start.", "자리를 비웠어요. 오늘 기록은 저장됐어요.": "You left your seat. Today's record is saved.", "연구소 가입": "Join the lab", "별명과 숫자 4자리 비밀번호로 내 계정을 만들어요. 출석, 집중 시간, 돌봄 기록이 이 계정에 쌓여요.": "Create an account with a nickname and a 4-digit PIN. Your attendance, focus time and care records are kept here.", "별명과 비밀번호를 입력하면 연구소에 들어갈 수 있어요.": "Enter your nickname and PIN to come in.", "연구소 문을 여는 중이에요…": "Opening the lab door…", "가입하고 들어가기": "Sign up and enter", "로그인": "Log in", "이미 계정이 있어요 · 로그인": "I have an account · Log in", "처음 왔어요 · 가입하기": "I'm new · Sign up", "비워 두면 \"독수리 N호\"로 정해져요": "Leave empty to become \"Eagle N\"", "너무 많이 시도했어요. 잠시 뒤 다시 해 주세요.": "Too many attempts. Try again later.", "인터넷 연결을 확인해 주세요.": "Check your internet connection.", "별명이나 비밀번호가 맞지 않아요.": "Nickname or PIN is wrong.", "잠시 뒤 다시 해 주세요.": "Please try again in a moment.", "연구소에 아직 연결되지 않았어요. 잠시 뒤 다시 해 주세요.": "Not connected to the lab yet. Try again in a moment.", "별명을 입력해 주세요.": "Enter your nickname.", "비밀번호는 숫자 4자리예요.": "The PIN is 4 digits.", "비밀번호 확인이 달라요.": "The PINs don't match.", "이미 쓰고 있는 별명이에요. 다른 별명을 골라 주세요.": "That nickname is taken. Pick another one.", "방금 누가 그 별명을 가져갔어요. 다른 별명으로 해 주세요.": "Someone just took that nickname. Try another one.", "그런 별명은 없어요. 처음이라면 가입해 주세요.": "No such nickname. If you're new, sign up.", "로그인 전": "Not logged in", "총 집중": "total focus", "완료한 세션": "sessions", "출석한 날": "days present", "하루 최고": "best day", "돌봄": "Care", "아직 다른 회원이 없어요.": "No other members yet.", " 가입": " joined", "기록 삭제": "Delete records", "정말 삭제": "Really delete", "지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't delete. Try again in a moment.", "새 별명을 입력해 주세요.": "Enter a new nickname.", "지금 쓰는 별명과 같아요.": "That's already your nickname.", "이미 쓰고 있는 별명이에요.": "That nickname is taken.", "저장하지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't save. Try again in a moment.", "새 비밀번호는 숫자 4자리예요.": "The new PIN is 4 digits.", "별명이나 ": "Nickname or PIN", "지금 ": "Current PIN", "바꾸지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't change it. Try again in a moment.", "비밀번호를 바꿨어요.": "PIN changed.", "로그아웃했어요. 오늘 기록은 저장됐어요.": "Logged out. Today's record is saved.", "비밀번호가 맞지 않아요.": "Wrong PIN.", "일부를 지우지 못했어요. 잠시 뒤 다시 해 주세요.": "Some data couldn't be deleted. Try again in a moment.", "계정과 기록을 모두 지웠어요.": "Your account and records are deleted.", "네온 문구를 적어 주세요.": "Write the neon text.", "네온사인 문구를 바꿨어요.": "Neon sign updated.", "화이트보드 공지를 바꿨어요.": "Whiteboard notice updated.", "정말 전부 지우기": "Really clear all", "채팅 전체 지우기": "Clear all chat", "채팅을 모두 지웠어요.": "Chat cleared.", "지우지 못했어요.": "Couldn't delete.", "로그인하면 보낼 수 있어요.": "Log in to send.", "내용을 적어 주세요.": "Write something first.", "이 링크 권한으로는 피드백을 저장할 수 없어요.": "Feedback can't be saved with this link.", "고마워요! 개발자에게 전달했어요.": "Thanks! Sent to the developer.", "보내지 못했어요. 잠시 뒤 다시 해 주세요.": "Couldn't send. Try again in a moment.", "아직 받은 피드백이 없어요.": "No feedback yet.", "지우기": "Delete", "자리를 옮겼어요.": "You moved seats.", "config.js에 Firebase 설정을 넣어야 연구소 문이 열려요. README.md를 참고해 주세요.": "Add your Firebase settings to config.js to open the lab. See README.md.", "Firebase를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.": "Couldn't load Firebase. Check your connection and refresh.", "정수리를 맞대고 논문을 정독하는 독수리들의 모임": "A flock of eagles reading papers, head to head", "백색소음": "White noise", "📸 캡처": "📸 Capture", "나의 연구 여정": "My research journey", "벤치": "Bench", "/14 · 출석부": "/14 · Attendance", "식물과 동물 돌보기": "Care for plants and animals", "🌱 식물": "🌱 Plants", "애기장대 · 유채 · 옥수수": "Arabidopsis · Rapeseed · Maize", "물 주기": "Water", "🐭 동물": "🐭 Animals", "쥐 · 토끼 · 제브라피시 · 개구리": "Mice · Rabbit · Zebrafish · Frogs", "밥 주기": "Feed", "돌봄은 15분마다 초기화돼요. 30분 집중 세션을 하나 마칠 때마다 1회, 들어오자마자 1회는 조건 없이 돌볼 수 있어요. 오른쪽 벽의 식물이나 동물을 눌러도 이 창이 열려요.": "Care resets every 15 minutes. You get one care for each 30-minute focus session, plus one free care when you arrive. Tapping the plants or animals on the right wall also opens this.", "🛠 개발자": "🛠 Developer", "이번 달 출석": "This month", "계정 관리": "Account", "별명 바꾸기": "Change nickname", "바꾸기": "Change", "비밀번호 바꾸기": "Change PIN", "지금 번호": "Current", "새 번호": "New", "새 비밀번호": "New PIN", "로그아웃": "Log out", "계정 삭제": "Delete account", "정말 지우려면 비밀번호를 입력하세요. 출석·집중 기록도 함께 사라져요.": "Enter your PIN to delete. Your attendance and focus records will be gone too.", "영구 삭제": "Delete forever", "피드백 보내기": "Send feedback", "피드백": "Feedback", "버그, 아이디어, 바라는 점을 적어 주세요. 개발자만 읽을 수 있어요.": "Bugs, ideas, wishes. Only the developer can read this.", "보내기": "Send", "🛠 개발자 도구": "🛠 Developer tools", "개발자는 세션 없이 언제든 돌볼 수 있어요.": "The developer can do care anytime, no session needed.", "화이트보드 공지": "Whiteboard notice", "공지 2": "Notice 2", "공지 3": "Notice 3", "네온사인 문구": "Neon sign text", "네온 저장": "Save neon", "공지 저장": "Save notice", "받은 피드백": "Feedback received", "회원 목록": "Members", "출석부": "Attendance", "지금": "Now", "출석 기록": "History", "채팅": "Chat", "채팅 입력": "Chat message", "← 돌아가기": "← Back", "내 자리": "My seat", "화내기!": "Get angry!", "별명": "Nickname", "비밀번호 (숫자 4자리)": "PIN (4 digits)", "비밀번호 확인": "Confirm PIN", "같은 별명과 비밀번호로 어느 기기에서든 들어올 수 있어요.": "Use the same nickname and PIN on any device.", "연구실 입장": "Enter the lab", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다. 기본은 독수리, 원하면 채소로 들어와도 돼요.": "At the bench everyone bows their head, head to head. You're an eagle by default, or come as a vegetable.", "티셔츠 색": "T-shirt color", "오늘 할 일": "Today's task", "Enter를 누르면 채팅할 수 있어요. 대신 떠든 사람은 화이트보드에 이름이 올라갈 수도 있어요.": "Press Enter to chat. But talkers may end up on the whiteboard.", "자리 비우기": "Leave seat", "닫기": "Close", "복사": "Copy", "연구실": "Lab", "🚪 다른 연구실로": "🚪 Switch lab", "어느 연구실로 갈까요?": "Which lab today?", "🧪 새로운 연구실 만들기": "🧪 Create a new lab", "이름을 짓고 번호를 받아 친구들을 불러요": "Name it, get a code, invite your friends", "🔑 연구실 입장하기": "🔑 Enter a lab", "받은 번호로 들어가요": "Use a code someone sent you", "👑 독수리 VIP 클럽 입장하기": "👑 Enter the Eagle VIP Club", "개발자가 승인한 독수리만 들어갈 수 있어요": "Only eagles approved by the developer", "연구실 이름": "Lab name", "예: 3층 식물생리 연구실": "e.g. Plant Physiology, 3rd floor", "정원 (나 포함)": "Capacity (including you)", "뒤로": "Back", "만들기": "Create", "번호 복사": "Copy code", "링크 복사": "Copy link", "입장하기": "Enter", "연구실 번호": "Lab code", "예: K7QM2X": "e.g. K7QM2X", "입장 요청 보내기": "Ask to join", "👑 VIP 클럽": "👑 VIP Club", "입장 요청": "Join requests", "VIP 회원": "VIP members", "VIP에 추가할 별명": "Nickname to add to VIP", "추가": "Add", "지금 사는 나라": "Country you live in", "전공": "Field of study", "예: 식물생물학, 바이오메디컬, 바이오인포매틱스": "e.g. Plant biology, Biomedical, Bioinformatics", "전공 · 집중할 때 이름표에 보여요": "Field of study · shown on your name tag while you focus", "연구실 탈퇴": "Leave this lab", "🚪 방 나가기": "🚪 Leave lab", "🚪 복도로 나가기": "🚪 Step into the hallway", "🚪 나가기": "🚪 Leave", "배경 소리": "Background sound", "🔇 끄기": "🔇 Off", "🌫️ 백색소음": "🌫️ White noise", "🌧️ 빗소리": "🌧️ Rain", "🎹 잔잔한 집중 음악": "🎹 Calm focus music", "볼륨": "Volume", "식물에 물 주기": "Water the plants", "동물에게 밥 주기": "Feed the animals", "입력": "Input", "네온 바꾸기": "Change neon", "📚 도서관 입장": "📚 Enter the library", "초대 코드 없이 바로 들어가요 · 최대 100명": "No invite code needed · up to 100 people", "화이트보드 공지는 화이트보드를 확대한 뒤 눌러서 바꿔요.": "To change the whiteboard notice, zoom in on the whiteboard and tap it.", "개발자 도구": "Developer tools", "❓ 사용법": "❓ How to use", "🌅 현실로 돌아가기": "🌅 Back to reality", "🌶️ 빨간 고추": "🌶️ Red chili", "🌱 대파": "🌱 Scallion", "🍆 가지": "🍆 Eggplant", "🍄 버섯": "🍄 Mushroom", "🌽 옥수수": "🌽 Corn", "👥 친구": "👥 Friends", "친구": "Friends", "별명으로 친구 찾기": "Find a friend by nickname", "친구 요청": "Add friend", "받은 요청": "Requests", "친구 목록": "Friends", "보낸 요청": "Sent", "연구실에서 만난 사람은 출석부 '지금' 탭의 [+ 친구]로도 요청할 수 있어요. 서로 허락하면 친구가 돼요. 친구가 일반 연구실이나 도서관에 있으면 번호 없이 바로 따라갈 수 있어요 (VIP 클럽 제외).": "You can also add people you meet with [+ Friend] in the Attendance 'Now' tab. You become friends once both agree. If a friend is in a regular lab or the library, you can join them without a code (except the VIP Club).", "📱 아이폰 바로가기": "📱 iPhone shortcut", "🧴 시약 창고 · 나의 연구 여정": "🧴 Reagent storage · My journey", "친구 · 내 계정 · 사용법 · 아이폰 바로가기": "Friends · Account · How to use · iPhone shortcut", "🧴 시약 창고": "🧴 Reagent storage", "👥 친구 관리": "👥 Friends", "👤 내 계정": "👤 My account", "🚪 로비로": "🚪 Back to lobby", "시약 창고": "Reagent storage", "Apex Eagle Club · 정수리 독수리 연구소": "Apex Eagle Lab", "노랑": "Yellow", "🧴 캐릭터와 색은 시약 창고나 방 안의 '캐릭터' 버튼에서 바꿀 수 있어요.": "🧴 Change your character and color in the reagent storage or with the 'Character' button in a room.", "벤치에 앉으면 다들 고개를 숙이고 정수리를 맞댑니다.": "Sit at the bench and everyone bows their heads, head to head.", "캐릭터 바꾸기": "Change character", "여기서 고른 캐릭터와 색은 내 계정에 저장돼서, 어느 방에 들어가도 그대로예요.": "Your character and color are saved to your account and follow you into every room.", "👓 안경 쓰기": "👓 Wear glasses", "📝 오늘 할 일 · 전공": "📝 Today's task · field", "🎨 캐릭터 변경": "🎨 Change character", "📊 내 기록": "📊 My records", "📊 나의 연구 여정 요약": "📊 My research journey", "← 닫기": "← Close", "🧴 캐릭터·나라·전공은 시약 창고나 '나의 연구 여정'에서 바꿀 수 있어요.": "🧴 Change your character, country and field in the reagent storage or My journey.", "다른 곳에서 접속했어요": "Signed in somewhere else", "같은 계정으로 다른 브라우저(또는 탭)에서 들어와서, 여기서는 연결을 끊었어요. 한 계정은 한 곳에서만 쓸 수 있어요.": "This account was opened in another browser (or tab), so this one was disconnected. An account can be used in one place at a time.", "여기서 다시 접속하기": "Use it here instead", "언어 공부": "Language study", "🐄 얼룩 송아지": "🐄 Spotted calf", "🐮 갈색 송아지": "🐮 Brown calf", "메뉴": "Menu"};
+Object.assign(EN, { "🎃 호박": "🎃 Pumpkin", "🐄 얼룩소": "🐄 Spotted cow", "🐂 갈색소": "🐂 Brown cow", "🦙 알파카": "🦙 Alpaca", "🐑 양": "🐑 Sheep", "🐐 염소": "🐐 Goat", "🫏 당나귀": "🫏 Donkey", "🦉 부엉이": "🦉 Owl", "🐭 쥐": "🐭 Mouse", "🐰 토끼": "🐰 Rabbit", "🐸 개구리": "🐸 Frog", "🐧 펭귄": "🐧 Penguin", "🐔 닭": "🐔 Chicken", "🪿 거위": "🪿 Goose",
+  "🌼 독수리 농장 입장": "🌼 Enter the Eagle Farm", "옥수수밭·텃밭·유채꽃밭에서 가축이 되어 풀 뜯기 · 최대 48명": "Graze as farm animals by corn, veggies and rapeseed · up to 48" });
 const $t = s => isEN && Object.prototype.hasOwnProperty.call(EN, s) ? EN[s] : s;
 const $tt = (ko, en) => isEN ? en : ko;
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -671,8 +677,11 @@ if (isEN) {
 }
 // 들어갈 연구실: 주소 끝 #r=번호 (vip는 VIP 클럽)
 const isLibKey = k => typeof k === 'string' && /^lib[0-9]{0,2}$/.test(k);
-const ROOM_KEY = (() => { const m = /[#&]r=([A-Za-z0-9]{3,12})/.exec(location.hash); if (!m) return null; const k = m[1].toLowerCase(); return k === 'vip' || isLibKey(k) ? k : m[1].toUpperCase(); })();
-const IS_LIB = isLibKey(ROOM_KEY);
+// 농장: 누구나 들어오는 공개 방 (도서관처럼 초대 코드 없음)
+const isFarmKey = k => k === 'farm';
+const isPubKey = k => isLibKey(k) || isFarmKey(k);
+const ROOM_KEY = (() => { const m = /[#&]r=([A-Za-z0-9]{3,12})/.exec(location.hash); if (!m) return null; const k = m[1].toLowerCase(); return k === 'vip' || isPubKey(k) ? k : m[1].toUpperCase(); })();
+const IS_LIB = isLibKey(ROOM_KEY), IS_FARM = isFarmKey(ROOM_KEY), IS_PUB = IS_LIB || IS_FARM;
 let ATT_LS = 'jsdsr-att-' + (ROOM_KEY || 'none');
 let RP = '', ROOM = null, roomReady = false, RTDB = null;
 
@@ -698,9 +707,23 @@ const COLOR_NAMES = [$t('노랑'), $t('분홍'), $t('민트'), $t('라벤더'), 
 const KINDS = {
   eagle: $t('🦅 독수리'), potato: $t('🥔 감자'), carrot: $t('🥕 당근'), sweetpotato: $t('🍠 고구마'), cabbage: $t('🥬 배추'),
   radish: $t('무'), tomato: $t('🍅 토마토'), celery: $t('🌿 셀러리'), endive: $t('앤다이브'), pepper: $t('🫑 피망'), broccoli: $t('🥦 브로콜리'), onion: $t('🧅 양파'),
-  chili: $t('🌶️ 빨간 고추'), scallion: $t('🌱 대파'), eggplant: $t('🍆 가지'), mushroom: $t('🍄 버섯'), corn: $t('🌽 옥수수'),
-  cow: $t('🐄 얼룩 송아지'), calf: $t('🐮 갈색 송아지'),
+  chili: $t('🌶️ 빨간 고추'), scallion: $t('🌱 대파'), eggplant: $t('🍆 가지'), mushroom: $t('🍄 버섯'), corn: $t('🌽 옥수수'), pumpkin: $t('🎃 호박'),
 };
+// 농장에서만 고르는 동물들 (연구소·도서관에서는 위 캐릭터)
+const FARM_KINDS = {
+  cow: $t('🐄 얼룩소'), calf: $t('🐂 갈색소'), alpaca: $t('🦙 알파카'), sheep: $t('🐑 양'), goat: $t('🐐 염소'), donkey: $t('🫏 당나귀'),
+};
+const ALL_KINDS = { ...KINDS, ...FARM_KINDS };
+// 가축 몸: s 크기, bw/bl 몸통 굵기·길이, nw/nl 목, upN/downN 고개 든·숙인 목 각도, downH 풀 뜯을 때 머리 각도
+const QUADS = {
+  cow: { s: 1, fur: '#f7f5ef', spots: '#1d1e21', bw: 0.3, bl: 0.62, nw: 0.15, nl: 0.42, upN: -0.6, downN: 0.95, downH: 0.6, tailC: '#f7f5ef' },
+  calf: { s: 1, fur: '#b07840', leg: '#9a6634', bw: 0.3, bl: 0.62, nw: 0.15, nl: 0.42, upN: -0.6, downN: 0.95, downH: 0.6, tailC: '#8a5a2e' },
+  alpaca: { s: 0.9, fur: '#efe4cf', wool: '#f6eedf', bw: 0.24, bl: 0.46, nw: 0.1, nl: 0.72, upN: -1.25, downN: 0.6, downH: 0.95, longNeck: true, tail: 'puff' },
+  sheep: { s: 0.78, fur: '#f1ebdf', leg: '#3e3634', wool: '#fbf8f0', bw: 0.27, bl: 0.4, nw: 0.11, nl: 0.3, upN: -0.5, downN: 1.1, downH: 0.45, tail: 'puff', hs: 1.1 },
+  goat: { s: 0.8, fur: '#f4f1ea', bw: 0.23, bl: 0.44, nw: 0.1, nl: 0.36, upN: -0.85, downN: 1.0, downH: 0.55, tail: 'up', hs: 1.1 },
+  donkey: { s: 0.92, fur: '#8e8a86', belly: '#d9d4cc', leg: '#86817c', mane: '#3d3835', bw: 0.26, bl: 0.56, nw: 0.12, nl: 0.46, upN: -0.8, downN: 0.95, downH: 0.6, tailC: '#3d3835' },
+};
+const FARM_CAP = 48;
 const TASKS = {
   thesis: { label: $t('논문 쓰기'), icon: '📝' },
   code:   { label: $t('코딩'), icon: '🖥️' },
@@ -714,10 +737,21 @@ const own = (o, k) => typeof k === 'string' && Object.prototype.hasOwnProperty.c
 const BENCH_H = 0.92, BENCH_L = 6.4, BENCH_W = 1.3;
 const SZ = 0.83, EX = 3.55;
 const LIB_ROWS = [-6, -3, 0, 3, 6];
+const FARM_ROWS = [-6.6, -2.2, 2.2, 6.6], FARM_COLS = [-2.6, 2.6], FARM_HEAD_R = 0.5;
 const SEATS = IS_LIB ? (() => {
   const pairs = []; for (const rz of LIB_ROWS) for (let k = 0; k < 10; k++) pairs.push({ x: -4.5 + k, rz });
   pairs.sort((a, b) => (Math.abs(a.x) + Math.abs(a.rz) * 0.6) - (Math.abs(b.x) + Math.abs(b.rz) * 0.6));
   const out = []; for (const p of pairs) out.push({ x: p.x, z: p.rz + SZ, ry: Math.PI, row: p.rz }, { x: p.x, z: p.rz - SZ, ry: 0, row: p.rz });
+  return out;
+})() : IS_FARM ? (() => {
+  // 풀·지푸라기 더미 8곳, 더미마다 6마리가 빙 둘러서서 머리를 가운데로 (정수리를 맞대요)
+  const out = [], cl = [];
+  for (const cz of FARM_ROWS) for (const cx of FARM_COLS) cl.push([cx, cz]);
+  cl.sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]) || a[0] - b[0]);
+  for (const [cx, cz] of cl) for (const k of [0, 3, 1, 4, 2, 5]) {
+    const a = Math.PI / 2 + k * Math.PI / 3, r = FARM_HEAD_R + 0.74;
+    out.push({ x: cx + Math.cos(a) * r, z: cz + Math.sin(a) * r, ry: Math.atan2(-Math.cos(a), -Math.sin(a)), row: cz, cx, cz, a });
+  }
   return out;
 })() : [
   { x: -0.5, z:  SZ, ry: Math.PI }, { x: -0.5, z: -SZ, ry: 0 },
@@ -749,7 +783,7 @@ scene.fog = new THREE.Fog('#11151a', 16, 30);
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 60);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; controls.dampingFactor = 0.08;
-controls.minDistance = 2.2; controls.maxDistance = IS_LIB ? 30 : 16; controls.maxPolarAngle = 1.42; controls.enablePan = false; controls.zoomSpeed = 2.6;
+controls.minDistance = 2.2; controls.maxDistance = IS_LIB ? 30 : IS_FARM ? 26 : 16; controls.maxPolarAngle = 1.42; controls.enablePan = false; controls.zoomSpeed = 2.6;
 controls.target.set(0, 1.3, 0);
 
 /* ================= 도우미 ================= */
@@ -1420,12 +1454,13 @@ sign($t('실험실 B-214'), 0.5, 0.12, { w: 512, h: 120, bg: '#ffffff', fg: '#1d
 bioSticker(doorPanel, -0.25, 1.62, 0.026, 0, 0.2);
 sticky(doorPanel, 6, 0.38, 1.2, 0.027, 0);
 const doorHits = []; let libDoor = null;
+const farmHits = []; let farmTick = null; // 농장: 텃밭·헛간 누르기, 야채 날아가는 애니메이션
 doorPanel.traverse(o => { if (o.isMesh) { o.userData.door = true; doorHits.push(o); } });
 const doorHit = new THREE.Mesh(box(DW, DH, 0.06), new THREE.MeshBasicMaterial({ visible: false })); doorHit.position.set(DOOR_X, DH / 2, 0.08); doorHit.userData.door = true; front.add(doorHit); doorHits.push(doorHit);
 let doorOpen = false, doorK = 0, doorTimer;
 function toggleDoor() {
   doorOpen = !doorOpen; clearTimeout(doorTimer);
-  toast(doorOpen ? (IS_LIB ? $tt('문이 열렸어요. 나가면 도서관에서 나가요.', 'The door is open. Step out to leave the library.') : $tt('문이 열렸어요. 복도로 나가면 연구실에서 나가요.', 'The door is open. Step into the hallway to leave the lab.')) : $t('문을 닫았어요.'));
+  toast(doorOpen ? (IS_FARM ? $tt('울타리 문이 열렸어요. 나가면 농장에서 나가요.', 'The gate is open. Step out to leave the farm.') : IS_LIB ? $tt('문이 열렸어요. 나가면 도서관에서 나가요.', 'The door is open. Step out to leave the library.') : $tt('문이 열렸어요. 복도로 나가면 연구실에서 나가요.', 'The door is open. Step into the hallway to leave the lab.')) : $t('문을 닫았어요.'));
   document.getElementById('doorExit').hidden = !(doorOpen && roomReady);
   if (doorOpen) doorTimer = setTimeout(() => { doorOpen = false; document.getElementById('doorExit').hidden = true; }, 12000);
 }
@@ -1933,7 +1968,7 @@ const PEPPER = (() => {
 const ONION = gradientize(lathe([[0.001, -0.24], [0.08, -0.23], [0.19, -0.14], [0.24, -0.01], [0.22, 0.1], [0.15, 0.2], [0.07, 0.28], [0.025, 0.34], [0.001, 0.37]], 32), [[-0.24, '#ecd3ae'], [0.0, '#dca064'], [0.22, '#c07a3c'], [0.37, '#8a5428']]);
 // 손은 모두 하늘색 니트릴 장갑
 const GLOVE = new THREE.MeshStandardMaterial({ color: '#8fd0f3', roughness: 0.42, metalness: 0.02 });
-const HAND_COL = { pepper: '#3a9b47', broccoli: '#a9cf73', onion: '#dca064', eagle: '#f2b632', potato: '#d1ae74', carrot: '#ee7a22', sweetpotato: '#a3485f', cabbage: '#d8eaa2', radish: '#f3f3ea', tomato: '#e8412f', celery: '#a9d36b', endive: '#f4f0d4', chili: '#d8261c', scallion: '#f2f5e4', eggplant: '#4a2459', mushroom: '#efe3c9', corn: '#f2c230' };
+const HAND_COL = { pumpkin: '#ef8a24', cow: '#fbfaf6', calf: '#a8703f', alpaca: '#f3ead8', owl: '#8a6040', mouse: '#a6a6ad', rabbit: '#fbfafa', frog: '#6dbb4a', penguin: '#24272e', chicken: '#fdfcf8', goose: '#ffffff', pepper: '#3a9b47', broccoli: '#a9cf73', onion: '#dca064', eagle: '#f2b632', potato: '#d1ae74', carrot: '#ee7a22', sweetpotato: '#a3485f', cabbage: '#d8eaa2', radish: '#f3f3ea', tomato: '#e8412f', celery: '#a9d36b', endive: '#f4f0d4', chili: '#d8261c', scallion: '#f2f5e4', eggplant: '#4a2459', mushroom: '#efe3c9', corn: '#f2c230' };
 
 const HAPPY_EYE = new THREE.TorusGeometry(0.024, 0.0065, 6, 12, Math.PI), SMILE = new THREE.TorusGeometry(0.04, 0.007, 6, 14, Math.PI);
 function happyParts(skull, eyes, z, y, sp, mouth) {
@@ -1943,7 +1978,16 @@ function happyParts(skull, eyes, z, y, sp, mouth) {
   if (mouth) { smile = mesh(SMILE, EYE, 0, y - 0.06, z - 0.004, skull); smile.rotation.z = Math.PI; smile.visible = false; }
   skull.userData.face = { eyes, happy, smile };
 }
+// 농장 동물 얼굴: 실험실 독수리처럼 반짝이는 동그란 눈 (볼터치·입 없이)
+let DERP = false;
+function derpFace(skull, z, y, sp) {
+  const eyes = [];
+  skull.userData.eyePos = { z: z + 0.015, y, sp };
+  for (const s of [1, -1]) { const e = mesh(geo.eye, EYE, s * sp, y, z, skull); e.scale.setScalar(1.15); eyes.push(e, mesh(geo.shine, glow('#ffffff'), s * sp + 0.008, y + 0.012, z + 0.025, skull)); }
+  happyParts(skull, eyes, z - 0.005, y + 0.005, sp, false);
+}
 function face(skull, z, y = 0, sp = 0.09) {
+  if (DERP) return derpFace(skull, z, y, sp);
   skull.userData.eyePos = { z, y, sp };
   const eyes = [];
   for (const s of [1, -1]) {
@@ -1996,11 +2040,17 @@ function buildHead(kind, skull) {
     face(skull, 0.225, 0.06);
     crown = leafTuft(skull, 0.24, 6, '#5fae3a', 0.17, 0.45);
   } else if (kind === 'sweetpotato') {
-    const p = mesh(sph(0.24, 24, 16), std('#a3485f', { roughness: 0.85 }), 0, 0, 0, skull); p.scale.set(0.96, 1.22, 0.92); p.rotation.z = 0.12;
-    for (let i = 0; i < 5; i++) mesh(sph(0.012, 6, 4), std('#7a2f45'), Math.sin(i * 2.1) * 0.2, -0.1 + i * 0.06, Math.cos(i * 2.1) * 0.16, skull);
-    face(skull, 0.21, 0.0);
-    crown = new THREE.Group(); crown.position.y = 0.285; skull.add(crown);
-    for (let i = 0; i < 3; i++) { const r = mesh(cyl(0.004, 0.002, 0.08, 4), std('#c98a6a'), (i - 1) * 0.02, 0.035, 0, crown); r.rotation.z = (i - 1) * 0.6; }
+    // 고구마: 양 끝이 뾰족한 길쭉한 자주색 덩이, 잔뿌리와 가는 꼬리
+    const skin = std('#b04a6a', { roughness: 0.75 });
+    const sp = mesh(lathe([[0.001, -0.34], [0.04, -0.3], [0.11, -0.2], [0.18, -0.06], [0.205, 0.05], [0.19, 0.15], [0.14, 0.24], [0.07, 0.3], [0.001, 0.33]], 26), skin, 0, 0, 0, skull);
+    sp.rotation.z = 0.32; sp.scale.set(1.0, 1.05, 0.95);
+    const dk = std('#6e2a40', { roughness: 0.9 });
+    for (let i = 0; i < 7; i++) { const a = i * 2.3, y = -0.2 + i * 0.07, r = 0.19 - Math.abs(y) * 0.35; const g = mesh(cyl(0.004, 0.004, 0.06, 4), dk, Math.sin(a) * r, y, Math.cos(a) * r * 0.9 - 0.02, skull); g.rotation.set(0.3, a, 1.3); }
+    for (let i = 0; i < 4; i++) { const a = 0.8 + i * 1.6; const r = mesh(cyl(0.003, 0.0015, 0.07, 4), std('#c98a6a'), Math.sin(a) * 0.17, -0.12 + i * 0.05, Math.cos(a) * 0.12 - 0.05, skull); r.rotation.set(0.6, 0, Math.sin(a) * 1.4); }
+    const tail = mesh(cyl(0.006, 0.002, 0.12, 5), std('#b5735a'), 0.04, -0.38, 0, skull); tail.rotation.z = 0.35;
+    face(skull, 0.19, 0.0);
+    crown = new THREE.Group(); crown.position.y = 0.31; skull.add(crown);
+    mesh(cyl(0.012, 0.018, 0.05, 6), std('#7a5a3a'), 0, 0.02, 0, crown);
   } else if (kind === 'cabbage') {
     // 길쭉한 배추: 흰 줄기 아래, 주름진 진초록 잎 위
     mesh(sph(0.15, 20, 14), std('#f1efc0', { roughness: 0.7 }), 0, 0.02, 0, skull).scale.set(1, 1.9, 1);
@@ -2109,24 +2159,92 @@ function buildHead(kind, skull) {
     const under = mesh(new THREE.CircleGeometry(0.29, 32), new THREE.MeshStandardMaterial({ color: '#e3d2b4', roughness: 1, side: THREE.DoubleSide }), 0, 0.002, 0, crown); under.rotation.x = Math.PI / 2;
     for (let i = 0; i < 8; i++) { const th = 0.3 + rnd() * 0.95, ph = rnd() * Math.PI * 2; mesh(sph(0.024, 8, 6), std('#f3ead8'), Math.sin(th) * Math.cos(ph) * 0.285, Math.cos(th) * 0.175, Math.sin(th) * Math.sin(ph) * 0.285, crown).scale.y = 0.45; }
   } else if (kind === 'cow' || kind === 'calf') {
-    // 송아지: 둥근 얼굴, 분홍 주둥이, 옆으로 뻗은 귀, 작은 뿔
-    const spotted = kind === 'cow', hm = std(spotted ? '#fbfaf6' : '#a8703f', { roughness: 0.9 }), dk = std(spotted ? '#202124' : '#7a4a26', { roughness: 0.9 });
-    mesh(sph(0.25, 28, 20), hm, 0, 0, 0, skull).scale.set(1.04, 0.95, 1);
-    if (spotted) for (const [ph, th, r] of [[0.3, 0.55, 0.085], [2.0, 0.95, 0.1], [3.4, 0.5, 0.09], [4.6, 1.15, 0.08], [1.2, 1.55, 0.07], [5.6, 0.9, 0.075]]) {
-      const x = Math.sin(th) * Math.cos(ph), y = Math.cos(th), z = Math.sin(th) * Math.sin(ph); if (z > 0.55 && y < 0.6) continue;
-      mesh(sph(r, 12, 8), dk, x * 0.2, y * 0.19, z * 0.2, skull);
+    // 사실적인 소: 앞으로 길게 나온 콧등과 넓은 코, 옆으로 뻗은 귀, 휘어진 뿔. 얼룩소(홀스타인)는 지푸라기, 갈색소(한우)는 코뚜레
+    const spotted = kind === 'cow', fur = std(spotted ? '#f7f5ef' : '#b07840', { roughness: 0.95 }), dk = std(spotted ? '#1d1e21' : '#8a5a2e', { roughness: 0.95 });
+    const nose = std(spotted ? '#e8a8a2' : '#4a3a36', { roughness: 0.7 });
+    const cr = mesh(sph(0.21, 28, 20), fur, 0, 0.04, -0.03, skull); cr.scale.set(1.05, 0.95, 1.05);
+    const bridge = mesh(new THREE.CapsuleGeometry(0.105, 0.17, 6, 16), fur, 0, -0.06, 0.14, skull); bridge.rotation.x = 1.15; bridge.scale.set(1.1, 1, 0.95);
+    const pad = mesh(sph(0.105, 22, 14), nose, 0, -0.14, 0.27, skull); pad.scale.set(1.2, 0.78, 0.72);
+    for (const sx of [1, -1]) { const n2 = mesh(sph(0.022, 10, 8), std('#2a1d1b'), sx * 0.05, -0.135, 0.335, skull); n2.scale.set(0.8, 1.2, 0.5); n2.rotation.z = sx * 0.4; }
+    mesh(box(0.05, 0.006, 0.01), std('#2a1d1b'), 0, -0.2, 0.31, skull);
+    if (spotted) {
+      for (const [x, y, z, r] of [[0.12, 0.12, 0.04, 0.09], [-0.15, 0.02, -0.02, 0.1], [0.05, 0.16, -0.16, 0.1], [-0.08, -0.02, 0.17, 0.05]]) mesh(sph(r, 14, 10), dk, x, y, z, skull).scale.set(1, 0.8, 1);
+      const pt = mesh(sph(0.07, 12, 8), dk, 0.07, 0.03, 0.17, skull); pt.scale.set(1, 1.2, 0.5);
+    } else {
+      mesh(sph(0.05, 10, 8), std('#cf9a62', { roughness: 0.95 }), 0, 0.17, 0.12, skull).scale.set(1.6, 0.6, 1);
     }
-    if (spotted) { const fp = mesh(sph(0.075, 12, 8), dk, -0.16, 0.13, 0.12, skull); fp.scale.set(1, 0.9, 0.8); }
-    if (!spotted) { mesh(sph(0.07, 12, 8), std('#f6efe3', { roughness: 0.9 }), 0, 0.12, 0.2, skull).scale.set(0.7, 1.3, 0.45); mesh(sph(0.05, 10, 8), dk, 0, 0.24, 0.02, skull).scale.set(1.4, 0.6, 1); }
-    const mz = mesh(sph(0.13, 22, 14), std('#f3b9ae', { roughness: 0.8 }), 0, -0.09, 0.19, skull); mz.scale.set(1.15, 0.72, 0.8);
     for (const sx of [1, -1]) {
-      mesh(sph(0.016, 8, 6), std('#7d4a45'), sx * 0.045, -0.075, 0.29, skull).scale.set(1, 1.3, 0.6);
-      const ear = mesh(sph(0.07, 14, 10), hm, sx * 0.28, 0.06, -0.01, skull); ear.scale.set(1.45, 0.45, 0.8); ear.rotation.z = sx * -0.35;
-      const ei = mesh(sph(0.05, 12, 8), std('#f3b9ae'), sx * 0.295, 0.055, 0.02, skull); ei.scale.set(1.3, 0.3, 0.55); ei.rotation.z = sx * -0.35;
-      const hn = mesh(new THREE.ConeGeometry(0.025, 0.06, 10), std('#efe3c8', { roughness: 0.6 }), sx * 0.12, 0.225, 0.0, skull); hn.rotation.z = sx * -0.35;
+      const ear = mesh(sph(0.075, 14, 10), fur, sx * 0.27, 0.07, -0.04, skull); ear.scale.set(1.5, 0.42, 0.85); ear.rotation.set(0, sx * 0.3, sx * -0.15);
+      const ei = mesh(sph(0.055, 12, 8), std(spotted ? '#efc0b8' : '#c98e5c'), sx * 0.285, 0.068, -0.005, skull); ei.scale.set(1.3, 0.28, 0.55); ei.rotation.set(0, sx * 0.3, sx * -0.15);
+      const hg = new THREE.Group(); hg.position.set(sx * 0.13, 0.19, -0.05); hg.rotation.z = sx * -0.9; skull.add(hg);
+      mesh(cyl(0.022, 0.03, 0.08, 10), std('#efe3c8', { roughness: 0.5 }), 0, 0.04, 0, hg);
+      const tip = mesh(new THREE.ConeGeometry(0.022, 0.07, 10), std('#d9c9a4', { roughness: 0.5 }), sx * -0.02, 0.1, 0, hg); tip.rotation.z = sx * 0.6;
     }
-    face(skull, 0.235, 0.07, 0.095);
-    crown = new THREE.Group(); crown.position.y = 0.235; skull.add(crown);
+    for (let i = 0; i < 5; i++) mesh(sph(0.03, 8, 6), spotted ? dk : std('#9a6634', { roughness: 1 }), (i - 2) * 0.035, 0.22 + (i % 2) * 0.012, 0.03, skull);
+    if (spotted) { const st2 = mesh(cyl(0.005, 0.005, 0.22, 5), std('#e8c55a', { roughness: 0.8 }), 0.1, -0.2, 0.28, skull); st2.rotation.set(0.15, 0, 1.2); }
+    else { const ring = mesh(new THREE.TorusGeometry(0.04, 0.008, 8, 20), std('#c9a24a', { metalness: 0.7, roughness: 0.3 }), 0, -0.18, 0.33, skull); ring.rotation.x = 0.35; }
+    face(skull, 0.17, 0.08, 0.13);
+    crown = new THREE.Group(); crown.position.y = 0.24; skull.add(crown);
+  } else if (kind === 'alpaca') {
+    // 알파카: 길쭉한 크림색 얼굴, 몽글몽글 앞머리, 쫑긋한 바나나 귀
+    const wool = std('#f3ead8', { roughness: 1 }), wool2 = std('#e9dcc1', { roughness: 1 });
+    mesh(sph(0.22, 24, 18), wool, 0, 0, 0, skull).scale.set(0.95, 1.15, 1);
+    for (let i = 0; i < 22; i++) { const th = rnd() * 1.1, ph = rnd() * Math.PI * 2; mesh(sph(0.06 + rnd() * 0.03, 10, 8), i % 3 ? wool : wool2, Math.sin(th) * Math.cos(ph) * 0.2, 0.17 + Math.cos(th) * 0.1, Math.sin(th) * Math.sin(ph) * 0.18 - 0.02, skull); }
+    const mz = mesh(sph(0.11, 18, 12), std('#e7d4b4', { roughness: 0.9 }), 0, -0.11, 0.15, skull); mz.scale.set(1, 0.85, 0.95);
+    mesh(sph(0.025, 8, 6), std('#4a3a32'), 0, -0.07, 0.25, skull).scale.set(1.4, 0.6, 0.6);
+    mesh(box(0.004, 0.035, 0.01), std('#4a3a32'), 0, -0.11, 0.255, skull);
+    for (const sx of [1, -1]) { const e = mesh(sph(0.045, 10, 8), wool2, sx * 0.13, 0.32, -0.02, skull); e.scale.set(0.6, 1.9, 0.6); e.rotation.z = sx * -0.25; }
+    face(skull, 0.2, 0.04, 0.09);
+    crown = new THREE.Group(); crown.position.y = 0.32; skull.add(crown);
+  } else if (kind === 'sheep') {
+    // 양: 크림색 얼굴, 머리 위와 뒤를 덮은 복슬 털, 옆으로 처진 귀
+    const wool = std('#fbf8f0', { roughness: 1 }), fc = std('#ecdfcc', { roughness: 0.9 });
+    const fh = mesh(sph(0.15, 22, 16), fc, 0, -0.02, 0.06, skull); fh.scale.set(0.85, 1.0, 1.3);
+    mesh(sph(0.065, 12, 8), std('#e2cdb8', { roughness: 0.9 }), 0, -0.08, 0.21, skull).scale.set(1.2, 0.8, 0.8);
+    for (const sx of [1, -1]) mesh(sph(0.012, 6, 4), std('#5a4038'), sx * 0.025, -0.07, 0.265, skull);
+    for (let i = 0; i < 16; i++) { const th = rnd() * 1.5, ph = rnd() * Math.PI * 2; const x = Math.sin(th) * Math.cos(ph), y = Math.cos(th), z = Math.sin(th) * Math.sin(ph); if (z > 0.45 && y < 0.6) continue; mesh(sph(0.065 + rnd() * 0.025, 10, 8), wool, x * 0.14, 0.04 + y * 0.12, z * 0.14 - 0.03, skull); }
+    for (const sx of [1, -1]) { const e = mesh(sph(0.06, 12, 8), fc, sx * 0.17, 0.0, 0.0, skull); e.scale.set(1.6, 0.45, 0.8); e.rotation.z = sx * 0.35; }
+    face(skull, 0.17, 0.04, 0.075);
+    crown = new THREE.Group(); crown.position.y = 0.2; skull.add(crown);
+  } else if (kind === 'goat') {
+    // 염소: 길쭉한 하얀 얼굴, 뒤로 휜 뿔, 턱수염, 옆으로 뻗은 귀
+    const wf = std('#f4f1ea', { roughness: 0.95 });
+    mesh(sph(0.16, 22, 16), wf, 0, 0.02, 0, skull).scale.set(0.95, 1, 1.05);
+    const mz = mesh(new THREE.CapsuleGeometry(0.085, 0.12, 6, 14), wf, 0, -0.05, 0.13, skull); mz.rotation.x = 1.25;
+    mesh(sph(0.04, 10, 8), std('#e8b8b0', { roughness: 0.8 }), 0, -0.07, 0.235, skull).scale.set(1.3, 0.8, 0.6);
+    for (const sx of [1, -1]) {
+      const hg = new THREE.Group(); hg.position.set(sx * 0.06, 0.14, -0.02); skull.add(hg);
+      const hn = mesh(new THREE.TorusGeometry(0.1, 0.02, 8, 16, Math.PI * 0.8), std('#b9a888', { roughness: 0.6 }), 0, 0, -0.1, hg); hn.rotation.set(0, Math.PI / 2, 0.2);
+      const e = mesh(sph(0.055, 12, 8), wf, sx * 0.17, 0.03, -0.02, skull); e.scale.set(1.7, 0.4, 0.7); e.rotation.z = sx * -0.2;
+    }
+    const bd = mesh(new THREE.ConeGeometry(0.035, 0.12, 8), std('#e0dbd0', { roughness: 1 }), 0, -0.17, 0.12, skull); bd.rotation.x = Math.PI + 0.3;
+    face(skull, 0.13, 0.06, 0.085);
+    crown = new THREE.Group(); crown.position.y = 0.17; skull.add(crown);
+  } else if (kind === 'donkey') {
+    // 당나귀: 회색 머리, 하얀 주둥이, 아주 긴 귀(끝은 진한 색), 짧은 갈기
+    const gr = std('#8e8a86', { roughness: 0.95 }), dk = std('#3d3835', { roughness: 1 });
+    mesh(sph(0.17, 22, 16), gr, 0, 0.03, -0.02, skull).scale.set(0.95, 1, 1.05);
+    const mz = mesh(new THREE.CapsuleGeometry(0.1, 0.12, 6, 14), gr, 0, -0.05, 0.12, skull); mz.rotation.x = 1.3;
+    const tip = mesh(sph(0.11, 16, 12), std('#e8e4de', { roughness: 0.9 }), 0, -0.08, 0.22, skull); tip.scale.set(1, 0.85, 0.9);
+    for (const sx of [1, -1]) { const n2 = mesh(sph(0.018, 8, 6), dk, sx * 0.045, -0.07, 0.31, skull); n2.scale.set(0.8, 1.2, 0.5); }
+    for (const sx of [1, -1]) {
+      const eg = new THREE.Group(); eg.position.set(sx * 0.08, 0.15, -0.05); eg.rotation.set(-0.25, 0, sx * -0.35); skull.add(eg);
+      mesh(sph(0.05, 12, 8), gr, 0, 0.14, 0, eg).scale.set(0.85, 2.9, 0.5);
+      mesh(sph(0.032, 10, 8), std('#d8d2ca'), 0, 0.13, 0.018, eg).scale.set(0.8, 2.8, 0.3);
+      mesh(sph(0.03, 8, 6), dk, 0, 0.27, 0, eg).scale.set(1.2, 1.2, 0.8);
+    }
+    for (let i = 0; i < 4; i++) mesh(box(0.04, 0.07, 0.05), dk, 0, 0.19 - i * 0.01, 0.03 - i * 0.06, skull);
+    face(skull, 0.14, 0.06, 0.09);
+    crown = new THREE.Group(); crown.position.y = 0.2; skull.add(crown);
+  } else if (kind === 'pumpkin') {
+    // 호박: 골이 진 주황 덩이, 짧은 꼭지와 덩굴손
+    const pm = std('#ef8a24', { roughness: 0.65 });
+    for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; const lobe = mesh(sph(0.15, 16, 12), pm, Math.sin(a) * 0.12, 0, Math.cos(a) * 0.12, skull); lobe.scale.set(0.95, 1.25, 0.95); }
+    mesh(sph(0.2, 20, 14), pm, 0, 0, 0, skull).scale.set(1.25, 0.95, 1.25);
+    face(skull, 0.27, 0.02, 0.095);
+    crown = new THREE.Group(); crown.position.y = 0.19; skull.add(crown);
+    const stem = mesh(cyl(0.025, 0.035, 0.08, 8), std('#6b7a34', { roughness: 0.8 }), 0, 0.03, 0, crown); stem.rotation.z = 0.2;
+    const tend = mesh(new THREE.TorusGeometry(0.03, 0.005, 6, 16, Math.PI * 1.5), std('#7c9a3c'), 0.04, 0.05, 0, crown); tend.rotation.y = 0.5;
   } else if (kind === 'corn') {
     // 옥수수: 노란 알갱이 자루(얼굴), 양옆과 뒤를 감싼 초록 껍질, 위엔 수염
     mesh(lathe([[0.001, -0.3], [0.12, -0.29], [0.17, -0.2], [0.19, -0.05], [0.18, 0.12], [0.14, 0.26], [0.07, 0.34], [0.001, 0.36]], 28), std('#ffffff', { map: cornTex, roughness: 0.5 }), 0, 0, 0, skull);
@@ -2205,20 +2323,23 @@ class Student {
   }
   build(s) {
     while (this.root.children.length) { const c = this.root.children[0]; this.root.remove(c); disposeTree(c); }
+    if (IS_FARM && own(FARM_KINDS, s.kind)) { this.buildQuad(s); return; }
+    this.quad = false;
     const R = this.root, accent = COLORS[s.color], eagle = s.kind === 'eagle';
+    const LEG = PANTS, paw = GLOVE;
     const shirt = std(accent, { roughness: 0.9 });
     const shirtDark = std('#' + new THREE.Color(accent).multiplyScalar(0.72).getHexString(), { roughness: 0.9 });
     const brown = std('#4a2f1d', { roughness: 1 }), yellow = std('#f6b51e', { roughness: 0.9 });
     for (const sx of [1, -1]) {
       if (this.standing) {
-        mesh(geo.thigh, eagle ? brown : PANTS, sx * 0.09, 0.6, 0.0, R);
-        mesh(geo.shin, eagle ? brown : PANTS, sx * 0.09, 0.3, 0.0, R);
+        mesh(geo.thigh, eagle ? brown : LEG, sx * 0.09, 0.6, 0.0, R);
+        mesh(geo.shin, eagle ? brown : LEG, sx * 0.09, 0.3, 0.0, R);
         if (eagle) { mesh(sph(0.08, 14, 10), yellow, sx * 0.1, 0.04, 0.06, R).scale.set(1.05, 0.55, 1.45); for (let k = -1; k <= 1; k++) mesh(sph(0.032, 8, 6), yellow, sx * 0.1 + k * 0.045, 0.03, 0.16, R); }
         else mesh(sph(0.07, 12, 8), std('#2b2f33'), sx * 0.09, 0.04, 0.05, R).scale.set(1, 0.6, 1.5);
         continue;
       }
-      const th = mesh(geo.thigh, eagle ? brown : PANTS, sx * 0.09, 0.76, 0.17, R); th.rotation.x = Math.PI / 2;
-      mesh(geo.shin, eagle ? brown : PANTS, sx * 0.09, 0.5, 0.33, R);
+      const th = mesh(geo.thigh, eagle ? brown : LEG, sx * 0.09, 0.76, 0.17, R); th.rotation.x = Math.PI / 2;
+      mesh(geo.shin, eagle ? brown : LEG, sx * 0.09, 0.5, 0.33, R);
       if (eagle) {
         mesh(sph(0.08, 14, 10), yellow, sx * 0.1, 0.29, 0.39, R).scale.set(1.05, 0.55, 1.45);
         for (let k = -1; k <= 1; k++) mesh(sph(0.032, 8, 6), yellow, sx * 0.1 + k * 0.045, 0.28, 0.49, R);
@@ -2245,16 +2366,17 @@ class Student {
       const a = new THREE.Group(); a.position.set(sx * 0.22, 0.55, 0.03); this.torso.add(a);
       mesh(new THREE.CapsuleGeometry(0.07, 0.17, 4, 10), COAT_D, 0, -0.13, 0, a); // 가운 소매
       if (eagle) { mesh(sph(0.062, 12, 8), GLOVE, 0, -0.27, 0, a).scale.set(0.8, 1.1, 1); mesh(new THREE.ConeGeometry(0.045, 0.08, 8), GLOVE, 0, -0.34, 0, a).rotation.x = Math.PI; }
-      else mesh(geo.hand, GLOVE, 0, -0.27, 0, a);
+      else mesh(geo.hand, paw, 0, -0.27, 0, a);
       const v = new THREE.Group(); v.position.set(0, -0.3, 0); v.visible = false; a.add(v);
-      const fc = GLOVE;
+      const fc = eagle ? GLOVE : paw;
       for (const fx of [1, -1]) { const fg = mesh(new THREE.CapsuleGeometry(0.014, 0.075, 4, 8), fc, fx * 0.02, -0.05, 0.01, v); fg.rotation.z = fx * 0.28; }
       this.arms.push(a); (this.vSigns ||= []).push(v);
     }
     this.head = new THREE.Group(); this.head.position.set(0, 0.70, 0); this.torso.add(this.head);
     const skull = new THREE.Group(); skull.position.y = 0.22; this.head.add(skull);
     this.vSigns = this.vSigns ? this.vSigns.slice(-2) : [];
-    this.crown = buildHead(s.kind, skull); this.skull = skull; this.cap = null;
+    this.crown = buildHead(s.kind, skull);
+    this.skull = skull; this.cap = null;
     if (s.gl && skull.userData.eyePos) {
       const { z, y, sp } = skull.userData.eyePos, fr = std('#262a2f', { roughness: 0.35, metalness: 0.4 }), r = Math.max(0.052, sp * 0.62);
       const lens = new THREE.MeshStandardMaterial({ color: '#dff1ff', transparent: true, opacity: 0.18, roughness: 0.05, depthWrite: false });
@@ -2283,6 +2405,87 @@ class Student {
     this.steam = [];
     for (let i = 0; i < 3; i++) { const p = mesh(sph(0.018, 8, 6), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0 }), 0, 0.12, 0, this.mug); p.castShadow = false; this.steam.push(p); }
   }
+  // ===== 농장 가축: 옷 없이 네 발로 서서, 정수리를 맞대고 풀·지푸라기를 뜯어요 =====
+  buildQuad(s) {
+    const R = this.root, Q = QUADS[s.kind], accent = COLORS[s.color];
+    this.quad = true; this.qs = Q.s; this.graze = 0;
+    const body = new THREE.Group(); body.scale.setScalar(Q.s); R.add(body); this.torso = body;
+    const fur = std(Q.fur, { roughness: 0.95 }), leg = std(Q.leg || Q.fur, { roughness: 0.95 }), hoof = std('#2e2724', { roughness: 0.7 });
+    const barrel = mesh(new THREE.CapsuleGeometry(Q.bw, Q.bl, 8, 20), fur, 0, 0.78, 0, body); barrel.rotation.x = Math.PI / 2; barrel.scale.set(1, 1, 0.92);
+    if (Q.belly) { const bl = mesh(new THREE.CapsuleGeometry(Q.bw * 0.82, Q.bl * 0.8, 6, 16), std(Q.belly, { roughness: 0.95 }), 0, 0.72, 0, body); bl.rotation.x = Math.PI / 2; }
+    if (Q.spots) for (const [x, y, z, r] of [[0.2, 0.9, 0.15, 0.13], [-0.22, 0.82, -0.2, 0.15], [0.05, 1.02, -0.32, 0.12], [-0.12, 0.98, 0.3, 0.1], [0.24, 0.7, -0.3, 0.1]]) mesh(sph(r, 14, 10), std(Q.spots, { roughness: 0.95 }), x, y, z, body).scale.set(1, 0.7, 1.15);
+    if (Q.wool) { const w2 = std(Q.wool, { roughness: 1 }); for (let i = 0; i < 34; i++) { const a = rnd() * Math.PI * 2, zz = (rnd() - 0.5) * (Q.bl + Q.bw); mesh(sph(Q.bw * (0.42 + rnd() * 0.2), 10, 8), w2, Math.cos(a) * Q.bw * 0.95, 0.78 + Math.sin(a) * Q.bw * 0.9, zz, body); } }
+    this.legs = [];
+    for (const [x, z] of [[0.17, 0.33], [-0.17, 0.33], [0.17, -0.33], [-0.17, -0.33]]) {
+      const lg = new THREE.Group(); lg.position.set(x * Q.bw / 0.28, 0.58, z * (Q.bl + 0.1) / 0.72); body.add(lg);
+      mesh(cyl(0.055, 0.047, 0.52, 10), leg, 0, -0.26, 0, lg);
+      if (Q.wool) mesh(sph(0.085, 10, 8), std(Q.wool, { roughness: 1 }), 0, -0.04, 0, lg).scale.set(1, 1.3, 1);
+      mesh(cyl(0.052, 0.058, 0.07, 10), hoof, 0, -0.545, 0, lg);
+      this.legs.push(lg);
+    }
+    this.tail = new THREE.Group(); this.tail.position.set(0, 0.86, -(Q.bl / 2 + Q.bw * 0.85)); body.add(this.tail);
+    if (Q.tail === 'puff') mesh(sph(0.08, 10, 8), std(Q.wool || Q.fur, { roughness: 1 }), 0, 0, -0.03, this.tail);
+    else if (Q.tail === 'up') { const t2 = mesh(new THREE.ConeGeometry(0.035, 0.12, 8), fur, 0, 0.05, -0.02, this.tail); t2.rotation.x = -0.4; }
+    else { const tl = mesh(cyl(0.014, 0.012, 0.42, 6), std(Q.tailC || Q.fur), 0, -0.21, -0.03, this.tail); tl.rotation.x = 0.12; mesh(sph(0.045, 8, 6), std(Q.tailC || '#2a2422', { roughness: 1 }), 0, -0.43, -0.06, this.tail).scale.set(0.8, 1.6, 0.8); }
+    // 목 → 머리. 목은 앞쪽(+z)으로 뻗고, 각도를 바꿔 고개를 들었다 내렸다 해요
+    this.neck = new THREE.Group(); this.neck.position.set(0, 0.9, Q.bl / 2 + Q.bw * 0.45); body.add(this.neck);
+    const nk = mesh(new THREE.CapsuleGeometry(Q.nw, Q.nl, 6, 14), fur, 0, 0, Q.nl / 2, this.neck); nk.rotation.x = Math.PI / 2;
+    if (Q.wool && Q.longNeck) for (let i = 0; i < 8; i++) mesh(sph(Q.nw * 1.05, 10, 8), std(Q.wool, { roughness: 1 }), (rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.04, i / 7 * Q.nl, this.neck);
+    if (Q.mane) for (let i = 0; i < 6; i++) mesh(box(0.035, 0.07, 0.07), std(Q.mane, { roughness: 1 }), 0, Q.nw + 0.02, 0.02 + i / 5 * Q.nl, this.neck);
+    // 목방울 (내 색)
+    const col = mesh(new THREE.TorusGeometry(Q.nw + 0.012, 0.016, 8, 24), std(accent, { roughness: 0.6 }), 0, 0, 0.06, this.neck);
+    const bell = mesh(cyl(0.03, 0.045, 0.06, 12), std('#d9b24a', { metalness: 0.7, roughness: 0.3 }), 0, -Q.nw - 0.04, 0.07, this.neck); bell.userData.bell = true;
+    this.head = new THREE.Group(); this.head.position.set(0, 0, Q.nl); this.neck.add(this.head);
+    const skull = new THREE.Group(); skull.position.set(0, 0.02, 0.05); this.head.add(skull);
+    DERP = true; try { this.crown = buildHead(s.kind, skull); } finally { DERP = false; }
+    skull.scale.setScalar(Q.hs || 1);
+    this.skull = skull; this.cap = null; this.arms = []; this.vSigns = [];
+    this.faceParts = skull.userData.face || null; this._posed = false;
+    this.angryT = -1; this.fumes = [];
+    for (let i = 0; i < 4; i++) { const f = mesh(sph(0.05, 10, 8), new THREE.MeshBasicMaterial({ color: i % 2 ? '#ff6a5a' : '#ffffff', transparent: true, opacity: 0, depthWrite: false }), 0, 0.3, 0, this.head); f.castShadow = false; this.fumes.push(f); }
+    this.flames = new THREE.Group(); this.flames.position.y = 0.3; this.flames.visible = false; this.head.add(this.flames);
+    [['#ff4a1c', 0.13, 0.42, 0, 0], ['#ff8a1c', 0.1, 0.34, 0.07, 0.03], ['#ff8a1c', 0.1, 0.32, -0.07, -0.02], ['#ffd23c', 0.07, 0.26, 0.02, 0.05], ['#ffd23c', 0.06, 0.22, -0.04, -0.05], ['#fff3a8', 0.045, 0.16, 0, 0.01]].forEach(([c, r, h, x, z], i) => {
+      const f = new THREE.Mesh(new THREE.ConeGeometry(r, h, 10), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.88, depthWrite: false }));
+      f.position.set(x, h / 2, z); f.userData = { h, ph: i * 1.7 }; this.flames.add(f);
+    });
+    this.items = new THREE.Group(); this.mug = new THREE.Group(); R.add(this.items, this.mug); this.steam = [];
+    shadowAll(R);
+  }
+  updateQuad(dt, t) {
+    const s = this.s, Q = QUADS[s.kind] || QUADS.cow, focus = s.mode === 'focus' && !photoMode, k = reduceMotion ? 1 : Math.min(1, dt * 1.8);
+    this.graze += ((focus ? 1 : 0) - this.graze) * k;
+    const g = this.graze, ph = this.phase;
+    let nod = 0;
+    if (this.nodT >= 0) { this.nodT += dt; const p = this.nodT / 1.2; if (p >= 1) this.nodT = -1; else nod = Math.sin(p * Math.PI * 3) * 0.25 * (1 - p); }
+    const chew = reduceMotion ? 0 : g * (Math.sin(t * 7 + ph) * 0.05 + Math.max(0, Math.sin(t * 0.6 + ph)) * 0.12);
+    this.neck.rotation.x = Q.upN + (Q.downN - Q.upN) * g + nod * 0.5;
+    this.head.rotation.x = -Q.upN * 0.95 + (Q.downH - -Q.upN * 0.95) * g + chew + nod;
+    this.head.rotation.y = reduceMotion ? 0 : Math.sin(t * 0.37 + ph) * 0.4 * (1 - g);
+    this.head.rotation.z = reduceMotion ? 0 : Math.sin(t * 0.23 + ph) * 0.06;
+    this.torso.rotation.z = 0;
+    if (this.tail) this.tail.rotation.z = reduceMotion ? 0 : Math.sin(t * 2.3 + ph) * 0.35;
+    if (photoMode) {
+      // 사진: 고개 들고 카메라 쪽을 보며 웃기
+      const lp = this.root.worldToLocal(tmpV.copy(camera.position));
+      this.head.rotation.y = Math.max(-0.9, Math.min(0.9, Math.atan2(lp.x, lp.z)));
+      if (!this._posed) { this.setSmile(true); this._posed = true; }
+    } else if (this._posed) { this.setSmile(false); this._posed = false; }
+    if (this.angryT >= 0) {
+      this.angryT += dt; const p = this.angryT / 2.0;
+      if (p >= 1) { this.angryT = -1; this.fumes.forEach(f => { f.material.opacity = 0; }); }
+      else {
+        this.head.rotation.y = Math.sin(this.angryT * 38) * 0.3 * (1 - p);
+        this.legs.forEach((l, i) => { l.rotation.x = i < 2 ? Math.sin(this.angryT * 25) * 0.25 * (1 - p) : 0; });
+        this.fumes.forEach((f, i) => { const q = (this.angryT * 1.6 + i / 4) % 1; f.position.set(Math.sin(i * 2.1) * 0.08 * (1 + q), 0.3 + q * 0.35, Math.cos(i * 2.1) * 0.08); f.scale.setScalar(0.6 + q * 1.6); f.material.opacity = 0.75 * (1 - q); });
+      }
+    } else this.legs.forEach(l => { l.rotation.x = 0; });
+    const burning = (s.fire || 0) > Date.now();
+    this.flames.visible = burning;
+    if (burning) this.flames.children.forEach(f => { const q = reduceMotion ? 1 : 0.8 + 0.35 * Math.abs(Math.sin(t * 9 + f.userData.ph)); f.scale.set(1, q, 1); f.position.y = f.userData.h * q / 2; });
+    if (this.crown && !reduceMotion) this.crown.rotation.z = Math.sin(t * 2.1 + ph) * 0.06;
+    const meta = s.mode === 'focus' ? `${burning ? '🔥 ' : ''}${TASKS[s.task].icon} ${TASKS[s.task].label}` : $tt('🌿 어슬렁 쉬는 중', '🌿 Wandering on a break');
+    this.placeLabel(meta);
+  }
   setCap(on) {
     if (on && (!this.cap || !this.cap.parent) && this.skull) {
       const c = new THREE.Group(), cp = this.crown ? this.crown.position : new THREE.Vector3(0, 0.25, 0);
@@ -2308,7 +2511,9 @@ class Student {
   sync(s, isMe, dev) {
     const sig = [s.color, s.kind, s.task, s.gl ? 1 : 0, s.cc === 'BE' ? 1 : 0].join('|');
     if (sig !== this.sig) { this.sig = sig; this.build(s); }
-    if (s.seat !== this.seat) { this.seat = s.seat; const st = SEATS[s.seat]; this.root.position.set(st.x, 0, st.z); this.root.rotation.y = st.ry; this.stagger = Math.abs(st.z) > 0.1 && Math.round(st.x + 2.5) % 2 ? 0.32 : 0; }
+    if (s.seat !== this.seat || this._qk !== (this.quad ? s.kind : '')) { this.seat = s.seat; this._qk = this.quad ? s.kind : ''; const st = SEATS[s.seat]; this.root.position.set(st.x, 0, st.z); this.root.rotation.y = st.ry;
+      if (this.quad && st.cx !== undefined) { const Q = QUADS[s.kind], r = FARM_HEAD_R + Q.s * (Q.bl / 2 + Q.bw * 0.45 + Q.nl * Math.cos(Q.downN) + 0.05); this.root.position.set(st.cx + Math.cos(st.a) * r, 0, st.cz + Math.sin(st.a) * r); }
+      this.stagger = Math.abs(st.z) > 0.1 && Math.round(st.x + 2.5) % 2 ? 0.32 : 0; }
     if (this.lastNod !== null && s.nod !== this.lastNod) { this.nodT = 0; this.label.classList.add('nodding'); clearTimeout(this.nodTimer); this.nodTimer = setTimeout(() => this.label.classList.remove('nodding'), 1600); }
     this.lastNod = s.nod;
     if (this.lastAngry !== undefined && s.angry !== this.lastAngry) { this.angryT = 0; this.label.classList.add('angry'); clearTimeout(this.angryTimer); this.angryTimer = setTimeout(() => this.label.classList.remove('angry'), 2200); }
@@ -2328,6 +2533,7 @@ class Student {
   }
   update(dt, t) {
     const s = this.s; if (!s) return;
+    if (this.quad) return this.updateQuad(dt, t);
     const focus = s.mode === 'focus', k = reduceMotion ? 1 : Math.min(1, dt * 2.2);
     this.lean += ((focus ? LEAN_F : LEAN_B) - this.lean) * k;
     this.ht += ((focus ? HT_F : HT_B) - this.ht) * k;
@@ -2377,8 +2583,13 @@ class Student {
     });
     if (photoMode && !this.nap) this.applyPhoto(); else if (this._posed) this.clearPhoto();
     const meta = this.nap ? $tt('💤 낮잠 중', '💤 Napping') : focus ? `${burning ? '🔥 ' : ''}${TASKS[s.task].icon} ${TASKS[s.task].label}` : $tt('☕ 휴식 중', '☕ On a break');
+    this.placeLabel(meta);
+  }
+  placeLabel(meta) {
     if (this._meta !== meta) { this._meta = meta; this.label.querySelector('.meta').textContent = meta; this._w = 0; }
-    this.head.getWorldPosition(this.anchor); this.anchor.y += this.nap ? 0.32 : (view === 'crown' ? 0.42 : 0.66) + (this.stagger || 0) * 0.45;
+    // 가축은 머리가 가운데 모여 있어서, 이름표는 등 위에 띄워요
+    if (this.quad) { this.neck.getWorldPosition(this.anchor); this.anchor.y += view === 'crown' ? 0.25 : 0.5; }
+    else { this.head.getWorldPosition(this.anchor); this.anchor.y += this.nap ? 0.32 : (view === 'crown' ? 0.42 : 0.66) + (this.stagger || 0) * 0.45; }
     this.label.classList.toggle('napping', !!this.nap);
     this.anchor.project(camera);
     const vis = this.anchor.z < 1 && Math.abs(this.anchor.x) < 1.2 && Math.abs(this.anchor.y) < 1.2;
@@ -2402,7 +2613,7 @@ class Student {
     this.arms[1].rotation.set(-2.75, 0, -0.35);
     if (!this._posed) { this.setSmile(true); this._posed = true; }
   }
-  clearPhoto() { this.setSmile(false); this.torso.rotation.y = 0; this.arms[1].rotation.z = 0; this.head.rotation.y = 0; this._posed = false; }
+  clearPhoto() { if (this.quad) return; this.setSmile(false); this.torso.rotation.y = 0; this.arms[1].rotation.z = 0; this.head.rotation.y = 0; this._posed = false; }
   dispose() { scene.remove(this.root); disposeTree(this.root); this.label.remove(); clearTimeout(this.nodTimer); clearTimeout(this.sayTimer); }
 }
 
@@ -2422,6 +2633,7 @@ const me = {
   color: Number.isInteger(saved.color) && saved.color >= 0 && saved.color < COLORS.length ? saved.color : 0,
   gl: saved.gl === true,
   kind: own(KINDS, saved.kind) ? saved.kind : 'eagle',
+  fk: own(FARM_KINDS, saved.fk) ? saved.fk : null, // 농장 동물 (처음엔 아직 안 골랐음)
   task: own(TASKS, migrateTask(saved.task)) ? migrateTask(saved.task) : 'thesis',
   seat: null, mode: 'break', since: Date.now(), nod: 0, angry: 0, joinedAt: 0, joined: false, wantSeat: null, streakDone: 0, napT: null, fire: 0,
   todayMs: 0, segStart: null, dayKey: dayKey(), say: null,
@@ -2432,8 +2644,11 @@ let myStats = null, statsDirty = false, statsTimer = null, myLv = 0, attLoaded =
 let myAtt = lsGet(ATT_LS) || { days: {} };
 if (!myAtt.days || typeof myAtt.days !== 'object') myAtt.days = {};
 me.todayMs = Number(myAtt.days[me.dayKey]?.focusMs) || 0;
-function saveProfile() { lsSet('jsdsr-profile', { name: me.name, color: me.color, kind: me.kind, gl: !!me.gl, task: me.task, cc: me.cc, major: me.major }); }
-function saveLook() { saveProfile(); try { sessionStorage.removeItem('jsdsr-prof-' + myUid); } catch {} if (db && myUid && auth.ok) db.doc('profiles/' + myUid).set({ kind: me.kind, color: me.color, gl: !!me.gl }, { merge: true }).catch(() => {}); publishName(); persist(); publish(); }
+// 지금 방에서 보이는 내 캐릭터: 농장에서는 농장 동물, 그 밖에서는 연구소 캐릭터
+const FARM_DEFAULT = Object.keys(FARM_KINDS);
+function curKind() { return IS_FARM ? (me.fk || FARM_DEFAULT[[...(me.name || 'x')].reduce((a, c) => a + c.charCodeAt(0), 0) % FARM_DEFAULT.length]) : me.kind; }
+function saveProfile() { lsSet('jsdsr-profile', { name: me.name, color: me.color, kind: me.kind, fk: me.fk, gl: !!me.gl, task: me.task, cc: me.cc, major: me.major }); }
+function saveLook() { saveProfile(); try { sessionStorage.removeItem('jsdsr-prof-' + myUid); } catch {} if (db && myUid && auth.ok) db.doc('profiles/' + myUid).set({ kind: me.kind, ...(me.fk ? { fk: me.fk } : {}), color: me.color, gl: !!me.gl }, { merge: true }).catch(() => {}); publishName(); persist(); publish(); }
 
 let room = null, myPeer = null, roomLive = false, db = null, myUid = null, dbWritable = true;
 let FB = null, OWNER_UID = '', pendingSignup = null;
@@ -2468,7 +2683,7 @@ function sanitize(o) {
   return {
     seat, color, say,
     name: (typeof o.name === 'string' && clean(o.name)) || $t('익명 독수리'),
-    kind: own(KINDS, o.kind) ? o.kind : 'eagle',
+    kind: own(ALL_KINDS, o.kind) ? o.kind : 'eagle',
     task: own(TASKS, o.task) ? o.task : 'thesis',
     mode: o.mode === 'break' ? 'break' : 'focus',
     since: Number.isFinite(o.since) ? Math.min(o.since, Date.now()) : Date.now(),
@@ -2487,7 +2702,7 @@ function sanitize(o) {
 }
 function myPresence() {
   return me.joined && me.seat !== null
-    ? { v: 1, gl: !!me.gl, lv: myLv || 1, name: me.name, color: me.color, kind: me.kind, task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major, napT: me.mode === 'break' ? me.napT : null, fire: me.fire || 0 }
+    ? { v: 1, gl: !!me.gl, lv: myLv || 1, name: me.name, color: me.color, kind: curKind(), task: me.task, seat: me.seat, mode: me.mode, since: me.since, nod: me.nod, angry: me.angry, joinedAt: me.joinedAt, todayMs: Math.round(me.todayMs), segStart: me.segStart, say: me.say, cc: me.cc, mj: me.major, napT: me.mode === 'break' ? me.napT : null, fire: me.fire || 0 }
     : { v: 0, seat: null };
 }
 function publish() { if (room && roomLive) room.presence(myPresence()).catch(() => {}); refresh(); }
@@ -2581,7 +2796,7 @@ function persist() {
   const d = myAtt.days[me.dayKey] || {};
   myAtt.days[me.dayKey] = { ...d, focusMs: Math.round(me.todayMs), firstIn: d.firstIn || me.joinedAt || Date.now(), lastSeen: Date.now() };
   const keys = Object.keys(myAtt.days).sort(); while (keys.length > 120) delete myAtt.days[keys.shift()];
-  myAtt.name = me.name; myAtt.color = me.color; myAtt.kind = me.kind;
+  myAtt.name = me.name; myAtt.color = me.color; myAtt.kind = curKind();
   lsSet(ATT_LS, myAtt);
   writeAtt(); saveStats();
 }
@@ -2589,7 +2804,7 @@ function writeAtt() {
   if (!db || !myUid || !dbWritable || !auth.ok || !roomReady) return;
   if (attWriting) { attPending = true; return; }
   attWriting = true;
-  const mine = { name: me.name, color: me.color, kind: me.kind, cc: me.cc || '', days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 };
+  const mine = { name: me.name, color: me.color, kind: curKind(), cc: me.cc || '', days: myAtt.days, careWater: myAtt.careWater || 0, careFeed: myAtt.careFeed || 0 };
   attDocs.set(myUid, { ...mine, days: { ...myAtt.days } });
   attDone = db.doc(RP + 'att/' + myUid).set(mine)
     .catch(e => { if (e && e.code === 'invalid_argument') { dbWritable = false; renderRoster(); } })
@@ -2619,14 +2834,14 @@ function refresh() {
   const list = seatedList();
   const keep = new Set();
   let napKey = null, napT = Infinity;
-  if (!IS_LIB) for (const it of list) if (it.s.mode === 'break' && it.s.napT && it.s.napT < napT) { napT = it.s.napT; napKey = it.key; }
+  if (!IS_PUB) for (const it of list) if (it.s.mode === 'break' && it.s.napT && it.s.napT < napT) { napT = it.s.napT; napKey = it.key; }
   for (const it of list) {
     keep.add(it.key);
     let st = students.get(it.key);
     if (!st) { st = new Student(it.key); students.set(it.key, st); if (!it.isMe && toastReady && !known.has(it.key)) toast($tt(`${it.s.name} 님이 벤치에 앉았어요.`, `${it.s.name} sat down at the bench.`)); }
     st.sync(it.s, it.isMe, it.isMe ? auth.isDev : !!(devId && it.by && it.by === devId)); st.nap = it.key === napKey; st.by = it.by;
     const byU = it.isMe ? myUid : it.by; st.by = byU; if (byU && !it.isMe) wantNames([byU]);
-    st.setCap(!!(ROOM && ROOM.owner && ROOM.key !== 'vip' && !isLibKey(ROOM.key) && byU && byU === ROOM.owner));
+    st.setCap(!!(ROOM && ROOM.owner && ROOM.key !== 'vip' && !isPubKey(ROOM.key) && byU && byU === ROOM.owner));
     const lvN = it.isMe ? (myLv || 1) : (it.s.lv || auth.names.get(byU)?.lv || 1);
     if (!st.lvb) { st.lvb = el('span', 'lvb'); st.label.querySelector('.nm').before(st.lvb); }
     const lvT = `Lv.${lvN}${lvN >= 30 ? ' 🥇' : lvN >= 20 ? ' 🥈' : lvN >= 10 ? ' 🥉' : ''}`; if (st.lvb.textContent !== lvT) { st.lvb.textContent = lvT; st._w = 0; }
@@ -2766,7 +2981,7 @@ function allPeople() {
   const map = new Map();
   for (const [uid, d] of attDocs) map.set(uid, { name: d.name, color: d.color, kind: d.kind, cc: d.cc, days: d.days || {} });
   const myKey = myUid || 'me';
-  map.set(myKey, { name: me.name || $t('나'), color: me.color, kind: me.kind, cc: me.cc, days: myAtt.days, isMe: true });
+  map.set(myKey, { name: me.name || $t('나'), color: me.color, kind: curKind(), cc: me.cc, days: myAtt.days, isMe: true });
   for (const it of seatedList()) {
     const k = it.isMe ? myKey : (it.by || it.key);
     const p = map.get(k) || { name: it.s.name, color: it.s.color, days: {} };
@@ -3102,14 +3317,14 @@ document.getElementById('napBack').addEventListener('click', () => endNap(false)
 function bedTaken() { return others().some(o => o.s && o.s.mode === 'break' && o.s.napT); }
 function goBreak(nap) {
   checkpoint(); me.mode = 'break'; me.segStart = null; me.since = Date.now(); me.streakDone = 0;
-  me.napT = nap && !IS_LIB && !bedTaken() ? Date.now() : null;
+  me.napT = nap && !IS_PUB && !bedTaken() ? Date.now() : null;
   persist(); publish(); tickTimer();
   if (me.napT) startNapView();
   toast(me.napT ? $tt('침대에서 5분 동안 낮잠 자요. 💤', 'A 5-minute nap in the bed. 💤') : $tt('자리에서 멍 때리는 중… ☕', 'Zoning out at your seat… ☕'));
 }
 // 쉬는 방법 고르기: 침대(5분) 또는 멍 때리기
 async function chooseBreak() {
-  if (IS_LIB) return false;
+  if (IS_PUB) return false;
   if (bedTaken()) {
     const r = await popup({ title: $tt('어떻게 쉴까요?', 'How do you want to rest?'), text: $tt('침대는 지금 다른 독수리가 쓰고 있어요.\n자리에서 멍 때리며 쉴게요.', 'Another eagle is using the bed right now.\nYou can zone out at your seat.'), yes: $tt('😶 멍 때리기', '😶 Zone out'), no: $tt('취소', 'Cancel') });
     return r === true ? false : null;
@@ -3168,9 +3383,10 @@ function zoomTo(name) {
   if (name === 'board' && auth.isDev) toast($tt('🛠 화이트보드를 누르면 공지를 바꿀 수 있어요.', '🛠 Tap the whiteboard to edit the notice.'));
   zoomCare = name === 'plants' ? 'water' : name === 'animals' || name === 'frog' ? 'feed' : null;
   zoomAct.hidden = !zoomCare;
+  document.getElementById('vegBar').hidden = name !== 'patch';
   if (zoomCare) zoomAct.textContent = zoomCare === 'water' ? $tt('💧 물 주기', '💧 Water') : $tt('🍽 밥 주기', '🍽 Feed');
 }
-function exitBoard(skipGo) { if (!boardZoomed) return; boardZoomed = false; curZoom = null; napBack.hidden = true; controls.enablePan = false; labelsOn = true; boardBack.hidden = true; zoomAct.hidden = true; zoomCare = null; updateViewOffset(); if (!skipGo) goView(view); }
+function exitBoard(skipGo) { if (!boardZoomed) return; document.getElementById('vegBar').hidden = true; boardZoomed = false; curZoom = null; napBack.hidden = true; controls.enablePan = false; labelsOn = true; boardBack.hidden = true; zoomAct.hidden = true; zoomCare = null; updateViewOffset(); if (!skipGo) goView(view); }
 boardBack.addEventListener('click', () => exitBoard());
 function setView(v) {
   if (napLock) { toast($tt("낮잠 중이에요. 일어나려면 '현실로 돌아가기'를 눌러 주세요.", "You're napping. Press 'Back to reality' to get up.")); return; } exitBoard(true); view = v; faceMode = v === 'face'; viewBtn.textContent = VIEW_LABEL[nextView(v)]; goView(v); }
@@ -3235,7 +3451,7 @@ QC.forEach(q => q.el.addEventListener('click', () => doCare(q.kind)));
 const qcV = new THREE.Vector3();
 function updateQuickCare() {
   for (const q of QC) {
-    const ok = !IS_LIB && roomReady && me.joined && !photoMode && !boardZoomed && needLevel(q.kind) > 0 && (auth.isDev || (sessionsToday() >= 1 && careCredits() > 0));
+    const ok = !IS_PUB && roomReady && me.joined && !photoMode && !boardZoomed && needLevel(q.kind) > 0 && (auth.isDev || (sessionsToday() >= 1 && careCredits() > 0));
     let show = false;
     if (ok) { qcV.copy(q.pos).project(camera); show = qcV.z < 1 && Math.abs(qcV.x) < 0.95 && Math.abs(qcV.y) < 0.9; }
     if (q.el.hidden === show) q.el.hidden = !show;
@@ -3408,7 +3624,7 @@ function joinNow() {
   me.joined = true; me.joinedAt = Date.now(); me.mode = 'break'; me.since = Date.now(); me.streakDone = 0; me.napT = null; me.freeCare = true;
   me.seat = chooseSeat(me.wantSeat); me.segStart = null;
   toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $tt("앉았어요. '집중 시작'을 누르면 할 일을 고르고 정수리를 맞대요.", "You're seated. Press 'Start focus' to pick a task and go head-to-head."));
-  persist(); publish(); if (IS_LIB) goView(view);
+  persist(); publish(); if (IS_PUB) goView(view);
 }
 form.addEventListener('submit', e => {
   e.preventDefault();
@@ -3423,7 +3639,7 @@ form.addEventListener('submit', e => {
     toast(me.seat === null ? $t('자리가 다 찼어요. 서서 구경하는 중이에요.') : $tt("앉았어요. '집중 시작'을 누르면 정수리를 맞대요.", "You're seated. Press 'Start focus' to go head-to-head."));
   }
   persist(); closeJoin(); publish();
-  if (IS_LIB) goView(view);
+  if (IS_PUB) goView(view);
 });
 document.getElementById('cancelBtn').addEventListener('click', closeJoin);
 function leaveSeat() { if (me.joined) checkpoint(); lsSet(LIVE_LS, null); me.segStart = null; me.joined = false; me.seat = null; me.say = null; publish(); }
@@ -3431,20 +3647,20 @@ document.getElementById('leaveBtn').addEventListener('click', () => { closeJoin(
 document.getElementById('editBtn').addEventListener('click', () => openChar());
 const charEl = document.getElementById('charDlg'), charForm = document.getElementById('charForm');
 COLORS.forEach((c, i) => { const l = el('label'); l.style.background = c; l.title = COLOR_NAMES[i]; const inp = el('input'); inp.type = 'radio'; inp.name = 'color'; inp.value = i; inp.id = 'color' + i; inp.setAttribute('aria-label', COLOR_NAMES[i]); l.appendChild(inp); document.getElementById('colorSwatches').appendChild(l); });
-chips(document.getElementById('kindChips'), 'kind', KINDS, v => v);
+chips(document.getElementById('kindChips'), 'kind', IS_FARM ? FARM_KINDS : KINDS, v => v);
 function openChar() {
   charForm.querySelector(`input[name=color][value="${me.color}"]`).checked = true;
-  charForm.querySelector(`input[name=kind][value="${me.kind}"]`).checked = true;
+  const kin = charForm.querySelector(`input[name=kind][value="${curKind()}"]`); if (kin) kin.checked = true;
   document.getElementById('glassChk').checked = !!me.gl;
   charEl.classList.add('open');
 }
 function closeChar() { charEl.classList.remove('open'); }
 // 고르는 동안 시약 창고의 내 캐릭터가 바로 바뀌어요
 charForm.addEventListener('change', () => { if (typeof storePreview === 'function') storePreview(lookFromForm()); });
-function lookFromForm() { const fd = new FormData(charForm), c = Number(fd.get('color')); return { kind: own(KINDS, String(fd.get('kind'))) ? String(fd.get('kind')) : 'eagle', color: c >= 0 && c < COLORS.length ? c : 0, gl: document.getElementById('glassChk').checked }; }
+function lookFromForm() { const fd = new FormData(charForm), c = Number(fd.get('color')); return { kind: own(IS_FARM ? FARM_KINDS : KINDS, String(fd.get('kind'))) ? String(fd.get('kind')) : curKind(), color: c >= 0 && c < COLORS.length ? c : 0, gl: document.getElementById('glassChk').checked }; }
 charForm.addEventListener('submit', e => {
-  e.preventDefault(); const lk = lookFromForm(); me.kind = lk.kind; me.color = lk.color; me.gl = lk.gl;
-  saveLook(); closeChar(); if (typeof storePreview === 'function') storePreview(); toast($tt('캐릭터를 저장했어요. 어느 방에서든 이 모습이에요! ✨', 'Character saved. You\'ll look like this in every room! ✨'));
+  e.preventDefault(); const lk = lookFromForm(); if (IS_FARM) me.fk = lk.kind; else me.kind = lk.kind; me.color = lk.color; me.gl = lk.gl;
+  saveLook(); closeChar(); if (typeof storePreview === 'function') storePreview(); toast(IS_FARM ? $tt('농장 동물을 저장했어요. 농장에서는 이 모습이에요! 🌼', 'Farm animal saved. This is you on the farm! 🌼') : $tt('캐릭터를 저장했어요. 연구소와 도서관에서 이 모습이에요! ✨', 'Character saved. You\'ll look like this in labs and the library! ✨'));
 });
 document.getElementById('charCancel').addEventListener('click', () => { closeChar(); if (typeof storePreview === 'function') storePreview(); });
 
@@ -3555,7 +3771,7 @@ async function handleUser(user, isNew) {
   auth.acct = { nick: clean(prof.nick) || $t('익명 독수리'), createdAt: prof.createdAt || Date.now(), email: user.email };
   auth.ok = true; me.name = auth.acct.nick;
   if (ccOk(prof.cc)) me.cc = prof.cc; if (typeof prof.major === 'string') me.major = clean(prof.major, 20);
-  if (own(KINDS, prof.kind)) me.kind = prof.kind; if (Number.isInteger(prof.color) && prof.color >= 0 && prof.color < COLORS.length) me.color = prof.color; if (typeof prof.gl === 'boolean') me.gl = prof.gl;
+  if (own(KINDS, prof.kind)) me.kind = prof.kind; if (own(FARM_KINDS, prof.fk)) me.fk = prof.fk; if (Number.isInteger(prof.color) && prof.color >= 0 && prof.color < COLORS.length) me.color = prof.color; if (typeof prof.gl === 'boolean') me.gl = prof.gl;
   saveProfile();
   loadFeedback();
   publishName(); closeAuth(); claimSession(); startFriends(); loadStats(); setTimeout(sweepRooms, 8000);
@@ -3695,6 +3911,7 @@ function friendPlace(uid) {
   const st = fStatus.get(uid), room = st && typeof st.room === 'string' ? st.room : null;
   if (!room) return { on: true, text: $tt('🟢 접속 중 · 로비', '🟢 Online · in the lobby') };
   if (room === 'vip') return { on: true, room, text: $tt('🟢 👑 VIP 클럽에서 공부 중', '🟢 Studying in the 👑 VIP Club') };
+  if (isFarmKey(room)) return { on: true, room, join: true, text: $tt(`🟢 🌼 ${FARM_NAME}에서 공부 중`, `🟢 Studying at the 🌼 ${FARM_NAME}`) };
   if (isLibKey(room)) { const ln = clean(String(st.roomName || LIB_NAME), 20); return { on: true, room, join: true, text: $tt(`🟢 📚 ${ln}에서 공부 중`, `🟢 Studying in the 📚 ${ln}`) }; }
   return { on: true, room, join: true, text: $tt(`🟢 🔑 ${clean(String(st.roomName || room), 20)}에서 공부 중`, `🟢 Studying in 🔑 ${clean(String(st.roomName || room), 20)}`) };
 }
@@ -3862,7 +4079,7 @@ function renderFriends() {
 
 /* ---- 연구실: 새로 만들기 · 번호로 입장 · 독수리 VIP 클럽 ---- */
 const lobbyEl = document.getElementById('lobby');
-const VIP_NAME = $tt('독수리 VIP 클럽', 'Eagle VIP Club'), LIB_NAME = $tt('독수리 도서관', 'Eagle Library');
+const VIP_NAME = $tt('독수리 VIP 클럽', 'Eagle VIP Club'), LIB_NAME = $tt('독수리 도서관', 'Eagle Library'), FARM_NAME = $tt('독수리 농장', 'Eagle Farm');
 // 도서관: lib(1관), lib2, lib3… 한 곳이 100명이 차면 새 도서관을 열고, 그 뒤로는 사람이 적은 곳으로 보내요
 const LIB_CAP = 100;
 const libKey = n => n === 1 ? 'lib' : 'lib' + n;
@@ -3886,7 +4103,7 @@ const roomUrl = code => location.origin + location.pathname + '#r=' + code;
 function recentRooms() { const v = lsGet('jsdsr-rooms'); return Array.isArray(v) ? v.filter(x => x && typeof x.code === 'string').slice(0, 5) : []; }
 function rememberRoom(code, name) { lsSet('jsdsr-rooms', [{ code, name: clean(String(name || code), 20) }, ...recentRooms().filter(x => x.code !== code)].slice(0, 5)); }
 function goRoom(code, info) {
-  if (!ROOM && info && !isLibKey(code) && !IS_LIB) { if (inStore) exitStoreQuiet(); history.replaceState(null, '', '#r=' + code); rememberRoom(code, info.name); return enterRoom(info); }
+  if (!ROOM && info && !isPubKey(code) && !IS_PUB) { if (inStore) exitStoreQuiet(); history.replaceState(null, '', '#r=' + code); rememberRoom(code, info.name); return enterRoom(info); }
   if (info) cacheRoomOk(code, info);
   if (me.joined) leaveSeat(); setTimeout(() => { if (location.hash === '#r=' + code) location.reload(); else location.hash = 'r=' + code; }, me.joined ? 500 : 0); }
 async function exitLab(msg) { if (!(await confirmStop())) return false; if (msg) toast(msg); if (me.joined) leaveSeat(); try { await Promise.race([attDone, new Promise(r => setTimeout(r, 1500))]); } catch {} leaveToLobby(); }
@@ -3907,6 +4124,10 @@ function showLobby(pane = 'lbHome', msg = '') {
 // 들어갈 수 있는지 확인. join이면 일반 연구실 회원으로 등록까지
 async function checkRoom(key, join) {
   try {
+    if (isFarmKey(key)) {
+      if (RTDB && (await libCount('farm')) >= FARM_CAP) return { ok: false, msg: $tt(`농장 피크닉 테이블이 꽉 찼어요 (${FARM_CAP}명). 조금 뒤에 다시 와 주세요.`, `All farm picnic seats are taken (${FARM_CAP}). Please try again a bit later.`) };
+      return { ok: true, info: { key, name: FARM_NAME, cap: FARM_CAP, owner: OWNER_UID } };
+    }
     if (isLibKey(key)) return { ok: true, info: { key, name: libName(key), cap: LIB_CAP, owner: OWNER_UID } };
     if (key === 'vip') {
       const info = { key: 'vip', name: VIP_NAME, cap: 14, owner: OWNER_UID };
@@ -3958,11 +4179,11 @@ async function routeAfterLogin() {
 async function enterRoom(info) {
   if (ATT_LS !== 'jsdsr-att-' + info.key) { ATT_LS = 'jsdsr-att-' + info.key; myAtt = lsGet(ATT_LS) || { days: {} }; me.todayMs = Number(myAtt.days[me.dayKey]?.focusMs) || 0; }
   setStatus(info);
-  ROOM = info; RP = info.key === 'vip' ? '' : info.key === 'lib' ? 'library/main/' : isLibKey(info.key) ? `library/${info.key}/` : `rooms/${info.key}/`; roomReady = true;
+  ROOM = info; RP = info.key === 'vip' ? '' : info.key === 'lib' ? 'library/main/' : isFarmKey(info.key) ? 'library/lib99/' /* 농장 기록: 지금 Firestore 규칙이 허용하는 자리 */ : isLibKey(info.key) ? `library/${info.key}/` : `rooms/${info.key}/`; roomReady = true;
   rememberRoom(info.key, info.name);
   document.getElementById('roomChip').hidden = false;
-  document.getElementById('roomName').textContent = info.key === 'vip' ? `👑 ${VIP_NAME}` : isLibKey(info.key) ? `📚 ${libName(info.key)}` : `🔑 ${info.name} · ${info.key}`;
-  document.getElementById('roomCopy').hidden = info.key === 'vip' || isLibKey(info.key);
+  document.getElementById('roomName').textContent = info.key === 'vip' ? `👑 ${VIP_NAME}` : isFarmKey(info.key) ? `🌼 ${FARM_NAME}` : isLibKey(info.key) ? `📚 ${libName(info.key)}` : `🔑 ${info.name} · ${info.key}`;
+  document.getElementById('roomCopy').hidden = info.key === 'vip' || isPubKey(info.key);
   subscribeRoom();
   await loadMyRecords();
   lobbyEl.classList.remove('open'); closeAuth();
@@ -3994,8 +4215,8 @@ function subscribeRoom() {
     }
     renderChat();
   }, () => {});
-  if (ROOM.key !== 'vip' && !isLibKey(ROOM.key)) { touchRoom(); setInterval(touchRoom, 10 * 60000); }
-  if (ROOM.key !== 'vip' && !isLibKey(ROOM.key)) db.doc('rooms/' + ROOM.key).onSnapshot(sn => {
+  if (ROOM.key !== 'vip' && !isPubKey(ROOM.key)) { touchRoom(); setInterval(touchRoom, 10 * 60000); }
+  if (ROOM.key !== 'vip' && !isPubKey(ROOM.key)) db.doc('rooms/' + ROOM.key).onSnapshot(sn => {
     if (sn.exists || roomClosing) return;
     roomClosing = true; dropRecent(ROOM.key); if (me.joined) leaveSeat(); setPanel(null);
     toast($tt('💥 연구실이 폭파됐어요. 로비로 돌아가요.', '💥 This lab blew up. Back to the lobby.'));
@@ -4011,6 +4232,7 @@ for (let n = 2; n <= 14; n++) { const o = el('option', '', $tt(`${n}명`, `${n} 
 document.getElementById('lbCreate').addEventListener('click', () => { lbShow('lbCreatePane'); document.getElementById('lbName').focus(); });
 document.getElementById('lbEnter').addEventListener('click', () => { lbShow('lbEnterPane'); document.getElementById('lbCodeIn').focus(); });
 document.getElementById('lbVip').addEventListener('click', () => tryEnter('vip'));
+document.getElementById('lbFarm').addEventListener('click', () => tryEnter('farm'));
 document.getElementById('lbLib').addEventListener('click', async () => { lbShow('lbHome', $tt('자리가 넉넉한 도서관을 찾는 중…', 'Finding a library with free seats…'), true); tryEnter(await pickLibrary()); });
 lobbyEl.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => lbShow('lbHome')));
 let madeCode = null, madeInfo = null;
@@ -4071,7 +4293,7 @@ document.getElementById('doorExit').addEventListener('click', () => exitLab($tt(
 // 연구실 탈퇴. 실장이 나가면 연구실 자체가 사라짐
 let roomClosing = false;
 const ROOM_TTL = 24 * 3600000;
-function touchRoom() { if (ROOM && ROOM.key !== 'vip' && !isLibKey(ROOM.key) && !roomClosing) db.doc('rooms/' + ROOM.key).set({ lastActive: Date.now() }, { merge: true }).catch(() => {}); }
+function touchRoom() { if (ROOM && ROOM.key !== 'vip' && !isPubKey(ROOM.key) && !roomClosing) db.doc('rooms/' + ROOM.key).set({ lastActive: Date.now() }, { merge: true }).catch(() => {}); }
 function dropRecent(code) { lsSet('jsdsr-rooms', recentRooms().filter(x => x.code !== code)); }
 // 24시간 동안 아무도 없던 연구실 자동 폭파: 누군가 로그인할 때(브라우저마다 1시간에 한 번) 오래된 방을 찾아서 지워요
 async function sweepRooms() {
@@ -4094,7 +4316,7 @@ async function wipeRoom(code) {
   await db.doc('rooms/' + code).delete();
 }
 document.getElementById('roomQuit').addEventListener('click', async e => {
-  const b = e.currentTarget; if (!ROOM || ROOM.key === 'vip' || isLibKey(ROOM.key)) return;
+  const b = e.currentTarget; if (!ROOM || ROOM.key === 'vip' || isPubKey(ROOM.key)) return;
   if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = $tt('정말 탈퇴', 'Really leave'); return; }
   if (!(await confirmStop())) { b.dataset.armed = ''; renderJourney(false); return; }
   b.disabled = true; const code = ROOM.key; roomClosing = true;
@@ -4209,9 +4431,9 @@ function renderJourney(full) {
   document.getElementById('devCareNote').hidden = !auth.isDev;
   document.getElementById('devTitle').textContent = auth.isDev ? $t('🛠 개발자 도구') : $tt('🔑 실장 도구 (이 연구실의 공지·네온·채팅)', '🔑 Lab manager tools (notice, neon, chat)');
   const rq = document.getElementById('roomQuit'), mgr = !!ROOM && ROOM.owner === myUid;
-  rq.hidden = !ROOM || ROOM.key === 'vip' || isLibKey(ROOM.key);
+  rq.hidden = !ROOM || ROOM.key === 'vip' || isPubKey(ROOM.key);
   if (rq.dataset.armed !== '1') rq.textContent = $tt('연구실 탈퇴', 'Leave this lab');
-  document.getElementById('jRoom').textContent = !ROOM ? $tt('아직 연구실에 들어가지 않았어요.', "You haven't entered a lab yet.") : ROOM.key === 'vip' ? `👑 ${VIP_NAME}` : isLibKey(ROOM.key) ? $tt(`📚 ${libName(ROOM.key)} · 누구나 · 최대 100명`, `📚 ${libName(ROOM.key)} · open to all · up to 100`) : $tt(`🔑 ${ROOM.name} · 번호 ${ROOM.key} · 정원 ${ROOM.cap}명${ROOM.owner === myUid ? ' · 내가 실장' : ''}`, `🔑 ${ROOM.name} · code ${ROOM.key} · up to ${ROOM.cap}${ROOM.owner === myUid ? ' · you manage it' : ''}`);
+  document.getElementById('jRoom').textContent = !ROOM ? $tt('아직 연구실에 들어가지 않았어요.', "You haven't entered a lab yet.") : ROOM.key === 'vip' ? `👑 ${VIP_NAME}` : isFarmKey(ROOM.key) ? $tt(`🌼 ${FARM_NAME} · 누구나 · 최대 ${FARM_CAP}명`, `🌼 ${FARM_NAME} · open to all · up to ${FARM_CAP}`) : isLibKey(ROOM.key) ? $tt(`📚 ${libName(ROOM.key)} · 누구나 · 최대 100명`, `📚 ${libName(ROOM.key)} · open to all · up to 100`) : $tt(`🔑 ${ROOM.name} · 번호 ${ROOM.key} · 정원 ${ROOM.cap}명${ROOM.owner === myUid ? ' · 내가 실장' : ''}`, `🔑 ${ROOM.name} · code ${ROOM.key} · up to ${ROOM.cap}${ROOM.owner === myUid ? ' · you manage it' : ''}`);
   document.querySelectorAll('#journey [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === (LANG || 'ko')));
   if (full) {
     document.getElementById('renameInput').value = auth.ok ? me.name : '';
@@ -4325,7 +4547,7 @@ async function editNotice() {
   catch (err) { toast($t('저장하지 못했어요. 잠시 뒤 다시 해 주세요.') + errTag(err)); }
 }
 async function editNeonPopup() {
-  if (!auth.ok || !roomReady || IS_LIB) return;
+  if (!auth.ok || !roomReady || IS_PUB) return;
   const v = await popup({ title: $tt('네온사인 바꾸기', 'Change the neon sign'), text: $tt('이 연구실 사람 누구나 바꿀 수 있어요. (16자까지)', 'Anyone in this lab can change it. (up to 16 characters)'), input: neonText, yes: $tt('바꾸기', 'Change'), no: $tt('취소', 'Cancel') });
   if (typeof v === 'string') setNeon(v);
 }
@@ -4497,7 +4719,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   if (inStore) { const sh = ray.intersectObjects(storeHits, false)[0]; if (sh) openStoreItem(sh.object.userData.store); return; }
-  const hit = ray.intersectObjects(IS_LIB ? [...stools, ...doorHits] : [wbMesh, neon, ...binHits, ...doorHits, ...careHits, ...focusHits, ...stools, benchTop], false)[0];
+  const hit = ray.intersectObjects(IS_PUB ? [...stools, ...doorHits, ...farmHits] : [wbMesh, neon, ...binHits, ...doorHits, ...careHits, ...focusHits, ...stools, benchTop], false)[0];
   if (!hit) return;
   const ud = hit.object.userData;
   if (ud.neon) { editNeonPopup(); return; }
@@ -4505,24 +4727,35 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (ud.focus === 'board' && boardZoomed && curZoom === 'board') { if (auth.isDev) editNotice(); return; }
   if (ud.focus) { zoomTo(ud.focus); return; }
   if (ud.door) { toggleDoor(); return; }
+  if (ud.barn) { exitLab($tt('🏚 헛간 문을 열고 로비로 돌아왔어요. 오늘 기록은 저장됐어요.', '🏚 You went through the barn back to the lobby. Today\'s record is saved.')); return; }
   if (ud.seat === undefined) return;
   const seat = hit.object.userData.seat;
   if (takenSeats().has(seat) || seat === me.seat) return;
   if (!me.joined) { me.wantSeat = seat; joinNow(); return; }
   if (me.seat === null && me.mode === 'focus') me.segStart = Date.now();
-  me.seat = seat; publish(); toast($t('자리를 옮겼어요.')); if (view === 'face' || IS_LIB) goView(view);
+  me.seat = seat; publish(); toast($t('자리를 옮겼어요.')); if (view === 'face' || IS_PUB) goView(view);
 });
 
 /* ================= 카메라 ================= */
 function isPortrait() { return innerHeight > innerWidth * 1.05; }
 function viewSpec(kind) {
   const aspect = innerWidth / innerHeight, tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), tanH = tanV * aspect, portrait = isPortrait();
-  if (IS_LIB && kind !== 'face') {
+  if (IS_FARM && kind === 'face') {
+    // 더미 위 건너편에서 풀 뜯는 내 동물의 얼굴을 내려다봐요
+    const st = SEATS[me.seat ?? 0], dx = Math.cos(st.a), dz = Math.sin(st.a);
+    const target = new THREE.Vector3(st.cx + dx * 0.55, 0.45, st.cz + dz * 0.55);
+    return { target, pos: new THREE.Vector3(st.cx - dx * 0.5, 2.3, st.cz - dz * 0.5) };
+  }
+  if (IS_PUB && kind !== 'face') {
     const st = me.seat !== null && me.seat !== undefined ? SEATS[me.seat] : null;
     if (kind === 'crown') {
-      const halfLong = 3.0, halfShort = 1.6, m = portrait ? 1.3 : 1.25;
+      const halfLong = IS_FARM ? 2.1 : 3.0, halfShort = IS_FARM ? 2.1 : 1.6, m = portrait ? 1.3 : 1.25;
       const d = (portrait ? Math.max(halfLong / tanV, halfShort / tanH) : Math.max(halfLong / tanH, halfShort / tanV)) * m;
-      return { r: d, phi: 0.2, theta: portrait ? Math.PI / 2 : 0, target: new THREE.Vector3(st ? st.x : 0, 1.4, st ? st.row : 0) };
+      return { r: d, phi: 0.2, theta: portrait ? Math.PI / 2 : 0, target: new THREE.Vector3(st ? (IS_FARM ? st.cx : st.x) : 0, IS_FARM ? 0.5 : 1.4, st ? st.row : 0) };
+    }
+    if (IS_FARM) { // 앞쪽(문 쪽)에서 테이블 너머로 논·밭·유채꽃밭이 보이게
+      const d = 10.5 / Math.min(tanV, tanH) * (portrait ? 0.95 : 0.8);
+      return { r: d, phi: portrait ? 1.05 : 1.12, theta: portrait ? 0.1 : 0.12, target: new THREE.Vector3(0.4, 0.4, -1.4) };
     }
     const d = 8.6 / Math.min(tanV, tanH) * (portrait ? 0.95 : 0.8);
     return { r: d, phi: portrait ? 0.95 : 1.0, theta: portrait ? -Math.PI / 2 + 0.35 : -0.6, target: new THREE.Vector3(0, 0.8, 0) };
@@ -4539,7 +4772,7 @@ function viewSpec(kind) {
       const sx = Math.sign(st.x), target = new THREE.Vector3(st.x - sx * 0.35, 1.5, 0);
       return { target, pos: target.clone().add(new THREE.Vector3(-sx * 2.6, 1.6, 0)) };
     }
-    const sz = Math.sign(st.z - rowZ), target = new THREE.Vector3(portrait || IS_LIB ? st.x : 0, 1.5, rowZ + (st.z - rowZ) * 0.85);
+    const sz = Math.sign(st.z - rowZ), target = new THREE.Vector3(portrait || IS_PUB ? st.x : 0, 1.5, rowZ + (st.z - rowZ) * 0.85);
     const d = portrait ? 3.0 : Math.max(3.2, 2.3 / tanH);
     return { target, pos: target.clone().add(new THREE.Vector3(0, 0.62, -sz).normalize().multiplyScalar(d)) };
   }
@@ -4660,6 +4893,306 @@ if (IS_LIB) {
     const hit = new THREE.Mesh(cyl(0.36, 0.36, 1.4, 10), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = 0.7; hit.userData.seat = k; g.add(hit); stools.push(hit);
   });
   const rb = document.getElementById('rosterBtn'); rb.innerHTML = rb.innerHTML.replace('/14', '/100').replace('벤치', '도서관').replace('Bench', 'Library');
+  document.getElementById('careBtn').hidden = true;
+}
+
+if (IS_FARM) {
+  // ===== 독수리 농장: 논과 밭 사이 피크닉 테이블, 뒤로는 유채꽃밭 =====
+  for (const c of scene.children.slice()) if (!PRE_ROOM.has(c)) c.visible = false;
+  lamp.visible = neonLight.visible = windowLight.visible = false;
+  stools.length = 0;
+  const F = new THREE.Group(); scene.add(F);
+  const R2 = mulberry(20261127);
+  // 하늘과 빛: 창밖과 같은 시간대 (낮 · 노을 18~20시 · 밤 20~6시)
+  const FARM_SKY = {
+    day: { sky: ['#5d9ce0', '#cfe6f7'], fog: '#cfe2ec', hemi: ['#eef6ff', '#6f8a4a', 1.15], sun: ['#fff4dc', 2.3], pos: [-14, 22, 10], lights: 0 },
+    sunset: { sky: ['#3b4a8a', '#f2a477'], fog: '#e8a98c', hemi: ['#ffd9c2', '#6a5a3a', 0.85], sun: ['#ffa463', 1.9], pos: [-26, 7, -14], lights: 0.7 },
+    night: { sky: ['#070c24', '#24305f'], fog: '#161d3a', hemi: ['#7d8ac0', '#1c2016', 0.32], sun: ['#a9b8ff', 0.28], pos: [10, 20, 8], lights: 1 },
+  };
+  const hemi = new THREE.HemisphereLight('#eef6ff', '#6f8a4a', 1.15); F.add(hemi);
+  const sun = new THREE.DirectionalLight('#fff4dc', 2.3); sun.target.position.set(0, 0, 0); F.add(sun, sun.target);
+  sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 70 }); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03;
+  let farmPh = winPhase();
+  const skyTex = canvasTex(512, 256, (g, w, h) => {
+    const P = FARM_SKY[farmPh], gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, P.sky[0]); gr.addColorStop(1, P.sky[1]); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    const r = mulberry(5);
+    if (farmPh === 'night') { for (let i = 0; i < 150; i++) { g.fillStyle = `rgba(255,255,240,${0.3 + r() * 0.7})`; const z = r() < 0.12 ? 1.6 : 0.9; g.fillRect(r() * w, r() * h * 0.7, z, z); } g.fillStyle = '#f4efd4'; g.beginPath(); g.arc(w * 0.76, h * 0.2, 9, 0, 7); g.fill(); g.fillStyle = P.sky[0]; g.beginPath(); g.arc(w * 0.76 + 4, h * 0.2 - 3, 8.5, 0, 7); g.fill(); }
+    else if (farmPh === 'day') { g.fillStyle = 'rgba(255,255,255,.55)'; for (const [cx, cy] of [[90, 60], [300, 40], [430, 85]]) for (let k = 0; k < 6; k++) { g.beginPath(); g.ellipse(cx + (r() - 0.5) * 70, cy + (r() - 0.5) * 12, 18 + r() * 20, 7 + r() * 6, 0, 0, 7); g.fill(); } }
+    else { const rg = g.createRadialGradient(w * 0.2, h * 0.92, 4, w * 0.2, h * 0.92, 150); rg.addColorStop(0, 'rgba(255,230,160,.95)'); rg.addColorStop(1, 'rgba(255,170,110,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, h); }
+  });
+  scene.background = skyTex; scene.fog = new THREE.Fog('#cfe2ec', 22, 55);
+  const strLights = [], bulbs = [];
+  const farmPhase = ph => {
+    farmPh = ph; const P = FARM_SKY[ph];
+    hemi.color.set(P.hemi[0]); hemi.groundColor.set(P.hemi[1]); hemi.intensity = P.hemi[2];
+    sun.color.set(P.sun[0]); sun.intensity = P.sun[1]; sun.position.set(...P.pos);
+    scene.fog.color.set(P.fog); redraw(skyTex);
+    for (const l of strLights) l.intensity = 3.2 * P.lights; for (const b of bulbs) b.material.color.set(P.lights ? '#ffd27a' : '#e9e2c8');
+  };
+  winPhaseCbs.push(farmPhase);
+  // 땅: 잔디, 테이블 쪽은 짧게 깎은 잔디, 문에서 오는 흙길
+  const grassTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#7fae4e'; g.fillRect(0, 0, w, h); const r = mulberry(9); for (let k = 0; k < 2200; k++) { g.fillStyle = ['rgba(60,110,40,.35)', 'rgba(150,200,90,.35)', 'rgba(95,140,55,.4)'][k % 3]; g.fillRect(r() * w, r() * h, 1.5, 3 + r() * 3); } });
+  grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping; grassTex.repeat.set(30, 30);
+  const ground = mesh(new THREE.PlaneGeometry(140, 140), std('#ffffff', { map: grassTex, roughness: 1 }), 0, 0, 0, F); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+  const lawn = mesh(new THREE.CircleGeometry(6.6, 40), std('#9cc463', { roughness: 1 }), 0, 0.004, 0, F); lawn.rotation.x = -Math.PI / 2; lawn.scale.set(0.9, 1.45, 1); lawn.receiveShadow = true;
+  const dirt = std('#b08a5a', { roughness: 1 });
+  const path = mesh(new THREE.PlaneGeometry(1.3, 5), dirt, 0, 0.006, 8.3, F); path.rotation.x = -Math.PI / 2; path.receiveShadow = true;
+  // --- 옥수수밭 (왼쪽): 사람 키보다 큰 옥수수가 줄지어 서 있어요
+  const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), s4 = new THREE.Vector3(1, 1, 1), v4 = new THREE.Vector3(), e4 = new THREE.Euler(), c4 = new THREE.Color();
+  const px0 = -10.6;
+  // 잎 하나: 가운데 잎맥이 있는 길쭉한 잎 (텍스처로 모양을 오려요)
+  const cornLeafTex = canvasTex(64, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#3f7f2c'); gr.addColorStop(0.5, '#6fae45'); gr.addColorStop(1, '#3f7f2c'); g.fillStyle = gr; g.beginPath(); g.moveTo(w / 2, h); g.quadraticCurveTo(w * 0.02, h * 0.55, w / 2, 0); g.quadraticCurveTo(w * 0.98, h * 0.55, w / 2, h); g.fill(); g.strokeStyle = 'rgba(220,240,170,.6)'; g.lineWidth = 2; g.beginPath(); g.moveTo(w / 2, h); g.lineTo(w / 2, 4); g.stroke(); });
+  const leafGeo = new THREE.PlaneGeometry(0.16, 0.85, 1, 6); { const pa = leafGeo.attributes.position; for (let k = 0; k < pa.count; k++) { const y = pa.getY(k) + 0.425; pa.setY(k, y); pa.setZ(k, -Math.pow(y / 0.85, 2) * 0.32); } leafGeo.computeVertexNormals(); }
+  const leafMat = new THREE.MeshStandardMaterial({ map: cornLeafTex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.8 });
+  const cornPlants = [];
+  for (let xi = 0; xi < 14; xi++) for (let zi = 0; zi < 30; zi++) { const x = px0 - 4.2 + xi * 0.62 + (R2() - 0.5) * 0.1, z = -6.4 + zi * 0.44 + (R2() - 0.5) * 0.12; cornPlants.push([x, z, 1.9 + R2() * 0.6]); }
+  const nC = cornPlants.length, LPP = 7;
+  const stalkI = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.018, 0.028, 1, 6), std('#7a9e43', { roughness: 0.85 }), nC);
+  const leafI = new THREE.InstancedMesh(leafGeo, leafMat, nC * LPP);
+  const earI = new THREE.InstancedMesh(new THREE.CapsuleGeometry(0.035, 0.14, 4, 8), std('#9cbf5a', { roughness: 0.8 }), nC);
+  const silkI = new THREE.InstancedMesh(new THREE.ConeGeometry(0.03, 0.08, 6), std('#c9874a', { roughness: 1 }), nC);
+  const tasI = new THREE.InstancedMesh(new THREE.ConeGeometry(0.012, 0.32, 4), std('#d8c27a', { roughness: 1 }), nC * 4);
+  cornPlants.forEach(([x, z, h], n) => {
+    q4.identity(); v4.set(x, h / 2, z); s4.set(1, h, 1); stalkI.setMatrixAt(n, m4.compose(v4, q4, s4));
+    for (let k = 0; k < LPP; k++) {
+      const y = 0.25 + k / LPP * (h - 0.45), yaw = k * 2.4 + R2() * 0.6, tilt = 0.5 + R2() * 0.35;
+      e4.set(tilt, yaw, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, y, z); const sc = 0.75 + (1 - Math.abs(k / LPP - 0.45)) * 0.45; s4.set(sc, sc, sc);
+      leafI.setMatrixAt(n * LPP + k, m4.compose(v4, q4, s4)); c4.setHSL(0.27 + R2() * 0.04, 0.45, 0.42 + R2() * 0.12); leafI.setColorAt(n * LPP + k, c4);
+    }
+    const ey = h * 0.5, ea = R2() * 6.28; e4.set(0.45, ea, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x + Math.sin(ea) * 0.05, ey, z + Math.cos(ea) * 0.05); s4.set(1, 1, 1); earI.setMatrixAt(n, m4.compose(v4, q4, s4));
+    v4.set(x + Math.sin(ea) * 0.1, ey + 0.1, z + Math.cos(ea) * 0.1); silkI.setMatrixAt(n, m4.compose(v4, q4, s4));
+    for (let k = 0; k < 4; k++) { e4.set(0.5 + R2() * 0.4, k * 1.57 + R2(), 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, h + 0.1, z); tasI.setMatrixAt(n * 4 + k, m4.compose(v4, q4, s4)); }
+  });
+  stalkI.castShadow = leafI.castShadow = true; leafI.receiveShadow = true; F.add(stalkI, leafI, earI, silkI, tasI);
+  // 옥수수밭 흙바닥
+  const cornSoil = mesh(new THREE.PlaneGeometry(9.2, 13.6), std('#8a6a44', { roughness: 1 }), px0 - 0.15, 0.006, 0, F); cornSoil.rotation.x = -Math.PI / 2; cornSoil.receiveShadow = true;
+  // 허수아비
+  const scare = new THREE.Group(); scare.position.set(px0 + 4.9, 0, 1.2); scare.rotation.y = 0.4; F.add(scare);
+  mesh(cyl(0.04, 0.04, 1.9, 8), dirt, 0, 0.95, 0, scare); mesh(cyl(0.03, 0.03, 1.2, 8), dirt, 0, 1.45, 0, scare).rotation.z = Math.PI / 2;
+  mesh(box(0.55, 0.55, 0.22), std('#c0533a', { roughness: 1 }), 0, 1.35, 0, scare); mesh(sph(0.19, 14, 10), std('#e8d6a8', { roughness: 1 }), 0, 1.8, 0, scare);
+  const hat = mesh(cyl(0.12, 0.3, 0.14, 16), std('#d9b864', { roughness: 1 }), 0, 1.98, 0, scare);
+  for (const sx of [1, -1]) mesh(sph(0.022, 6, 4), EYE, sx * 0.06, 1.83, 0.17, scare);
+  // --- 텃밭 (오른쪽): 흙 이랑마다 다른 채소
+  const soil = std('#7a5534', { roughness: 1 }), leaf = std('#4f9a3a', { roughness: 0.8 }), leaf2 = std('#7cc04e', { roughness: 0.8 });
+  const fx0 = 10.4, rows = [-5.2, -3.6, -2.0, -0.4, 1.2, 2.8, 4.4], vegPlants = [];
+  rows.forEach((rz, k) => {
+    const bed = mesh(box(7.4, 0.22, 1.15), soil, fx0, 0.11, rz, F); bed.receiveShadow = true;
+    vegPlants[k] = [];
+    for (let x = fx0 - 3.2; x <= fx0 + 3.21; x += 0.8) {
+      const g = new THREE.Group(); g.position.set(x + (R2() - 0.5) * 0.08, 0.22, rz + (R2() - 0.5) * 0.1); g.rotation.y = R2() * 6; g.scale.setScalar(1.75); F.add(g);
+      if (k !== 3 && k !== 5) vegPlants[k].push(g);
+      if (k === 0) { // 배추
+        for (let i = 0; i < 6; i++) { const lf = mesh(sph(0.13, 10, 8), i % 2 ? leaf : leaf2, Math.sin(i) * 0.06, 0.12, Math.cos(i) * 0.06, g); lf.scale.set(0.8, 1.3, 0.5); lf.rotation.y = i; }
+      } else if (k === 1) { // 당근 잎
+        mesh(cyl(0.04, 0.01, 0.06, 8), std('#ee7a22'), 0, 0.02, 0, g); for (let i = 0; i < 5; i++) { const s2 = mesh(cyl(0.006, 0.006, 0.28, 4), leaf2, Math.sin(i * 1.3) * 0.04, 0.16, Math.cos(i * 1.3) * 0.04, g); s2.rotation.set(Math.cos(i * 1.3) * 0.4, 0, Math.sin(i * 1.3) * 0.4); }
+      } else if (k === 2) { // 상추
+        for (let i = 0; i < 7; i++) { const lf = mesh(sph(0.09, 10, 8), leaf2, Math.sin(i * 0.9) * 0.08, 0.07, Math.cos(i * 0.9) * 0.08, g); lf.scale.set(1, 0.45, 1.2); lf.rotation.y = i * 0.9; }
+      } else if (k === 3) { // 토마토 지지대
+        if (Math.round((x - fx0) / 0.8) % 2) continue;
+        vegPlants[k].push(g);
+        mesh(cyl(0.012, 0.012, 1.0, 5), dirt, 0, 0.5, 0, g); for (let i = 0; i < 5; i++) mesh(sph(0.1, 8, 6), leaf, (R2() - 0.5) * 0.2, 0.25 + i * 0.15, (R2() - 0.5) * 0.2, g).scale.set(1, 0.6, 1);
+        for (let i = 0; i < 4; i++) mesh(sph(0.045, 10, 8), std('#e23b2a', { roughness: 0.4 }), (R2() - 0.5) * 0.22, 0.3 + R2() * 0.55, (R2() - 0.5) * 0.22, g);
+      } else if (k === 4) { // 무
+        mesh(sph(0.07, 10, 8), std('#f3f3ea'), 0, 0.02, 0, g).scale.set(1, 1.3, 1); for (let i = 0; i < 4; i++) { const lf = mesh(sph(0.06, 8, 6), leaf, Math.sin(i * 1.6) * 0.07, 0.17, Math.cos(i * 1.6) * 0.07, g); lf.scale.set(0.6, 1.6, 0.4); lf.rotation.set(Math.cos(i * 1.6) * 0.5, 0, Math.sin(i * 1.6) * 0.5); }
+      } else if (k === 5) { // 호박 덩굴
+        for (let i = 0; i < 3; i++) mesh(sph(0.12, 10, 8), leaf, (R2() - 0.5) * 0.4, 0.05, (R2() - 0.5) * 0.3, g).scale.set(1.2, 0.35, 1.2);
+        if (R2() < 0.6) { const pg = new THREE.Group(); pg.position.y = 0.1; g.add(pg); vegPlants[k].push(pg); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; mesh(sph(0.085, 10, 8), std('#ef8a24', { roughness: 0.6 }), Math.sin(a) * 0.07, 0, Math.cos(a) * 0.07, pg).scale.set(0.9, 1.1, 0.9); } mesh(cyl(0.015, 0.02, 0.06, 6), std('#6b7a34'), 0, 0.1, 0, pg); }
+      } else { // 옥수수
+        mesh(cyl(0.025, 0.03, 1.5, 6), leaf, 0, 0.75, 0, g); for (let i = 0; i < 4; i++) { const lf = mesh(box(0.05, 0.5, 0.01), leaf2, Math.sin(i * 1.7) * 0.12, 0.45 + i * 0.22, Math.cos(i * 1.7) * 0.12, g); lf.rotation.set(Math.cos(i * 1.7) * 0.8, i * 1.7, Math.sin(i * 1.7) * 0.8); }
+        const ear = mesh(sph(0.05, 8, 6), std('#f2c230'), 0.05, 0.95, 0, g); ear.scale.set(0.8, 2, 0.8);
+      }
+    }
+  });
+  // 밭 옆 짚단
+  for (const [x, z, ry] of [[5.2, 9.7, 0.3], [-4.6, -9.2, 1.2]]) { const hb = mesh(cyl(0.45, 0.45, 0.75, 18), std('#e2c36a', { roughness: 1 }), x, 0.45, z, F); hb.rotation.set(Math.PI / 2, 0, ry); }
+  // --- 텃밭 누르기 → 텃밭으로 이동, 버튼으로 야채 골라 먹기
+  { const ph2 = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.9, 11.2), new THREE.MeshBasicMaterial({ visible: false })); ph2.position.set(fx0, 0.45, -0.4); ph2.userData.focus = 'patch'; F.add(ph2); farmHits.push(ph2); }
+  FOCUS.patch = { t: [fx0, 0.4, -0.4], dir: [-0.62, 0.95, 0.55], w: 8.4, h: 7.2 };
+  const VEG = [['🥬', '배추', 'cabbage'], ['🥕', '당근', 'carrot'], ['🥗', '상추', 'lettuce'], ['🍅', '토마토', 'tomato'], ['🤍', '무', 'radish'], ['🎃', '호박', 'pumpkin'], ['🌽', '옥수수', 'corn']];
+  const vegBar = document.getElementById('vegBar'); vegBar.textContent = '';
+  VEG.forEach(([em, ko, en], k) => { const b = el('button', 'pill', `${em} ${isEN ? en : ko}`); b.type = 'button'; b.addEventListener('click', () => eatVeg(k)); vegBar.appendChild(b); });
+  const flights = [];
+  function eatVeg(k) {
+    const mine = students.get('me');
+    if (!me.joined || !mine || !mine.quad) { toast($tt('먼저 풀 더미 옆에 자리를 잡아야 먹을 수 있어요. 🐄', 'Take a spot by a hay pile first, then you can eat. 🐄')); return; }
+    const left = vegPlants[k].filter(g => g.visible);
+    if (!left.length) { toast($tt(`${VEG[k][0]} ${VEG[k][1]}는 다 먹었어요. 2분 뒤에 다시 자라요!`, `${VEG[k][0]} All the ${VEG[k][2]} is gone. It grows back in 2 minutes!`)); return; }
+    const g = left[Math.floor(Math.random() * left.length)], from = new THREE.Vector3(); g.getWorldPosition(from);
+    const fly = g.clone(); fly.position.copy(from); fly.scale.setScalar(1.75); fly.quaternion.copy(g.getWorldQuaternion(new THREE.Quaternion())); scene.add(fly);
+    g.visible = false; setTimeout(() => { g.visible = true; }, 120000);
+    flights.push({ fly, from, t: 0, k });
+    exitBoard();
+  }
+  farmTick = dt => {
+    for (let i = flights.length - 1; i >= 0; i--) {
+      const f = flights[i], mine = students.get('me'); f.t += dt / 1.4;
+      const to = new THREE.Vector3(); if (mine && mine.head) mine.head.getWorldPosition(to); else to.copy(f.from);
+      const e = Math.min(1, f.t), p = f.from.clone().lerp(to, e); p.y += Math.sin(e * Math.PI) * 2.6;
+      f.fly.position.copy(p); f.fly.rotation.y += dt * 6; f.fly.scale.setScalar(1.75 * (1 - e * 0.7));
+      if (f.t >= 1) {
+        scene.remove(f.fly); flights.splice(i, 1);
+        if (mine) mine.nodT = 0;
+        me.say = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, t: Date.now(), text: $tt(`${VEG[f.k][0]} ${VEG[f.k][1]} 냠냠!`, `${VEG[f.k][0]} Nom nom ${VEG[f.k][2]}!`) };
+        publish();
+      }
+    }
+  };
+  // --- 유채꽃밭 (뒤): 노란 꽃 물결, 멀리 언덕과 나무
+  const rapeTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#b9b83a'; g.fillRect(0, 0, w, h); const r = mulberry(11); for (let k = 0; k < 2600; k++) { g.fillStyle = ['#ffe14d', '#f5d531', '#fff07a', '#8fa83a'][k % 4]; g.beginPath(); g.arc(r() * w, r() * h, 1.2 + r() * 1.8, 0, 7); g.fill(); } });
+  rapeTex.wrapS = rapeTex.wrapT = THREE.RepeatWrapping; rapeTex.repeat.set(24, 6);
+  rapeTex.repeat.set(6, 2); const rf = mesh(new THREE.PlaneGeometry(33.6, 11), std('#ffffff', { map: rapeTex, roughness: 1 }), 0, 0.02, -14.6, F); rf.rotation.x = -Math.PI / 2;
+  // 유채: 허리 높이로 자란 대가 갈라져, 가지 끝마다 네 잎 노란 꽃이 모인 꽃송이와 초록 꼬투리
+  const flTex = canvasTex(128, 128, (g, w, h) => {
+    g.clearRect(0, 0, w, h); const r = mulberry(21);
+    for (let k = 0; k < 4; k++) { const a = r() * 6.28, d = 14 + r() * 8; g.fillStyle = '#9fbf4a'; g.beginPath(); g.ellipse(64 + Math.cos(a) * d * 1.6, 70 + Math.sin(a) * d * 0.4 + 30, 3, 14, a, 0, 7); g.fill(); }
+    const fl = (cx, cy, R, col) => { g.fillStyle = col; for (let p = 0; p < 4; p++) { const a = p * Math.PI / 2 + 0.4; g.beginPath(); g.ellipse(cx + Math.cos(a) * R * 0.55, cy + Math.sin(a) * R * 0.55, R * 0.55, R * 0.38, a, 0, 7); g.fill(); } g.fillStyle = '#e0a514'; g.beginPath(); g.arc(cx, cy, R * 0.22, 0, 7); g.fill(); };
+    for (let k = 0; k < 9; k++) { const a = r() * 6.28, d = r() * 34; fl(64 + Math.cos(a) * d, 58 + Math.sin(a) * d * 0.7, 11 + r() * 6, ['#ffd91a', '#ffe23d', '#f7cf10'][k % 3]); }
+    for (let k = 0; k < 5; k++) { g.fillStyle = '#d7d94a'; g.beginPath(); g.arc(54 + r() * 20, 30 + r() * 10, 4, 0, 7); g.fill(); }
+  });
+  const flMat = new THREE.MeshStandardMaterial({ map: flTex, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.7 });
+  const rLeafTex = canvasTex(64, 128, (g, w, h) => { g.clearRect(0, 0, w, h); g.fillStyle = '#5d8f3c'; g.beginPath(); g.moveTo(w / 2, h); g.bezierCurveTo(0, h * 0.7, w * 0.1, h * 0.1, w / 2, 0); g.bezierCurveTo(w * 0.9, h * 0.1, w, h * 0.7, w / 2, h); g.fill(); g.strokeStyle = 'rgba(200,230,160,.5)'; g.lineWidth = 2; g.beginPath(); g.moveTo(w / 2, h); g.lineTo(w / 2, 6); g.stroke(); });
+  const rLeafMat = new THREE.MeshStandardMaterial({ map: rLeafTex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 });
+  const RPN = 2900, RAC = 3, flQ = new THREE.PlaneGeometry(0.26, 0.26);
+  const rStem = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.006, 0.011, 1, 4), std('#6f9a3a', { roughness: 0.9 }), RPN * RAC);
+  const rFlw = new THREE.InstancedMesh(flQ, flMat, RPN * RAC * 3), rLeaf = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.14, 0.28), rLeafMat, RPN * 2);
+  const up = new THREE.Vector3(0, 1, 0), dir = new THREE.Vector3();
+  for (let i = 0; i < RPN; i++) {
+    const x = (R2() - 0.5) * 32.6, z = -9.3 - Math.pow(R2(), 1.1) * 10.3, h = 0.85 + R2() * 0.55;
+    for (let b = 0; b < RAC; b++) {
+      // 가지: 가운데 대는 곧게, 옆 가지는 비스듬히
+      const lean = b === 0 ? (R2() - 0.5) * 0.15 : 0.25 + R2() * 0.25, yaw = R2() * 6.28, len = b === 0 ? h : h * (0.55 + R2() * 0.25), y0 = b === 0 ? 0 : h * (0.35 + R2() * 0.2);
+      dir.set(Math.sin(lean) * Math.cos(yaw), Math.cos(lean), Math.sin(lean) * Math.sin(yaw));
+      const tx = x + dir.x * len, ty = y0 + dir.y * len, tz = z + dir.z * len;
+      q4.setFromUnitVectors(up, dir); v4.set(x + dir.x * len / 2, y0 + dir.y * len / 2, z + dir.z * len / 2); s4.set(1, len, 1); rStem.setMatrixAt(i * RAC + b, m4.compose(v4, q4, s4));
+      // 꽃송이: 십자로 엇갈린 두 장 + 위를 보는 한 장
+      const sc = (b === 0 ? 1.15 : 0.85) * (0.85 + R2() * 0.4), ry = R2() * 3.14;
+      [[0, ry, 0], [0, ry + 1.57, 0], [-1.45, ry, 0]].forEach(([ax, ay], k) => { e4.set(ax, ay, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(tx, ty + (k === 2 ? 0.07 : 0.02), tz); s4.set(sc, sc, sc); const id = (i * RAC + b) * 3 + k; rFlw.setMatrixAt(id, m4.compose(v4, q4, s4)); c4.setHSL(0.13 + R2() * 0.02, 0.9, 0.55 + R2() * 0.1); rFlw.setColorAt(id, c4); });
+    }
+    for (let k = 0; k < 2; k++) { e4.set(0.6 + R2() * 0.5, R2() * 6.28, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, 0.14 + R2() * 0.2, z); s4.set(1, 1, 1); rLeaf.setMatrixAt(i * 2 + k, m4.compose(v4, q4, s4)); }
+  }
+  rFlw.castShadow = false; F.add(rStem, rFlw, rLeaf);
+  const hillM = std('#8dbb5a', { roughness: 1 }), hillM2 = std('#7aa84c', { roughness: 1 });
+  for (const [x, z, r, sy, m] of [[-30, -50, 22, 0.35, hillM], [6, -56, 26, 0.3, hillM2], [38, -48, 20, 0.38, hillM]]) mesh(sph(r, 28, 14), m, x, 0, z, F).scale.y = sy;
+  const treeM = std('#4f8a3a', { roughness: 0.9 }), trunk = std('#6a4a30', { roughness: 1 });
+  for (const [x, z, s3] of [[-19.5, -14, 1.2], [-21, -9, 1], [19.5, -13, 1.3], [22, -8, 1], [-19.5, 9, 1.1], [19.5, 10, 1.2]]) { mesh(cyl(0.12 * s3, 0.16 * s3, 1.6 * s3, 8), trunk, x, 0.8 * s3, z, F); mesh(sph(1.0 * s3, 14, 10), treeM, x, 2.1 * s3, z, F); }
+  // --- 와인색 헛간 (가까이, 오른쪽 앞): 누르면 로비로 돌아가요
+  farmHits.length = 0;
+  const barn = new THREE.Group(); barn.position.set(11.6, 0, 7.6); barn.rotation.y = -Math.PI / 2; F.add(barn);
+  const wine = std('#6e1f2c', { roughness: 0.85 }), trim = std('#f1ece2', { roughness: 0.8 }), slate = std('#3d3a3c', { roughness: 0.8 });
+  mesh(box(4.2, 2.6, 3.4), wine, 0, 1.3, 0, barn);
+  const gS = new THREE.Shape(); gS.moveTo(-2.25, 0); gS.lineTo(-1.95, 0.95); gS.lineTo(0, 1.65); gS.lineTo(1.95, 0.95); gS.lineTo(2.25, 0); gS.lineTo(-2.25, 0);
+  mesh(new THREE.ExtrudeGeometry(gS, { depth: 3.0, bevelEnabled: false }), wine, 0, 2.6, -1.5, barn);
+  const rS = new THREE.Shape(); rS.moveTo(-2.4, -0.05); rS.lineTo(-2.08, 0.98); rS.lineTo(0, 1.78); rS.lineTo(2.08, 0.98); rS.lineTo(2.4, -0.05); rS.lineTo(2.25, -0.05); rS.lineTo(1.95, 0.88); rS.lineTo(0, 1.62); rS.lineTo(-1.95, 0.88); rS.lineTo(-2.25, -0.05);
+  mesh(new THREE.ExtrudeGeometry(rS, { depth: 3.8, bevelEnabled: false }), slate, 0, 2.6, -1.9, barn);
+  // 앞문: 흰 테두리와 X자 문살, 위에는 건초 다락 창
+  mesh(box(1.9, 2.0, 0.06), std('#5a1824', { roughness: 0.8 }), 0, 1.0, 1.72, barn);
+  for (const [w, h, x, y] of [[2.05, 0.1, 0, 2.03], [0.1, 2.05, -0.98, 1.0], [0.1, 2.05, 0.98, 1.0], [0.08, 2.0, 0, 1.0]]) mesh(box(w, h, 0.05), trim, x, y, 1.76, barn);
+  for (const sx of [-1, 1]) for (const d of [1, -1]) { const xb = mesh(box(0.07, 2.15, 0.04), trim, sx * 0.48, 1.0, 1.78, barn); xb.rotation.z = d * 0.43; }
+  mesh(box(0.9, 0.7, 0.06), std('#2a2220'), 0, 3.15, 1.72, barn); for (const [w, h, x, y] of [[1.0, 0.07, 0, 3.52], [1.0, 0.07, 0, 2.78], [0.07, 0.8, -0.48, 3.15], [0.07, 0.8, 0.48, 3.15]]) mesh(box(w, h, 0.05), trim, x, y, 1.76, barn);
+  for (const sx of [-1, 1]) { mesh(box(0.12, 2.6, 0.06), trim, sx * 2.08, 1.3, 1.72, barn); }
+  sign(isEN ? '🏠 LOBBY' : '🏠 로비로', 1.0, 0.32, { w: 480, h: 150, bg: '#f1ece2', fg: '#5a1824' }, barn, 0, 2.35, 1.8);
+  const winGlow = mesh(box(0.7, 0.5, 0.02), new THREE.MeshBasicMaterial({ color: '#2a2220' }), 0, 3.15, 1.73, barn); bulbs.push(winGlow);
+  barn.traverse(o => { if (o.isMesh) { o.userData.barn = true; farmHits.push(o); } });
+  // --- 빨간 트랙터 (헛간 옆)
+  const trac = new THREE.Group(); trac.position.set(7.2, 0, 8.6); trac.rotation.y = 0.35; F.add(trac);
+  const red = std('#c8261e', { roughness: 0.45, metalness: 0.2 }), blk = std('#1e1e20', { roughness: 0.9 }), metal = std('#9aa0a6', { roughness: 0.4, metalness: 0.6 });
+  mesh(box(1.7, 0.28, 0.62), red, 0.1, 0.62, 0, trac);
+  const hood = mesh(box(0.95, 0.46, 0.56), red, 0.55, 0.98, 0, trac);
+  mesh(box(0.06, 0.4, 0.5), std('#2d2d30'), 1.04, 0.95, 0, trac); for (let i = 0; i < 4; i++) mesh(box(0.065, 0.025, 0.48), metal, 1.045, 0.82 + i * 0.09, 0, trac);
+  for (const sz of [-1, 1]) mesh(sph(0.055, 10, 8), glow('#fff6d8'), 1.05, 1.12, sz * 0.2, trac);
+  mesh(cyl(0.035, 0.035, 0.55, 8), blk, 0.75, 1.45, 0.16, trac); mesh(cyl(0.05, 0.035, 0.06, 8), blk, 0.75, 1.75, 0.16, trac);
+  for (const [x, z] of [[-0.62, -0.32], [-0.62, 0.32], [-0.05, -0.32], [-0.05, 0.32]]) mesh(cyl(0.025, 0.025, 1.05, 6), blk, x, 1.42, z, trac);
+  mesh(box(0.82, 0.06, 0.8), red, -0.33, 1.96, 0, trac);
+  mesh(box(0.42, 0.08, 0.42), blk, -0.4, 0.95, 0, trac); mesh(box(0.08, 0.38, 0.42), blk, -0.6, 1.15, 0, trac);
+  const sw = mesh(new THREE.TorusGeometry(0.13, 0.018, 8, 18), blk, -0.08, 1.25, 0, trac); sw.rotation.set(0, Math.PI / 2, -0.6); sw.rotation.order = 'YZX';
+  for (const sz of [-1, 1]) {
+    const rw = new THREE.Group(); rw.position.set(-0.4, 0.58, sz * 0.48); trac.add(rw);
+    const tire = mesh(cyl(0.58, 0.58, 0.32, 22), blk, 0, 0, 0, rw); tire.rotation.x = Math.PI / 2;
+    for (let i = 0; i < 14; i++) { const lug = mesh(box(0.1, 0.06, 0.32), blk, 0, 0, 0, rw); const a = i / 14 * Math.PI * 2; lug.position.set(Math.cos(a) * 0.59, Math.sin(a) * 0.59, 0); lug.rotation.z = a + 0.5; }
+    const hub = mesh(cyl(0.3, 0.3, 0.34, 18), red, 0, 0, 0, rw); hub.rotation.x = Math.PI / 2;
+    const fender = mesh(new THREE.CylinderGeometry(0.66, 0.66, 0.36, 20, 1, true, 0, Math.PI), red, 0, 0.02, 0, rw); fender.rotation.set(Math.PI / 2, 0, Math.PI / 2); fender.material = std('#c8261e', { roughness: 0.45, metalness: 0.2, side: THREE.DoubleSide });
+    const fw = mesh(cyl(0.3, 0.3, 0.2, 18), blk, 0.72, 0.3 - 0.58, sz * 0.1, rw); fw.rotation.x = Math.PI / 2; fw.position.set(1.12, -0.28, sz * -0.12);
+    const fh = mesh(cyl(0.15, 0.15, 0.22, 14), red, 1.12, -0.28, sz * -0.12, rw); fh.rotation.x = Math.PI / 2;
+  }
+  // --- 제주 현무암 돌담: 구멍 숭숭 까만 돌을 허리 높이로 엉성하게 쌓아 농장을 빙 둘러요
+  const basaltTex = canvasTex(128, 128, (g, w, h) => { g.fillStyle = '#4a4744'; g.fillRect(0, 0, w, h); const r = mulberry(31); for (let k = 0; k < 420; k++) { g.fillStyle = `rgba(${k % 3 ? '20,19,18' : '110,105,98'},${0.35 + r() * 0.45})`; g.beginPath(); g.arc(r() * w, r() * h, 0.8 + r() * 2.6, 0, 7); g.fill(); } });
+  const stoneGeo = new THREE.DodecahedronGeometry(0.2, 0), stones = [];
+  const WX = 17, WZB = -20, WZF = 10.6;
+  const wallRun = (x0, z0, x1, z1) => {
+    const L = Math.hypot(x1 - x0, z1 - z0), n = Math.ceil(L / 0.34), ang = Math.atan2(z1 - z0, x1 - x0);
+    for (let row = 0; row < 3; row++) for (let i = 0; i <= n; i++) {
+      const t2 = (i + (row % 2) * 0.5) / n; if (t2 > 1) continue;
+      const sc = 0.8 + R2() * 0.55, x = x0 + (x1 - x0) * t2 + (R2() - 0.5) * 0.08, z = z0 + (z1 - z0) * t2 + (R2() - 0.5) * 0.12;
+      stones.push([x, 0.17 + row * 0.3 + (R2() - 0.5) * 0.06, z, sc * (1.05 + R2() * 0.3), sc * (0.8 + R2() * 0.25), sc * (0.85 + R2() * 0.3), R2() * 6, R2() * 6, ang]);
+    }
+  };
+  wallRun(-WX, WZF, -0.95, WZF); wallRun(0.95, WZF, WX, WZF); wallRun(-WX, WZB, WX, WZB); wallRun(-WX, WZB, -WX, WZF); wallRun(WX, WZB, WX, WZF);
+  for (const sx of [-1, 1]) for (let row = 0; row < 5; row++) stones.push([sx * 1.1, 0.18 + row * 0.27, WZF, 1.3, 0.95, 1.2, R2() * 6, R2() * 6, 0]);
+  const stoneI = new THREE.InstancedMesh(stoneGeo, std('#ffffff', { map: basaltTex, roughness: 1 }), stones.length);
+  stones.forEach(([x, y, z, sx, sy, sz, r1, r2], i) => { e4.set(r1, r2, 0); q4.setFromEuler(e4); v4.set(x, y, z); s4.set(sx, sy, sz); stoneI.setMatrixAt(i, m4.compose(v4, q4, s4)); c4.setHSL(0.07, 0.04, 0.2 + R2() * 0.14); stoneI.setColorAt(i, c4); });
+  stoneI.castShadow = stoneI.receiveShadow = true; F.add(stoneI);
+  sign(isEN ? 'EAGLE FARM' : '독수리 농장', 1.9, 0.42, { w: 760, h: 168, bg: '#2f2c2a', fg: '#ffe9a8' }, F, 0, 1.75, WZF + 0.05, Math.PI);
+  mesh(box(2.4, 0.08, 0.1), std('#5a4a3a'), 0, 1.5, WZF, F);
+  doorHits.length = 0;
+  const wood = std('#c49a63', { roughness: 0.9 });
+  const gate = new THREE.Group(); gate.position.set(0, 0, WZF); gate.rotation.y = Math.PI; F.add(gate);
+  libDoor = new THREE.Group(); gate.add(libDoor);
+  for (const y of [0.35, 0.65, 0.95]) mesh(box(1.5, 0.1, 0.05), wood, 0, y, 0, libDoor);
+  const dg = mesh(box(0.08, 1.4, 0.05), wood, 0, 0.65, 0.01, libDoor); dg.rotation.z = 0.6;
+  libDoor.traverse(o => { if (o.isMesh) { o.userData.door = true; doorHits.push(o); } });
+  // --- 튤립밭 (왼쪽 앞): 색깔별 줄무늬
+  const tulipCols = ['#e23b3b', '#ff8fb0', '#ffd23c', '#fbf6ee', '#9b5fd0', '#ff8a2a', '#e23b3b'];
+  const tul = []; tulipCols.forEach((col, r) => { const z = 7.7 + r * 0.36; for (let x = -15.6; x <= -5.0; x += 0.17) tul.push([x + (R2() - 0.5) * 0.06, z + (R2() - 0.5) * 0.08, col]); });
+  const tStem = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.008, 0.01, 1, 4), std('#5f9a3c', { roughness: 0.9 }), tul.length);
+  const tCup = new THREE.InstancedMesh(new THREE.SphereGeometry(0.055, 10, 8, 0, Math.PI * 2, 0, Math.PI * 0.62), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.55, side: THREE.DoubleSide }), tul.length);
+  const tLeaf = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.09, 0.32), rLeafMat, tul.length * 2);
+  tul.forEach(([x, z, col], i) => {
+    const h = 0.38 + R2() * 0.14; q4.identity(); v4.set(x, h / 2, z); s4.set(1, h, 1); tStem.setMatrixAt(i, m4.compose(v4, q4, s4));
+    e4.set(Math.PI + (R2() - 0.5) * 0.3, R2() * 6, 0); q4.setFromEuler(e4); v4.set(x, h + 0.045, z); s4.set(1, 1.35, 1); tCup.setMatrixAt(i, m4.compose(v4, q4, s4)); c4.set(col); c4.offsetHSL(0, 0, (R2() - 0.5) * 0.08); tCup.setColorAt(i, c4);
+    for (let k = 0; k < 2; k++) { e4.set(0.25 + R2() * 0.3, R2() * 6, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, 0.14, z); s4.set(1, 1, 1); tLeaf.setMatrixAt(i * 2 + k, m4.compose(v4, q4, s4)); c4.setHSL(0.3, 0.32, 0.42); tLeaf.setColorAt(i * 2 + k, c4); }
+  });
+  const tulSoil = mesh(new THREE.PlaneGeometry(11, 2.8), std('#8a6a44', { roughness: 1 }), -10.3, 0.007, 8.75, F); tulSoil.rotation.x = -Math.PI / 2;
+  F.add(tStem, tCup, tLeaf);
+  // --- 해바라기밭 (뒤쪽 양옆): 키 큰 대, 큰 잎, 앞을 보는 꽃
+  const sunTex = canvasTex(256, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const c = w / 2; for (let L = 0; L < 2; L++) for (let p = 0; p < 22; p++) { const a = p / 22 * Math.PI * 2 + L * 0.14; g.save(); g.translate(c + Math.cos(a) * 66, c + Math.sin(a) * 66); g.rotate(a); g.fillStyle = L ? '#ffcf1f' : '#f5b412'; g.beginPath(); g.ellipse(0, 0, 50, 15, 0, 0, 7); g.fill(); g.restore(); } const rg = g.createRadialGradient(c, c, 6, c, c, 62); rg.addColorStop(0, '#3a2414'); rg.addColorStop(0.75, '#5c3a1c'); rg.addColorStop(1, '#7a5222'); g.fillStyle = rg; g.beginPath(); g.arc(c, c, 62, 0, 7); g.fill(); const r = mulberry(41); for (let k = 0; k < 260; k++) { const a = r() * 6.28, d = Math.sqrt(r()) * 58; g.fillStyle = 'rgba(255,200,120,.25)'; g.fillRect(c + Math.cos(a) * d, c + Math.sin(a) * d, 2, 2); } });
+  const sunMat = new THREE.MeshStandardMaterial({ map: sunTex, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.7 });
+  const sunLeafTex = canvasTex(128, 128, (g, w, h) => { g.clearRect(0, 0, w, h); g.fillStyle = '#4f8a32'; g.beginPath(); g.moveTo(w / 2, h); g.bezierCurveTo(-10, h * 0.45, w * 0.25, 0, w / 2, 6); g.bezierCurveTo(w * 0.75, 0, w + 10, h * 0.45, w / 2, h); g.fill(); g.strokeStyle = 'rgba(200,230,150,.5)'; g.lineWidth = 2; g.beginPath(); g.moveTo(w / 2, h); g.lineTo(w / 2, 10); g.stroke(); });
+  const sunLeafMat = new THREE.MeshStandardMaterial({ map: sunLeafTex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 });
+  const suns = [];
+  for (let x = 5.6; x <= 16.2; x += 0.52) for (let z = -6.4; z >= -8.9; z -= 0.55) suns.push([x + (R2() - 0.5) * 0.15, z + (R2() - 0.5) * 0.15]);
+  for (let x = -16.2; x <= -5.6; x += 0.52) for (let z = -7.3; z >= -8.9; z -= 0.55) suns.push([x + (R2() - 0.5) * 0.15, z + (R2() - 0.5) * 0.15]);
+  const sStem = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.022, 0.03, 1, 6), std('#5f8a34', { roughness: 0.9 }), suns.length);
+  const sHead = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.62, 0.62), sunMat, suns.length);
+  const sBack = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.15, 0.12, 0.06, 14), std('#4f7a2c', { roughness: 0.9 }), suns.length);
+  const sLeaf = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.34, 0.34), sunLeafMat, suns.length * 3);
+  suns.forEach(([x, z], i) => {
+    const h = 1.55 + R2() * 0.7; q4.identity(); v4.set(x, h / 2, z); s4.set(1, h, 1); sStem.setMatrixAt(i, m4.compose(v4, q4, s4));
+    const yaw = (R2() - 0.5) * 0.6, tilt = -0.25 - R2() * 0.25; e4.set(tilt, yaw, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, h + 0.05, z + 0.08); const sc = 0.85 + R2() * 0.35; s4.set(sc, sc, sc); sHead.setMatrixAt(i, m4.compose(v4, q4, s4));
+    e4.set(tilt + Math.PI / 2, yaw, 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, h + 0.04, z + 0.03); sBack.setMatrixAt(i, m4.compose(v4, q4, s4));
+    for (let k = 0; k < 3; k++) { e4.set(0.9 + R2() * 0.4, k * 2.1 + R2(), 0, 'YXZ'); q4.setFromEuler(e4); v4.set(x, h * (0.3 + k * 0.2), z); s4.set(1, 1, 1); sLeaf.setMatrixAt(i * 3 + k, m4.compose(v4, q4, s4)); }
+  });
+  sStem.castShadow = sLeaf.castShadow = true; F.add(sStem, sHead, sBack, sLeaf);
+  // --- 먹이 더미 8곳: 지푸라기 더미와 싱싱한 풀 무더기를 번갈아 (가축들이 머리를 맞대고 뜯어먹어요)
+  const hayM = std('#e6c766', { roughness: 1 }), hayD = std('#c9a44a', { roughness: 1 }), grassM = std('#5fa83a', { roughness: 0.9 }), grassL = std('#86c957', { roughness: 0.9 });
+  const piles = []; for (const cz of FARM_ROWS) for (const cx of FARM_COLS) piles.push([cx, cz]);
+  piles.forEach(([cx, cz], n) => {
+    const P = new THREE.Group(); P.position.set(cx, 0, cz); F.add(P);
+    const patch = mesh(new THREE.CircleGeometry(1.5, 32), std(n % 2 ? '#c8a95a' : '#5d9a3a', { roughness: 1 }), 0, 0.008, 0, P); patch.rotation.x = -Math.PI / 2;
+    if (n % 2) {
+      const mound = mesh(sph(0.64, 20, 12), hayM, 0, 0, 0, P); mound.scale.set(1, 0.5, 1);
+      for (let k = 0; k < 110; k++) { const a = R2() * Math.PI * 2, r = R2() * 1.0, st2 = mesh(cyl(0.006, 0.006, 0.18 + R2() * 0.15, 4), R2() < 0.5 ? hayM : hayD, Math.cos(a) * r, 0.04 + (0.75 - r) * 0.25, Math.sin(a) * r, P); st2.rotation.set((R2() - 0.5) * 2.6, R2() * 3, (R2() - 0.5) * 2.6); }
+    } else {
+      for (let k = 0; k < 150; k++) { const a = R2() * Math.PI * 2, r = Math.sqrt(R2()) * 1.1, h = 0.16 + R2() * 0.2; const bl = mesh(new THREE.ConeGeometry(0.025, h, 4), R2() < 0.5 ? grassM : grassL, Math.cos(a) * r, h / 2, Math.sin(a) * r, P); bl.rotation.set((R2() - 0.5) * 0.5, 0, (R2() - 0.5) * 0.5); }
+      for (let k = 0; k < 6; k++) { const a = R2() * Math.PI * 2, r = R2() * 0.6; mesh(sph(0.03, 8, 6), std(k % 2 ? '#ffffff' : '#ffe14d'), Math.cos(a) * r, 0.2, Math.sin(a) * r, P); }
+    }
+  });
+  SEATS.forEach((st, k) => { const hit = new THREE.Mesh(cyl(0.42, 0.42, 1.3, 10), new THREE.MeshBasicMaterial({ visible: false })); hit.position.set(st.x, 0.65, st.z); hit.userData.seat = k; F.add(hit); stools.push(hit); });
+  F.traverse(o => { if (o.isMesh && o !== ground && o.material && o.material.visible !== false && !(o.material instanceof THREE.MeshBasicMaterial)) o.castShadow = true; if (o.isMesh) o.receiveShadow = true; });
+  ground.castShadow = false; rf.castShadow = false;
+  farmPhase(winPhase());
+  setTimeout(() => { if (!me.fk) toast($tt('🌼 농장에서는 동물 친구가 돼요. 아래 \'캐릭터\' 버튼으로 골라 보세요!', '🌼 On the farm you\'re an animal. Pick one with the \'Character\' button below!')); }, 6000);
+  setTimeout(() => toast($tt('🥕 텃밭을 누르면 야채를 골라 먹을 수 있고, 🏚 와인색 헛간을 누르면 로비로 돌아가요.', '🥕 Tap the veggie patch to pick something to eat. Tap the 🏚 wine-red barn to go back to the lobby.')), 11000);
+  const rb = document.getElementById('rosterBtn'); rb.innerHTML = rb.innerHTML.replace('/14', '/' + FARM_CAP).replace('벤치', '농장').replace('Bench', 'Farm');
   document.getElementById('careBtn').hidden = true;
 }
 
@@ -4986,6 +5519,7 @@ function frame() {
   animateStore(dt, t);
   animateCare(dt, t);
   animateDoor(dt);
+  if (farmTick) farmTick(dt, t);
   updateQuickCare();
   animateBall(dt);
   if (!reduceMotion) { platform.rotation.y += dt * 0.9; platform.position.x = Math.sin(t * 12) * 0.012; platform.position.z = Math.cos(t * 12) * 0.012; }
