@@ -5,6 +5,12 @@ Newest first.
 
 ---
 
+## v3.1 · Eagle Farm
+- 🌼 **New room: Eagle Farm**: an open room for everyone (no invite code, up to 48), reached from the lobby. A Jeju-style wall of loosely stacked black basalt stones runs all the way around it. Inside are a tall cornfield with a scarecrow, a striped tulip bed, sunflower fields, a veggie patch with big vegetables, a red tractor and a waist-high rapeseed field at the back. The sky and light follow the time of day. Leave through the wooden gate, or tap the wine-red barn to go straight back to the lobby.
+- 🥕 **Eat from the veggie patch**: tap the patch to fly over to it, then pick cabbage, carrot, lettuce, tomato, radish, pumpkin or corn. The vegetable flies to your animal, which munches it with a "nom nom" bubble. Eaten plants grow back after 2 minutes.
+- 🐄 **Grazing livestock instead of desks**: on the farm you're one of six four-legged animals with no clothes, just a bell collar in your colour: spotted cow, brown cow, alpaca, sheep, goat and donkey. Six animals stand in a ring around each of eight big hay or grass piles. While you focus, they lower their heads to the middle, crown to crown, and munch. On a break, they lift their heads and look around. Your farm animal is saved separately from your lab character.
+- 🎃 **Lab characters**: added pumpkin, made the sweet potato longer and more sweet-potato-like, and moved the cows to the farm.
+
 ## v3.0 · Look around the storage
 - 🌇 **Library light follows the time**: the library's lighting now matches the window view (day, sunset 6–8 pm, night after 8 pm). The space outside the building is plain black.
 - 🏙 **Wider view from the library**: the glass walls show the city from farther away, so the towers look distant. If a library picture is missing, the lab's window view is used instead of a black window.
