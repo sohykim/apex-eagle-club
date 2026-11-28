@@ -10,10 +10,11 @@ No install, no email. It works in your browser on a laptop or a phone, in landsc
 
 ---
 
-## 🆕 Current version (v3.1)
+## 🆕 Update (v3.1)
 
 <Graze and focus!> farm is now available. 
-![Lab view](sources/farm.png)
+![Lab view](sources/farm-1.png)
+
 Choose your favourite farm animal, graze together with your friends.
 Feeling tired? Take a quick nap in the barn.
 
